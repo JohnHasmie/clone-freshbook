@@ -43,7 +43,7 @@ body {
   left: 0;
   z-index: 99;
   height: 100vh;
-  overflow: auto;
+  overflow-y: scroll;
   margin: 0;
   padding: 33px 20px;
 }
@@ -67,6 +67,7 @@ body {
 .layout-dashboard .ant-layout-sider.sider-primary .profile {
   display: grid;
   justify-items: center;
+  color:#fff;
 }
 
 .layout-dashboard .ant-layout-sider.sider-primary .profile img {
@@ -125,7 +126,7 @@ body {
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-item .active,
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-submenu.ant-menu-item-selected .active,
 .layout-dashboard .ant-layout-sider.sider-primary .ant-menu-submenu .active {
-  background-color: #fff;
+  background-color: blue;
   box-shadow: 0 20px 27px rgb(0 0 0 / 5%);
   font-weight: 600;
 }
@@ -2151,6 +2152,10 @@ body {
   color: #141414;
 }
 
+.text-light {
+  color: #fff;
+}
+
 .sign-img img {
   width: 100%;
   max-width: 500px;
@@ -3103,4 +3108,58 @@ button.ant-btn.ant-btn-dashed.ant-full-box svg {
 
 section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile .header-control span.ant-input-affix-wrapper.header-search .anticon-search svg path {
   fill: #8c8c8c;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+/*! destyle.css v2.0.2 | MIT License | https://github.com/nicolas-cusan/destyle.css */
+
+/* Reset box-model and set borders */
+/* ============================================ */
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+}
+
+/* width */
+.category ::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #e1ecf4;
+}
+
+.category ::-webkit-scrollbar-track {
+  background: none;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #88939f;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #535f6c;
 }

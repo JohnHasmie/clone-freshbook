@@ -87,9 +87,7 @@ function Main({ children }) {
         trigger={null}
         width={250}
         theme="light"
-        className={`sider-primary ant-layout-sider-primary ${
-          sidenavType === "#fff" ? "active-route" : ""
-        }`}
+        className={`sider-primary ant-layout-sider-primary`}
         style={{ background: sidenavType }}
       >
         <Sidenav color={sidenavColor} />

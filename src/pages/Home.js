@@ -569,22 +569,7 @@ function Home() {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="h-full col-content p-20">
-                    <div className="ant-muse">
-                      <Text>Built by developers</Text>
-                      <Title level={5}>Muse Dashboard for Ant Design</Title>
-                      <Paragraph className="lastweek mb-36">
-                        From colors, cards, typography to complex elements, you
-                        will find the full documentation.
-                      </Paragraph>
-                    </div>
-                    <div className="card-footer">
-                      <a className="icon-move-right" href="#pablo">
-                        Read More
-                        {<RightOutlined />}
-                      </a>
-                    </div>
-                  </div> */}
+                 
                 </Col>
                 <Col xs={24} md={6} sm={24} lg={6} xl={6}>
                   <div className="h-full col-content p-20">
@@ -702,26 +687,6 @@ function Home() {
               </Row>
             </Card>
           </Col>
-
-          {/* <Col xs={24} md={12} sm={24} lg={12} xl={10} className="mb-24">
-            <Card bordered={false} className="criclebox card-info-2 h-full">
-              <div className="gradent h-full col-content">
-                <div className="card-content">
-                  <Title level={5}>Work with the best</Title>
-                  <p>
-                    Wealth creation is an evolutionarily recent positive-sum
-                    game. It is all about who take the opportunity first.
-                  </p>
-                </div>
-                <div className="card-footer">
-                  <a className="icon-move-right" href="#pablo">
-                    Read More
-                    <RightOutlined />
-                  </a>
-                </div>
-              </div>
-            </Card>
-          </Col> */}
         </Row>
 
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
@@ -777,7 +742,7 @@ function Home() {
             <div className="ant-progress-project">
               <Title level={5}>Total Profit</Title>
               <a role="button" style={{ color: "#0063c1" }}>
-              View Profit & Loss Report
+                View Profit & Loss Report
               </a>
             </div>
             <Card
@@ -831,8 +796,8 @@ function Home() {
 
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-              <Title level={5}>Revenue Streams</Title>
-             
+            <Title level={5}>Revenue Streams</Title>
+
             <Card
               bordered={true}
               style={{
@@ -884,8 +849,8 @@ function Home() {
 
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-              <Title level={5}>Spending</Title>
-             
+            <Title level={5}>Spending</Title>
+
             <Card
               bordered={true}
               style={{
@@ -899,17 +864,16 @@ function Home() {
                 className="h-full col-content p-20"
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: "300px",
-                    }}
-                  >
-                   Cooming Soon
-                  </div>
-               
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "300px",
+                  }}
+                >
+                  Cooming Soon
+                </div>
               </div>
             </Card>
           </Col>
@@ -917,8 +881,8 @@ function Home() {
 
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-              <Title level={5}>Unbilled Time</Title>
-             
+            <Title level={5}>Unbilled Time</Title>
+
             <Card
               bordered={true}
               style={{
@@ -932,17 +896,16 @@ function Home() {
                 className="h-full col-content p-20"
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: "300px",
-                    }}
-                  >
-                   Cooming Soon
-                  </div>
-               
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "300px",
+                  }}
+                >
+                  Cooming Soon
+                </div>
               </div>
             </Card>
           </Col>

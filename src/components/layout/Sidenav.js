@@ -7,7 +7,6 @@ import maskGroup from "../../assets/images/mask-group.svg";
 function Sidenav({ color }) {
   const { pathname } = useLocation();
   const page = pathname.replace("/", "");
-
   const dashboard = [
     <svg
       width="20"
@@ -160,11 +159,11 @@ function Sidenav({ color }) {
     >
       <path
         d="M10 2C6.68632 2 4.00003 4.68629 4.00003 8V11.5858L3.29292 12.2929C3.00692 12.5789 2.92137 13.009 3.07615 13.3827C3.23093 13.7564 3.59557 14 4.00003 14H16C16.4045 14 16.7691 13.7564 16.9239 13.3827C17.0787 13.009 16.9931 12.5789 16.7071 12.2929L16 11.5858V8C16 4.68629 13.3137 2 10 2Z"
-        fill="#111827"
+        fill="#fff"
       ></path>
       <path
         d="M10 18C8.34315 18 7 16.6569 7 15H13C13 16.6569 11.6569 18 10 18Z"
-        fill="#111827"
+        fill="#fff"
       ></path>
     </svg>,
   ];
@@ -182,7 +181,7 @@ function Sidenav({ color }) {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M11.4892 3.17094C11.1102 1.60969 8.8898 1.60969 8.51078 3.17094C8.26594 4.17949 7.11045 4.65811 6.22416 4.11809C4.85218 3.28212 3.28212 4.85218 4.11809 6.22416C4.65811 7.11045 4.17949 8.26593 3.17094 8.51078C1.60969 8.8898 1.60969 11.1102 3.17094 11.4892C4.17949 11.7341 4.65811 12.8896 4.11809 13.7758C3.28212 15.1478 4.85218 16.7179 6.22417 15.8819C7.11045 15.3419 8.26594 15.8205 8.51078 16.8291C8.8898 18.3903 11.1102 18.3903 11.4892 16.8291C11.7341 15.8205 12.8896 15.3419 13.7758 15.8819C15.1478 16.7179 16.7179 15.1478 15.8819 13.7758C15.3419 12.8896 15.8205 11.7341 16.8291 11.4892C18.3903 11.1102 18.3903 8.8898 16.8291 8.51078C15.8205 8.26593 15.3419 7.11045 15.8819 6.22416C16.7179 4.85218 15.1478 3.28212 13.7758 4.11809C12.8896 4.65811 11.7341 4.17949 11.4892 3.17094ZM10 13C11.6569 13 13 11.6569 13 10C13 8.34315 11.6569 7 10 7C8.34315 7 7 8.34315 7 10C7 11.6569 8.34315 13 10 13Z"
-        fill="#111827"
+        fill="#fff"
       ></path>
     </svg>,
   ];
@@ -198,7 +197,7 @@ function Sidenav({ color }) {
         </NavLink>
       </div>
       <hr />
-      <Menu theme="light" mode="inline">
+      <Menu theme="light" mode="inline" >
         <Menu.Item key="1">
           <NavLink to="/dashboard">
             <span
@@ -209,7 +208,7 @@ function Sidenav({ color }) {
             >
               {dashboard}
             </span>
-            <span className="label">Dashboard</span>
+            <span className="text-light">Dashboard</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="1">
@@ -222,7 +221,7 @@ function Sidenav({ color }) {
             >
               {dashboard}
             </span>
-            <span className="label">Clients</span>
+            <span className="text-light">Clients</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="2">
@@ -235,7 +234,7 @@ function Sidenav({ color }) {
             >
               {tables}
             </span>
-            <span className="label">Tables</span>
+            <span className="text-light">Tables</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="3">
@@ -248,7 +247,7 @@ function Sidenav({ color }) {
             >
               {billing}
             </span>
-            <span className="label">Billing</span>
+            <span className="text-light">Billing</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="4">
@@ -261,7 +260,7 @@ function Sidenav({ color }) {
             >
               {rtl}
             </span>
-            <span className="label">RTL</span>
+            <span className="text-light">RTL</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item className="menu-item-header" key="5">
@@ -277,19 +276,19 @@ function Sidenav({ color }) {
             >
               {profile}
             </span>
-            <span className="label">Profile</span>
+            <span className="text-light">Profile</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="7">
           <NavLink to="/sign-in">
             <span className="icon">{signin}</span>
-            <span className="label">Sign In</span>
+            <span className="text-light">Sign In</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="8">
           <NavLink to="/sign-up">
             <span className="icon">{signup}</span>
-            <span className="label">Sign Up</span>
+            <span className="text-light">Sign Up</span>
           </NavLink>
         </Menu.Item>
       </Menu>
