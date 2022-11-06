@@ -23,6 +23,7 @@ import "antd/dist/antd.css";
 import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
 import Business from "./pages/setting/Business";
+import EmailNotification from "./pages/setting/EmailNotification";
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
           <Route exact path="/global-settings" component={GlobalSetting} />
           <Route exact path="/global-settings/account" component={GlobalSetting} />
           <Route exact path="/global-settings/business" component={Business} />
+          <Route exact path="/global-settings/email-notifications" component={EmailNotification} />
+
 
 
           <Route exact path="/tables" component={Tables} />
