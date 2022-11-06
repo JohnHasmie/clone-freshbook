@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <clipPath id="clip-path">
+      <circle id="Ellipse_871" data-name="Ellipse 871" cx="60" cy="60" r="60" transform="translate(134 150)" fill="#fff" stroke="#707070" stroke-width="1"/>
+    </clipPath>
+  </defs>
+  <g id="Mask_Group_310" data-name="Mask Group 310" transform="translate(-134 -150)" clip-path="url(#clip-path)">
+    <rect id="Rectangle_5252" data-name="Rectangle 5252" width="134" height="132" transform="translate(127 142)" fill="#edebf7"/>
+    <g id="vuesax_bold_user" data-name="vuesax/bold/user" transform="translate(130.812 159.258)">
+      <g id="user" transform="translate(0 0)">
+        <path id="Vector" d="M0,0H125.089V125.089H0Z" fill="none" opacity="0"/>
+        <path id="Vector-2" data-name="Vector" d="M52.12,26.06A26.06,26.06,0,1,1,26.06,0,26.06,26.06,0,0,1,52.12,26.06Z" transform="translate(36.484 10.424)" fill="#1c1a51"/>
+        <path id="Vector-3" data-name="Vector" d="M47.377,0C21.265,0,0,17.512,0,39.09A2.581,2.581,0,0,0,2.606,41.7H92.149a2.581,2.581,0,0,0,2.606-2.606C94.755,17.512,73.49,0,47.377,0Z" transform="translate(15.167 75.575)" fill="#1c1a51"/>
+      </g>
+    </g>
+  </g>
+</svg>
