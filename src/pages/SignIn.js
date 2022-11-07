@@ -122,7 +122,7 @@ const signin = [
 export default class SignIn extends Component {
   render() {
     const onFinish = (values) => {
-      console.log("Success:", values);
+  
       axios
         .post("auth/login", {
           email: values.email,
@@ -135,7 +135,10 @@ export default class SignIn extends Component {
           // });
         })
         .catch((error) => {
-          window.location.href = "/dashboard";
+          if(process.env.REACT_APP_CHECK_LOGIN === true){
+          window.location.href = "/dashboard";}else{
+            alert(error)
+          }
         });
     };
 
