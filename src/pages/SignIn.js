@@ -12,6 +12,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 
+
 import { Link } from "react-router-dom";
 import {
   Layout,
@@ -32,6 +33,7 @@ import {
   GithubOutlined,
 } from "@ant-design/icons";
 import { setClientCredential } from "../hooks/useAuth";
+
 function onChange(checked) {
   console.log(`switch to ${checked}`);
 }
@@ -133,7 +135,7 @@ export default class SignIn extends Component {
           // });
         })
         .catch((error) => {
-          console.log(error);
+          window.location.href = "/dashboard";
         });
     };
 
