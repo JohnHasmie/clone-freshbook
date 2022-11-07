@@ -258,7 +258,7 @@ function Sidenav({ color,user, setting }) {
             <span className="text-light">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2">
+        <Menu.Item key="2" style={{display:"none"}}>
           <NavLink to="/client">
             <span
               className=""
