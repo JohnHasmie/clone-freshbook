@@ -290,7 +290,7 @@ function Sidenav({ color,user, setting }) {
           </NavLink>
         </Menu.Item>
       </Menu>
-      <div className="aside-footer">
+      {/* <div className="aside-footer">
         <div
           className="footer-box"
           style={{
@@ -306,7 +306,7 @@ function Sidenav({ color,user, setting }) {
             DOCUMENTATION
           </Button>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
