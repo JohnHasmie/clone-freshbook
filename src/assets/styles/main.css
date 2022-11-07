@@ -17,7 +17,12 @@ body {
   font-size: 14px;
   line-height: 1.6;
   font-weight: 400;
-  font-family: open sans, Helvetica, Arial, sans-serif;
+  /* font-family: open sans, Helvetica, Arial, sans-serif; */
+  font-family: 'Inter', sans-serif;
+}
+
+.profile-photo{
+  border-radius: 100%;
 }
 
 .ant-layout.ant-layout-has-sider {
@@ -35,6 +40,8 @@ body {
   .layout-dashboard {
     overflow: auto;
   }
+
+  
 }
 
 .layout-dashboard .ant-layout-sider.sider-primary {
@@ -301,6 +308,58 @@ body {
   padding-bottom: 33px;
 }
 
+/* #sidebar */
+.menu-border {
+  border-bottom: 1px solid #f0f0f0;
+}
+.ant-popover-inner-content{
+  padding: 0;
+}
+
+.ant-popover-title {
+  padding: 20px 16px 4px;
+}
+
+/* .ant-popover-content{
+  border:1px solid gray;
+} */
+/* end #sidebar */
+
+/* #global setting */
+.ant-form-large .ant-form-item-label > label {
+  height: auto;
+  
+}
+
+.font-small{
+  font-size: 14px;
+    line-height: 16px;
+}
+
+.font-normal{
+  font-size: 16px;
+}
+/*  #end global setting */
+
+
+/* #email notifications */
+.ant-checkbox-inner {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 20px;
+  height: 20px;
+  direction: ltr;
+  background-color: #fff;
+  border: 2px solid #d9d9d9;
+  border-radius: 5px;
+  border-collapse: separate;
+  transition: all 0.3s;
+}
+
+/*  #end email notifications */
+
 .ant-menu-inline.ant-menu-root .ant-menu-item,
 .ant-menu-inline.ant-menu-root .ant-menu-submenu-title {
   display: block;
@@ -520,8 +579,10 @@ h4 {
 }
 
 p {
-  font-size: 14px;
+  font-size: 16px;
 }
+
+
 
 .settings-drawer .drawer-content .sidebar-color h6 {
   margin-bottom: 8px;
@@ -1299,6 +1360,10 @@ span.ismobile {
   .footer-menu ul {
     justify-content: center;
   }
+  .layout-dashboard .ant-layout-content {
+    padding: 0;
+    margin: 0 20px 0 ; 
+  }
 
   footer.ant-layout-footer {
     padding: 0px 15px;
@@ -1950,8 +2015,8 @@ body {
 }
 
 .ant-input {
-  font-weight: 600;
-  color: #8c8c8c;
+  font-weight: normal;
+  color: rgba(0, 0, 0, 0.85);
 }
 
 .ant-input {
@@ -2152,6 +2217,10 @@ body {
   color: #141414;
 }
 
+.text-secondary {
+  color: #576981;
+}
+
 .text-light {
   color: #fff;
 }
@@ -2205,6 +2274,8 @@ body {
     margin: 0;
   }
 
+ 
+
   .card-signup {
     margin-bottom: 120px;
   }
@@ -2249,7 +2320,7 @@ button.ant-btn.bell strong {
 
 .layout-dashboard .ant-layout-content {
   padding: 0;
-  margin: 0 20px 0;
+  margin: 0 ; 
 }
 
 .m-10,

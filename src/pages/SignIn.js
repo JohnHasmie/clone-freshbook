@@ -10,6 +10,8 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 import React, { Component } from "react";
+import axios from "axios";
+
 import { Link } from "react-router-dom";
 import {
   Layout,
@@ -29,6 +31,7 @@ import {
   InstagramOutlined,
   GithubOutlined,
 } from "@ant-design/icons";
+import { setClientCredential } from "../hooks/useAuth";
 function onChange(checked) {
   console.log(`switch to ${checked}`);
 }
@@ -118,6 +121,20 @@ export default class SignIn extends Component {
   render() {
     const onFinish = (values) => {
       console.log("Success:", values);
+      axios
+        .post("auth/login", {
+          email: values.email,
+          password: values.password,
+        })
+        .then((response) => {
+          console.log(response,"response Token");
+          // setClientCredential(response?.data?.token).then(() => {
+          //   window.location.href = "/dashboard";
+          // });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -204,7 +221,7 @@ export default class SignIn extends Component {
                       },
                     ]}
                   >
-                    <Input placeholder="Password" />
+                    <Input type="password" placeholder="Password" />
                   </Form.Item>
 
                   <Form.Item

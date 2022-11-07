@@ -13,6 +13,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import axios from "axios"
+
+
+
+axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL
 
 ReactDOM.render(
   <BrowserRouter>
