@@ -21,11 +21,20 @@ export default function Business() {
     "settings",
     () => axios.get("settings").then((res) => res.data)
   )
-  console.log(settingData?.data?.setting,"setting");
+  const onFinish = (values) => {
+    console.log("Success:", values);
+    
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
   return (
     <>
       <div style={{ width: "75%" }}>
         <Form
+         onFinish={onFinish}
+         onFinishFailed={onFinishFailed}
           layout="vertical"
           size={"large"}
           fields={[

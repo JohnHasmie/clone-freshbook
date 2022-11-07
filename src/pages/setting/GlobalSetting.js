@@ -2,6 +2,7 @@ import { Col, Form, Input, Row, Select, Typography } from "antd";
 import React from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
+import ButtonSubmit from '../../components/ButtonSubmit';
 
 export default function GlobalSetting() {
   const { Title } = Typography;
@@ -11,10 +12,19 @@ export default function GlobalSetting() {
   const { data } = useQuery("profile", () =>
     axios.get("user/profile").then((res) => res.data)
   );
+  const onFinish = (values) => {
+    console.log("Success:", values);
+    
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
   return (
     <>
-      <div style={{ width: "75%" }}>
         <Form
+         onFinish={onFinish}
+         onFinishFailed={onFinishFailed}
           layout="vertical"
           size={"large"}
           fields={[
@@ -28,6 +38,7 @@ export default function GlobalSetting() {
             },
           ]}
         >
+      <div style={{ width: "75%" }}>
           <Row gutter={24}>
             <Col span={24}>
               <Title level={3}>Account Details</Title>
@@ -182,8 +193,9 @@ export default function GlobalSetting() {
               </p>
             </Col>
           </Row>
-        </Form>
       </div>
+      <ButtonSubmit/>
+        </Form>
     </>
   );
 }
