@@ -345,7 +345,7 @@ function Home() {
 
   return (
     <>
-      <div className="layout-content">
+      <div className="layout-content" style={{width:"97%"}}>
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div className="ant-progress-project">
