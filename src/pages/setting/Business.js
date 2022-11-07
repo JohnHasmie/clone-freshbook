@@ -11,6 +11,7 @@ import {
 import React from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
+import ButtonSubmit from "../../components/ButtonSubmit";
 
 export default function Business() {
   const { Title } = Typography;
@@ -31,8 +32,7 @@ export default function Business() {
   };
   return (
     <>
-      <div style={{ width: "75%" }}>
-        <Form
+       <Form
          onFinish={onFinish}
          onFinishFailed={onFinishFailed}
           layout="vertical"
@@ -60,6 +60,8 @@ export default function Business() {
             },
           ]}
         >
+      <div style={{ width: "75%" }}>
+     
           <Row gutter={24}>
             <Col span={24} style={{ marginBottom: "20px" }}>
               <Title level={3}>Business Details</Title>
@@ -402,8 +404,9 @@ export default function Business() {
             Looking for a way to update your <strong>Invoice due dates</strong>?{" "}
             <a>Click here</a>
           </p>
-        </Form>
       </div>
+      <ButtonSubmit/>
+        </Form>
     </>
   );
 }
