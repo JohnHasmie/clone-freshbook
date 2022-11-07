@@ -129,10 +129,9 @@ export default class SignIn extends Component {
           password: values.password,
         })
         .then((response) => {
-          console.log(response,"response Token");
-          // setClientCredential(response?.data?.token).then(() => {
-          //   window.location.href = "/dashboard";
-          // });
+          setClientCredential(response?.data?.token).then(() => {
+            window.location.href = "/dashboard";
+          });
         })
         .catch((error) => {
           if(process.env.REACT_APP_CHECK_LOGIN === true){
