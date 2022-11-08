@@ -1,14 +1,3 @@
-/*!
-=========================================================
-* Muse Ant Design Dashboard - v1.0.0
-=========================================================
-* Product Page: https://www.creative-tim.com/product/muse-ant-design-dashboard
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/muse-ant-design-dashboard/blob/main/LICENSE.md)
-* Coded by Creative Tim
-=========================================================
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 import React, { Component } from "react";
 import {
   Layout,
@@ -31,6 +20,7 @@ import {
   InstagramOutlined,
   GithubOutlined,
 } from "@ant-design/icons";
+import axios from "axios";
 
 const { Title } = Typography;
 const { Header, Footer, Content } = Layout;
@@ -117,7 +107,18 @@ const signin = [
 export default class SignUp extends Component {
   render() {
     const onFinish = (values) => {
-      console.log("Success:", values);
+      axios
+        .post("auth/register", {
+          email: values.email,
+          password: values.password,
+          password_confirmation: values.password_confirmation,
+        })
+        .then((response) => {
+          window.location.href = "/sign-in";
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -127,9 +128,6 @@ export default class SignUp extends Component {
       <>
         <div className="layout-default ant-layout layout-sign-up">
           <Header>
-            <div className="header-col header-brand">
-              <h5>Muse Dashboard</h5>
-            </div>
             <div className="header-col header-nav">
               <Menu mode="horizontal" defaultSelectedKeys={["1"]}>
                 <Menu.Item key="1">
@@ -138,28 +136,20 @@ export default class SignUp extends Component {
                     <span> Dashboard</span>
                   </Link>
                 </Menu.Item>
+
                 <Menu.Item key="2">
-                  <Link to="/profile">
-                    {profile}
-                    <span>Profile</span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="3">
                   <Link to="/sign-up">
                     {signup}
                     <span> Sign Up</span>
                   </Link>
                 </Menu.Item>
-                <Menu.Item key="4">
+                <Menu.Item key="3">
                   <Link to="/sign-in">
                     {signin}
                     <span> Sign In</span>
                   </Link>
                 </Menu.Item>
               </Menu>
-            </div>
-            <div className="header-col header-btn">
-              <Button type="false">FREE DOWNLOAD</Button>
             </div>
           </Header>
 
@@ -176,10 +166,10 @@ export default class SignUp extends Component {
 
             <Card
               className="card-signup header-solid h-full ant-card pt-0"
-              title={<h5>Register With</h5>}
+              title={<h5>Register </h5>}
               bordered="false"
             >
-              <div className="sign-up-gateways">
+              {/* <div className="sign-up-gateways">
                 <Button type="false">
                   <img src={logo1} alt="logo 1" />
                 </Button>
@@ -190,7 +180,7 @@ export default class SignUp extends Component {
                   <img src={logo3} alt="logo 3" />
                 </Button>
               </div>
-              <p className="text-center my-25 font-semibold text-muted">Or</p>
+              <p className="text-center my-25 font-semibold text-muted">Or</p> */}
               <Form
                 name="basic"
                 initialValues={{ remember: true }}
@@ -198,21 +188,21 @@ export default class SignUp extends Component {
                 onFinishFailed={onFinishFailed}
                 className="row-col"
               >
-                <Form.Item
+                {/* <Form.Item
                   name="Name"
                   rules={[
                     { required: true, message: "Please input your username!" },
                   ]}
                 >
                   <Input placeholder="Name" />
-                </Form.Item>
+                </Form.Item> */}
                 <Form.Item
                   name="email"
                   rules={[
                     { required: true, message: "Please input your email!" },
                   ]}
                 >
-                  <Input placeholder="email" />
+                  <Input placeholder="Email" />
                 </Form.Item>
                 <Form.Item
                   name="password"
@@ -220,7 +210,32 @@ export default class SignUp extends Component {
                     { required: true, message: "Please input your password!" },
                   ]}
                 >
-                  <Input placeholder="Passwoed" />
+                  <Input placeholder="Password" type="password" />
+                </Form.Item>
+                <Form.Item
+                  name="password_confirmation"
+                  dependencies={["password"]}
+                  hasFeedback
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please confirm your password!",
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue("password") === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error(
+                            "The two passwords that you entered do not match!"
+                          )
+                        );
+                      },
+                    }),
+                  ]}
+                >
+                  <Input placeholder="Password Confirmation" type="password" />
                 </Form.Item>
 
                 <Form.Item name="remember" valuePropName="checked">
@@ -250,7 +265,7 @@ export default class SignUp extends Component {
               </p>
             </Card>
           </Content>
-          <Footer>
+          {/* <Footer>
             <Menu mode="horizontal">
               <Menu.Item>Company</Menu.Item>
               <Menu.Item>About Us</Menu.Item>
@@ -289,7 +304,7 @@ export default class SignUp extends Component {
               {" "}
               Copyright © 2021 Muse by <a href="#pablo">Creative Tim</a>.{" "}
             </p>
-          </Footer>
+          </Footer> */}
         </div>
       </>
     );

@@ -1,16 +1,20 @@
 // import { useState } from "react";
-import { LogoutOutlined, SettingOutlined, TagOutlined } from "@ant-design/icons";
+import {
+  LogoutOutlined,
+  SettingOutlined,
+  TagOutlined,
+} from "@ant-design/icons";
 import { Menu, Button, Popover, Typography, Divider } from "antd";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import maskGroup from "../../assets/images/mask-group.svg";
 
-function Sidenav({ color,user, setting }) {
+function Sidenav({ color, user, setting }) {
   const { pathname } = useLocation();
   const { Title } = Typography;
   const page = pathname.replace("/", "");
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
   const dashboard = [
     <svg
       width="20"
@@ -190,46 +194,51 @@ function Sidenav({ color,user, setting }) {
     </svg>,
   ];
 
-
-
   const content = (
-    <Menu   theme="light" mode="inline" style={{width:"300px"}}>
-      <Menu.Item className="menu-border" >
-        <NavLink onClick={()=>setVisible(!visible)} to="/global-settings" >         
-          <SettingOutlined/>
-          <span >Settings</span>
+    <Menu theme="light" mode="inline" style={{ width: "300px" }}>
+      <Menu.Item className="menu-border">
+        <NavLink onClick={() => setVisible(!visible)} to="/global-settings">
+          <SettingOutlined />
+          <span>Settings</span>
         </NavLink>
       </Menu.Item>
 
       <Menu.Item className="menu-border">
-        <NavLink onClick={()=>setVisible(!visible)} to="/" >         
-        <TagOutlined />
-          <span  >Items & Services</span>
+        <NavLink onClick={() => setVisible(!visible)} to="/">
+          <TagOutlined />
+          <span>Items & Services</span>
         </NavLink>
       </Menu.Item>
-      <Menu.Item >
-        <NavLink onClick={()=>setVisible(!visible)} to="/" >         
-        <LogoutOutlined />
-          <span  >Log Out</span>
+      <Menu.Item>
+        <NavLink onClick={() => setVisible(!visible)} to="/">
+          <LogoutOutlined />
+          <span>Log Out</span>
         </NavLink>
       </Menu.Item>
     </Menu>
   );
-
-
-  const text = <Title level={5}>Kedai Pixel</Title>;
-
+  
+  const text = <Title level={5}>{setting?.company_name}</Title>;
   return (
     <>
       <div className="profile" style={{ position: "relative" }}>
-        <img src={user?.avatar+ "Heri Setiawan"} className="profile-photo" alt="profile" />
-        <span style={{ marginTop: "1rem" }}>Heri</span>
+        <img
+          src={user?.avatar + "Heri Setiawan"}
+          className="profile-photo"
+          alt="profile"
+        />
+        <span style={{ marginTop: "1rem" }}>
+          {user?.first_name ? user?.first_name : "Heri"}
+        </span>
         <span>{setting?.company_name}</span>
-        <div style={{ position: "absolute", right: "-8px", top: "4px" }}>
+        {/* bell dihidden sementara */}
+        {/* <div style={{ position: "absolute", right: "-8px", top: "4px" }}>
           {bell}
-        </div>
-  
-        <Popover
+        </div> */}
+        <NavLink to="/global-settings" style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }}>{logsetting}</NavLink>
+
+{/* Popover atau Tooltip dihidden sementara */}
+        {/* <Popover
           placement="rightTop"
           title={text}
           content={content}
@@ -240,7 +249,7 @@ function Sidenav({ color,user, setting }) {
           <div  style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }} onClick={()=>setVisible(!visible)}>
             {logsetting}
           </div>
-        </Popover>
+        </Popover> */}
       </div>
       <hr />
       <Menu theme="light" mode="inline">
@@ -258,7 +267,7 @@ function Sidenav({ color,user, setting }) {
             <span className="text-light">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2" style={{display:"none"}}>
+        <Menu.Item key="2" style={{ display: "none" }}>
           <NavLink to="/client">
             <span
               className=""

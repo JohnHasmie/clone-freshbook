@@ -1,19 +1,8 @@
-/*!
-=========================================================
-* Muse Ant Design Dashboard - v1.0.0
-=========================================================
-* Product Page: https://www.creative-tim.com/product/muse-ant-design-dashboard
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/muse-ant-design-dashboard/blob/main/LICENSE.md)
-* Coded by Creative Tim
-=========================================================
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
+
 import React, { Component } from "react";
 import axios from "axios";
 
-
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
 import {
   Layout,
   Menu,
@@ -119,25 +108,25 @@ const signin = [
     />
   </svg>,
 ];
+
 export default class SignIn extends Component {
   render() {
+const {pathname}= this.props.location
     const onFinish = (values) => {
-  
       axios
         .post("auth/login", {
           email: values.email,
           password: values.password,
         })
         .then((response) => {
-          setClientCredential(response?.data?.token).then(() => {
+          setClientCredential(response?.data?.data?.token).then(() => {
             window.location.href = "/dashboard";
           });
         })
         .catch((error) => {
-          if(process.env.REACT_APP_CHECK_LOGIN === true){
-            alert(error)
-
-         }else{
+          if (process.env.REACT_APP_CHECK_LOGIN === true) {
+            alert(error);
+          } else {
             window.location.href = "/dashboard";
           }
         });
@@ -150,39 +139,28 @@ export default class SignIn extends Component {
       <>
         <Layout className="layout-default layout-signin">
           <Header>
-            <div className="header-col header-brand">
-              <h5>Muse Dashboard</h5>
-            </div>
             <div className="header-col header-nav">
-              <Menu mode="horizontal" defaultSelectedKeys={["1"]}>
+              <Menu mode="horizontal" defaultSelectedKeys={[1]}>
                 <Menu.Item key="1">
                   <Link to="/dashboard">
                     {template}
                     <span> Dashboard</span>
                   </Link>
                 </Menu.Item>
+
                 <Menu.Item key="2">
-                  <Link to="/profile">
-                    {profile}
-                    <span>Profile</span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="3">
                   <Link to="/sign-up">
                     {signup}
                     <span> Sign Up</span>
                   </Link>
                 </Menu.Item>
-                <Menu.Item key="4">
+                <Menu.Item key="3">
                   <Link to="/sign-in">
                     {signin}
                     <span> Sign In</span>
                   </Link>
                 </Menu.Item>
               </Menu>
-            </div>
-            <div className="header-col header-btn">
-              <Button type="primary">FREE DOWNLOAD</Button>
             </div>
           </Header>
           <Content className="signin">
@@ -267,7 +245,7 @@ export default class SignIn extends Component {
               </Col>
             </Row>
           </Content>
-          <Footer>
+          {/* <Footer>
             <Menu mode="horizontal">
               <Menu.Item>Company</Menu.Item>
               <Menu.Item>About Us</Menu.Item>
@@ -306,7 +284,7 @@ export default class SignIn extends Component {
               {" "}
               Copyright © 2021 Muse by <a href="#pablo">Creative Tim</a>.{" "}
             </p>
-          </Footer>
+          </Footer> */}
         </Layout>
       </>
     );

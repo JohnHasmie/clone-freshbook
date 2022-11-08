@@ -64,6 +64,7 @@ function Main({ children }) {
   useEffect(() => {
     settingData && setSetting(settingData?.data?.setting)
   }, [settingData])
+
   return (
     <Layout
       className={`layout-dashboard ${
