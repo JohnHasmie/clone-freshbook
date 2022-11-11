@@ -204,7 +204,7 @@ function Sidenav({ color, user, setting }) {
       </Menu.Item>
 
       <Menu.Item className="menu-border">
-        <NavLink onClick={() => setVisible(!visible)} to="/">
+        <NavLink onClick={() => setVisible(!visible)} to="/items">
           <TagOutlined />
           <span>Items & Services</span>
         </NavLink>
@@ -235,10 +235,10 @@ function Sidenav({ color, user, setting }) {
         {/* <div style={{ position: "absolute", right: "-8px", top: "4px" }}>
           {bell}
         </div> */}
-        <NavLink to="/global-settings" style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }}>{logsetting}</NavLink>
+        {/* <NavLink to="/global-settings" style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }}>{logsetting}</NavLink> */}
 
 {/* Popover atau Tooltip dihidden sementara */}
-        {/* <Popover
+        <Popover
           placement="rightTop"
           title={text}
           content={content}
@@ -249,7 +249,7 @@ function Sidenav({ color, user, setting }) {
           <div  style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }} onClick={()=>setVisible(!visible)}>
             {logsetting}
           </div>
-        </Popover> */}
+        </Popover>
       </div>
       <hr />
       <Menu theme="light" mode="inline">

@@ -1,4 +1,3 @@
-
 import {
   Switch,
   Route,
@@ -25,13 +24,14 @@ import axios from "axios";
 import useAuth from "./hooks/useAuth";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import Items from "./pages/item-service/Items";
+import Service from "./pages/item-service/Service";
 
 function App() {
   let { pathname } = useLocation();
   const queryClient = new QueryClient();
 
-  const { token } = useAuth()
-
+  const { token } = useAuth();
 
   let history = useHistory();
   useEffect(() => {
@@ -63,6 +63,8 @@ function App() {
               path="/global-settings/email-notifications"
               component={EmailNotification}
             />
+            <Route exact path="/items" component={Items} />
+            <Route exact path="/services" component={Service} />
 
             <Route exact path="/tables" component={Tables} />
             <Route exact path="/billing" component={Billing} />

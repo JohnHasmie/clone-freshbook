@@ -1,15 +1,3 @@
-/*!
-  =========================================================
-  * Muse Ant Design Dashboard - v1.0.0
-  =========================================================
-  * Product Page: https://www.creative-tim.com/product/muse-ant-design-dashboard
-  * Copyright 2021 Creative Tim (https://www.creative-tim.com)
-  * Licensed under MIT (https://github.com/creativetimofficial/muse-ant-design-dashboard/blob/main/LICENSE.md)
-  * Coded by Creative Tim
-  =========================================================
-  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect } from "react";
 
 import {
@@ -25,6 +13,10 @@ import {
   Drawer,
   Typography,
   Switch,
+  Divider,
+  Popover,
+  Menu,
+  Tabs,
 } from "antd";
 
 import {
@@ -32,9 +24,14 @@ import {
   StarOutlined,
   TwitterOutlined,
   FacebookFilled,
+  DownOutlined,
+  UserOutlined,
+  FileDoneOutlined,
+  FileTextOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import avtar from "../../assets/images/team-2.jpg";
 
@@ -259,6 +256,7 @@ function Header({
   handleFixedNavbar,
 }) {
   const { Title, Text } = Typography;
+  const history = useHistory();
 
   const [visible, setVisible] = useState(false);
   const [sidenavType, setSidenavType] = useState("transparent");
@@ -268,30 +266,87 @@ function Header({
   const showDrawer = () => setVisible(true);
   const hideDrawer = () => setVisible(false);
 
+  const content = (
+    <div className="user-pop">
+      <ul>
+        <li>
+          <NavLink to="/global-settings" className="navlink ">
+            <UserOutlined style={{ marginTop: "4px" }} />
+            <div className="flex-col flex " style={{ marginLeft: "12px" }}>
+              <span className="text-base">Admin/Manager</span>
+              <p className="text-xs ">
+                They get full access to your FreshBooks account including
+                clients, invoices, and reports
+              </p>
+            </div>
+          </NavLink>
+        </li>
+        <Divider style={{ margin: "0" }} />
+        <li>
+          <NavLink to="/global-settings" className="navlink">
+            <UserOutlined style={{ marginTop: "4px" }} />
+            <div className="flex flex-col" style={{ marginLeft: "12px" }}>
+              <span className="text-base">Employee</span>
+              <p className="text-xs ">
+                They get full access to your account, but can't see financial
+                reports, expenses or the dashboard
+              </p>
+            </div>
+          </NavLink>
+        </li>
+      </ul>
+    </div>
+  );
+
+  const createList = (
+    <Menu theme="light" mode="inline" style={{ width: "250px" }}>
+      <Menu.Item>
+        <NavLink to="/global-settings">
+          <AppstoreOutlined />
+          <span>Client</span>
+        </NavLink>
+      </Menu.Item>
+
+      <Menu.Item>
+        <NavLink to="/">
+          <FileDoneOutlined />
+          <span>Invoice</span>
+        </NavLink>
+      </Menu.Item>
+      <Menu.Item>
+        <NavLink to="/">
+          <FileTextOutlined />
+          <span>Recurring Template</span>
+        </NavLink>
+      </Menu.Item>
+    </Menu>
+  );
+  const handleClick = (key) => {
+    history.push(`${key}`);
+    // console.log(key,"key");
+  };
   return (
     <>
       {/* <div className="setting-drwer" onClick={showDrawer}>
         {setting}
       </div> */}
+
       <Row gutter={[24, 0]}>
-        {/* <Col span={24} md={6}>
-          <Breadcrumb>
+        <Col span={24} md={6} style={{ paddingLeft: "none" }}>
+          {/* <Breadcrumb>
             <Breadcrumb.Item>
               <NavLink to="/">Pages</NavLink>
             </Breadcrumb.Item>
             <Breadcrumb.Item style={{ textTransform: "capitalize" }}>
               {name.replace("/", "")}
             </Breadcrumb.Item>
-          </Breadcrumb>
+          </Breadcrumb> */}
           <div className="ant-page-header-heading">
-            <span
-              className="ant-page-header-heading-title"
-              style={{ textTransform: "capitalize" }}
-            >
+            <Title level={2} style={{ textTransform: "capitalize" }}>
               {subName.replace("/", "")}
-            </span>
+            </Title>
           </div>
-        </Col> */}
+        </Col>
         <Col span={24} md={18} className="header-control">
           {/* <Badge size="small" count={4}>
             <Dropdown overlay={menu} trigger={["click"]}>
@@ -420,17 +475,52 @@ function Header({
                 </div>
               </div>
             </div>
-          </Drawer>
-          <Link to="/sign-in" className="btn-sign-in">
+          </Drawer> */}
+          {/* <Link to="/sign-in" className="btn-sign-in">
             {profile}
             <span>Sign in</span>
-          </Link>
-          <Input
+          </Link> */}
+
+          {/* <Input
             className="header-search"
             placeholder="Type here..."
             prefix={<SearchOutlined />}
           /> */}
+          <Popover placement="bottom" content={createList} trigger="click">
+            <div className="flex-justify-center">
+              <Button className="primary-btn">
+                <span style={{ fontSize: "24px", marginRight: "10px" }}>
+                  Create New
+                </span>
+                <DownOutlined style={{ borderLeft: "1px solid #f7fafc" }} />
+              </Button>
+            </div>
+          </Popover>
+          <Popover placement="bottom" content={content} trigger="click">
+            <div
+              style={{
+                display: "flex",
+                alignItems: " baseline",
+                marginRight: "30px",
+                cursor: "pointer",
+              }}
+            >
+              <Title level={4} style={{ marginRight: "20px" }}>
+                Invite
+              </Title>
+              <DownOutlined />
+            </div>
+          </Popover>
         </Col>
+        {name.includes("items") || name.includes("services") ? (
+          <Tabs defaultActiveKey={name} onChange={handleClick}>
+            <Tabs.TabPane tab="Items" key="/items" />
+
+            <Tabs.TabPane tab="Services" key="/services" />
+          </Tabs>
+        ) : (
+          <Divider />
+        )}
       </Row>
     </>
   );

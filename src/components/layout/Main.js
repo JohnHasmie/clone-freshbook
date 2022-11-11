@@ -142,7 +142,8 @@ function Main({ children }) {
           </AntHeader>
         ) : (
           <TabsSettting/>
-        )}
+        ) 
+        }
         <Content className="content-ant">{children}</Content>
         {/* <Footer /> */}
       </Layout>
