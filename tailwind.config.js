@@ -1,12 +1,15 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  future: {
-    // removeDeprecatedGapUtilities: true,
-    // purgeLayersByDefault: true,
-  },
-  purge: [],
+  content: ["./src/**/*.js"],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        button: ".5rem",
+      },
+      colors: {
+        current: "currentColor",
+      }
+    },
   },
-  variants: {},
   plugins: [],
 }

@@ -6,7 +6,6 @@ import {
   Breadcrumb,
   Badge,
   Dropdown,
-  Button,
   List,
   Avatar,
   Input,
@@ -18,7 +17,6 @@ import {
   Menu,
   Tabs,
 } from "antd";
-
 import {
   SearchOutlined,
   StarOutlined,
@@ -30,9 +28,9 @@ import {
   FileTextOutlined,
   AppstoreOutlined,
 } from "@ant-design/icons";
-
 import { NavLink, Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
+import Button from "../Button";
 import avtar from "../../assets/images/team-2.jpg";
 
 const ButtonContainer = styled.div`
@@ -489,10 +487,10 @@ function Header({
           <Popover placement="bottom" content={createList} trigger="click">
             <div className="flex-justify-center">
               <Button className="primary-btn">
-                <span style={{ fontSize: "24px", marginRight: "10px" }}>
+                <span>
                   Create New
                 </span>
-                <DownOutlined style={{ borderLeft: "1px solid #f7fafc" }} />
+                <DownOutlined />
               </Button>
             </div>
           </Popover>
