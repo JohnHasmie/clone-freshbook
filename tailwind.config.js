@@ -8,6 +8,12 @@ module.exports = {
       },
       colors: {
         current: "currentColor",
+        primary: {
+          DEFAULT: "#0175DD",
+        },
+        success: {
+          DEFAULT: "#36A703",
+        }
       }
     },
   },

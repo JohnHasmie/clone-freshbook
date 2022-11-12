@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import {
   Row,
   Col,
@@ -29,7 +28,7 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 import { NavLink, Link, useHistory } from "react-router-dom";
-import styled from "styled-components";
+import { styled } from "twin.macro";
 import Button from "../Button";
 import avtar from "../../assets/images/team-2.jpg";
 
@@ -486,7 +485,7 @@ function Header({
           /> */}
           <Popover placement="bottom" content={createList} trigger="click">
             <div className="flex-justify-center">
-              <Button className="primary-btn">
+              <Button tw="bg-success text-white">
                 <span>
                   Create New
                 </span>
