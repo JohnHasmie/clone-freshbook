@@ -55,7 +55,8 @@ function Main({ children }) {
   useEffect(() => {
     settingData && setSetting(settingData?.data?.setting)
   }, [settingData])
-console.log(fixed,"fixed");
+
+
   return (
     <Layout
       className={`layout-dashboard ${

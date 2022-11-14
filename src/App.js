@@ -31,7 +31,7 @@ import Clients from "./pages/clients/Clients";
 function App() {
   let { pathname } = useLocation();
   const queryClient = new QueryClient();
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth();
   const { token } = useAuth();
 
   let history = useHistory();
@@ -45,13 +45,18 @@ function App() {
     Authorization: `Bearer ${token}`,
     Accept: "Application/json",
   };
-  console.log(isAuthenticated,"auth")
+  useEffect(() => {
+    if (isAuthenticated === false && !pathname.includes('sign')) {
+      history.push("/sign-in");
+    }
+  }, [pathname,isAuthenticated]);
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
         <Switch>
-          <Route path="/sign-up" exact component={SignUp} />
-          <Route path="/sign-in" exact component={SignIn} />
+          <Route path="/sign-up" component={SignUp} />
+          <Route path="/sign-in" component={SignIn} />
+
           <Main>
             <Route exact path="/dashboard" component={Home} />
             <Route exact path="/clients" component={Clients} />
@@ -73,8 +78,10 @@ function App() {
             <Route exact path="/billing" component={Billing} />
             <Route exact path="/rtl" component={Rtl} />
             <Route exact path="/profile" component={Profile} />
-            {/* <Redirect from="*" to="/dashboard" /> */}
+            {/* <Redirect from="*" component={<div>Error...</div>} /> */}
           </Main>
+
+
         </Switch>
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
