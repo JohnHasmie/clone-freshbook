@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Typography } from "antd";
 import { Button } from "antd";
 import Search from "antd/lib/transfer/search";
+import InputSearch from "../../components/InputSearch";
+import { SearchOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
@@ -91,15 +93,9 @@ export default function Items() {
       <div style={{ width: "98%", marginBottom: "20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between",marginBottom:'5px' }}>
           <Title level={5}>Items</Title>
-          <div style={{display:'flex'}}>
-            <Search
-              placeholder="Search"
-              onSearch={onSearch}
-              style={{
-                width: 100,
-              }}
-            />
-          </div>
+          <InputSearch
+             prefix={<SearchOutlined />}
+         />
         </div>
         <div className="table-responsive">
           <Table

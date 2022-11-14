@@ -570,10 +570,10 @@ h4 {
 .settings-drawer .drawer-content p {
   color: #8c8c8c;
 }
-
+/* 
 p {
   font-size: 16px;
-}
+} */
 
 
 
@@ -3233,6 +3233,33 @@ color:#0063c1;
   padding-bottom: 20px; 
 }
 /* #header end */
+
+
+
+/* #search bar */
+
+.input-search {
+  width: 213px;
+  margin: 0 7px 0 0;
+  border-radius: 6px;
+  height: 40px;
+  border: 1px solid #d9d9d9;
+}
+
+.anticon.anticon-search svg {
+  width: 16px;
+  height: 16px;
+}
+
+.input-search svg path {
+  fill: #8c8c8c;
+}
+/*  */
+
+
+
+
+
 
 
 

@@ -26,6 +26,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import Items from "./pages/item-service/Items";
 import Service from "./pages/item-service/Service";
+import Clients from "./pages/clients/Clients";
 
 function App() {
   let { pathname } = useLocation();
@@ -52,6 +53,8 @@ function App() {
           <Route path="/sign-in" exact component={SignIn} />
           <Main>
             <Route exact path="/dashboard" component={Home} />
+            <Route exact path="/clients" component={Clients} />
+
             <Route exact path="/global-settings" component={GlobalSetting} />
             <Route
               exact

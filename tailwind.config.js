@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  important: true,
   content: ["./src/**/*.js"],
   theme: {
     extend: {
@@ -8,6 +9,7 @@ module.exports = {
       },
       colors: {
         current: "currentColor",
+        secondary: '#576981',
         primary: {
           DEFAULT: "#0175DD",
         },

@@ -38,6 +38,7 @@ import team3 from "../assets/images/team-3.jpg";
 import team4 from "../assets/images/team-4.jpg";
 import card from "../assets/images/info-card-1.jpg";
 import ReactApexChart from "react-apexcharts";
+import  tw from 'twin.macro';
 
 function Home() {
   const { Title, Text } = Typography;
@@ -340,7 +341,7 @@ function Home() {
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div className="ant-progress-project">
               <Title level={5}>Outstanding Invoices</Title>
-              <a role="button" style={{ color: "#0063c1" }}>
+              <a tw="text-2xl" role="button" style={{ color: "#0063c1" }}>
                 View Account Aging Report
               </a>
             </div>

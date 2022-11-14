@@ -1,14 +1,17 @@
-import { Avatar, Checkbox, Table } from "antd";
+import { Avatar, Checkbox,  Table } from "antd";
 import React, { useState } from "react";
 import { Typography } from "antd";
-import { Button } from "antd";
 import Search from "antd/lib/transfer/search";
+import { SearchOutlined } from "@ant-design/icons";
+import InputSearch from "../../components/InputSearch";
+
+
+
 
 const { Title } = Typography;
 
 export default function Service() {
   const [checked, setChecked] = useState(false);
-  console.log(checked, "check");
   const columns = [
     {
       title: (
@@ -54,7 +57,9 @@ export default function Service() {
           onChange={(e) => console.log(e.target.value)}
         />
       ),
+      // name: <span >General</span>,
       name: <span>General</span>,
+
       billable: <span>Yes</span>,
 
       always: <span>No</span>,
@@ -96,17 +101,18 @@ export default function Service() {
   return (
     <>
       <div style={{ width: "98%", marginBottom: "20px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between",marginBottom:'5px' }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "5px",
+          }}
+        >
           <Title level={5}>Services</Title>
-          <div style={{display:'flex'}}>
-            <Search
-              placeholder="Search"
-              onSearch={onSearch}
-              style={{
-                width: 100,
-              }}
-            />
-          </div>
+         <InputSearch
+             prefix={<SearchOutlined />}
+         />
+       
         </div>
         <div className="table-responsive">
           <Table
