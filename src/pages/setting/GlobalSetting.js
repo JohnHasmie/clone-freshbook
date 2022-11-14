@@ -21,7 +21,7 @@ export default function GlobalSetting() {
     console.log("Failed:", errorInfo);
   };
   return (
-    <>
+    <div className="layout-content">
         <Form
          onFinish={onFinish}
          onFinishFailed={onFinishFailed}
@@ -74,7 +74,7 @@ export default function GlobalSetting() {
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Firts Name"
+                label="First Name"
                 name="first_name"
               >
                 <Input
@@ -107,7 +107,6 @@ export default function GlobalSetting() {
                   disabled
                 />
               </Form.Item>
-              <p style={{ color: "#0063c1", marginTop:"-10px" }}>Disconnect Google Account</p>
             </Col>
 
             <Col span={24}>
@@ -134,68 +133,40 @@ export default function GlobalSetting() {
                 name="time_zone"
               >
                 <Select
-                  defaultValue="Asia Jakarta"
+                  defaultValue="(utc+0:00)"
                   style={{
                     width: "100%",
                   }}
                   onChange={handleChange}
                   options={[
                     {
-                      value: "asia_jakarta",
-                      label: "Asia Jakarta",
+                      value: "(utc+0:00)",
+                      label: "(UTC+0:00) Etc - GMT",
                     },
-                    {
-                      value: "antartica_davis",
-                      label: "Antartica Davis",
-                    },
-                    {
-                      value: "all_time_zone",
-                      disabled: true,
-                      label: "All Time Zones",
-                    },
-                    {
-                      value: "pacific_niue",
-                      label: "Pacific Niue",
-                    },
+                    // {
+                    //   value: "antartica_davis",
+                    //   label: "Antartica Davis",
+                    // },
+                    // {
+                    //   value: "all_time_zone",
+                    //   disabled: true,
+                    //   label: "All Time Zones",
+                    // },
+                    // {
+                    //   value: "pacific_niue",
+                    //   label: "Pacific Niue",
+                    // },
                   ]}
                 />
               </Form.Item>
             </Col>
 
-            <Col span={24}>
-              <Form.Item
-                label="Loading Screen Display"
-                name="loading_screen"
-              >
-                <Select
-                  defaultValue="Show inspirational quotes"
-                  style={{
-                    width: "100%",
-                  }}
-                  onChange={handleChange}
-                  options={[
-                    {
-                      value: "show freshbooks logo (no quotes)",
-                      label: "Show Freshbooks logo (no quotes)",
-                    },
-                    {
-                      value: "show inspirational quotes",
-                      label: "Show inspirational quotes",
-                    },
-                  ]}
-                />
-              </Form.Item>
-              <p className="font-small text-secondary" style={{marginTop:"-10px"}}>Choose what appears when your account is loading.</p>
-            </Col>
-            <Col span={24} style={{ marginTop: "50px" }}>
-              <p style={{ color: "#0063c1" }}>
-                Log out of FreshBooks on all devices
-              </p>
-            </Col>
+          
+          
           </Row>
       </div>
       <ButtonSubmit/>
         </Form>
-    </>
+    </div>
   );
 }

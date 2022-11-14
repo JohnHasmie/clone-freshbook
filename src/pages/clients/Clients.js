@@ -1,9 +1,17 @@
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  MailOutlined,
+  PhoneOutlined,
+  PlusOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { Card, Checkbox, Col, Row, Table, Tabs, Typography } from "antd";
 import React, { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
+import CardClient from "../../components/CardClient";
 import InputSearch from "../../components/InputSearch";
+import Photo from "../../assets/images/mask-group.svg";
+
 
 export default function Clients() {
   const { Title, Text } = Typography;
@@ -119,29 +127,44 @@ export default function Clients() {
           <div tw="mt-20">
             <Title level={4}>Recently Active</Title>
             <div tw="flex">
-              <div tw="border border-dashed flex w-60  mr-5 justify-center items-center">
-                <span>New Client</span>
+              <div tw="border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center">
+              <div tw="flex flex-col">
+                <PlusOutlined tw="text-3xl text-green-400" />
+                  <span tw="text-lg text-2xl font-bold">New Client</span>
               </div>
-              <Card
+              </div>
+              <CardClient
                 title="Default size card"
-                extra={<a href="#">More</a>}
+                size="small"
                 style={{
                   width: 300,
                 }}
               >
-                <p>Card content</p>
-                <p>Card content</p>
-                <p>Card content</p>
-              </Card>
+                <div tw="flex justify-around">
+                  <img src={Photo} tw="w-14 h-14"/>
+                  <div tw="grid">
+                    <h3 tw="font-bold text-lg">Card content</h3>
+                    <p tw="text-sm">Company Name</p>
+                  </div>
+                </div>
+                <div>
+                  <MailOutlined tw="mr-1" />
+                  <span>kywu@mailinator.com</span>
+                </div>
+                <div>
+                  <PhoneOutlined tw="mr-1" />
+                  <span>+6289669235897</span>
+                </div>
+              </CardClient>
+              
             </div>
           </div>
           <div tw="mt-20">
-            <TabClients />
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
-                marginBottom: "5px",
+                marginBottom: "24px",
               }}
             >
               <Title level={5}>All Clients</Title>
@@ -162,22 +185,4 @@ export default function Clients() {
   );
 }
 
-function TabClients() {
-  const { Title } = Typography;
-  const { pathname } = useLocation();
 
-  const history = useHistory();
-  const handleClick = (key) => {
-    history.push(`${key}`);
-    // console.log(key,"key");
-  };
-  return (
-    <div>
-      <Tabs defaultActiveKey={pathname} onChange={handleClick}>
-        <Tabs.TabPane tab="Clients" key="/clients" />
-
-        <Tabs.TabPane tab="Sent Emails" key="/clients" />
-      </Tabs>
-    </div>
-  );
-}

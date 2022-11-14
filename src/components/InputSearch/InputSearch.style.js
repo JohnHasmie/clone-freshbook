@@ -7,7 +7,7 @@ export const StyledInputSearch = styled(Input)(({ hidden }) => [
         /* Add specifity so that we don't need to add ! rule to override */
         && {
             .ant-input {
-                ${tw`h-7`}
+                ${tw`h-8`}
               }
     
             .anticon {

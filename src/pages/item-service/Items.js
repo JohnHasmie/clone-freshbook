@@ -29,7 +29,7 @@ export default function Items() {
       width: "50%",
     },
     {
-      title: "Current Stok",
+      title: "Current Stock",
       dataIndex: "current",
       key: "current",
     },
@@ -91,8 +91,8 @@ export default function Items() {
   return (
     <>
       <div style={{ width: "98%", marginBottom: "20px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between",marginBottom:'5px' }}>
-          <Title level={5}>Items</Title>
+        <div style={{ display: "flex", justifyContent: "space-between",marginBottom:'24px' }}>
+          <Title level={3}>Items</Title>
           <InputSearch
              prefix={<SearchOutlined />}
          />

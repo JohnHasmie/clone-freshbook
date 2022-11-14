@@ -206,7 +206,7 @@ function Sidenav({ color, user, setting }) {
       <Menu.Item className="menu-border">
         <NavLink onClick={() => setVisible(!visible)} to="/items">
           <TagOutlined />
-          <span>Items & Services</span>
+          <span>Items</span>
         </NavLink>
       </Menu.Item>
       <Menu.Item>
@@ -222,6 +222,8 @@ function Sidenav({ color, user, setting }) {
   return (
     <>
       <div className="profile" style={{ position: "relative" }}>
+        {user ? 
+        <>
         <img
           src={user?.avatar + "Heri Setiawan"}
           className="profile-photo"
@@ -231,13 +233,15 @@ function Sidenav({ color, user, setting }) {
           {user?.first_name ? user?.first_name : "Heri"}
         </span>
         <span>{setting?.company_name}</span>
+        </>:
+        <p>Loading...</p>
+        }
         {/* bell dihidden sementara */}
         {/* <div style={{ position: "absolute", right: "-8px", top: "4px" }}>
           {bell}
         </div> */}
         {/* <NavLink to="/global-settings" style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }}>{logsetting}</NavLink> */}
 
-{/* Popover atau Tooltip dihidden sementara */}
         <Popover
           placement="rightTop"
           title={text}

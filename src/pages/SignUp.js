@@ -238,14 +238,7 @@ export default class SignUp extends Component {
                   <Input placeholder="Password Confirmation" type="password" />
                 </Form.Item>
 
-                <Form.Item name="remember" valuePropName="checked">
-                  <Checkbox>
-                    I agree the{" "}
-                    <a href="#pablo" className="font-bold text-dark">
-                      Terms and Conditions
-                    </a>
-                  </Checkbox>
-                </Form.Item>
+              
 
                 <Form.Item>
                   <Button

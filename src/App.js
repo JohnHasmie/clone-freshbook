@@ -25,13 +25,13 @@ import useAuth from "./hooks/useAuth";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import Items from "./pages/item-service/Items";
-import Service from "./pages/item-service/Service";
+// import Service from "./pages/item-service/Service";
 import Clients from "./pages/clients/Clients";
 
 function App() {
   let { pathname } = useLocation();
   const queryClient = new QueryClient();
-
+  const { isAuthenticated } = useAuth()
   const { token } = useAuth();
 
   let history = useHistory();
@@ -45,6 +45,7 @@ function App() {
     Authorization: `Bearer ${token}`,
     Accept: "Application/json",
   };
+  console.log(isAuthenticated,"auth")
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
@@ -67,7 +68,6 @@ function App() {
               component={EmailNotification}
             />
             <Route exact path="/items" component={Items} />
-            <Route exact path="/services" component={Service} />
 
             <Route exact path="/tables" component={Tables} />
             <Route exact path="/billing" component={Billing} />

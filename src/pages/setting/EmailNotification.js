@@ -1,20 +1,53 @@
 import { Card, Checkbox, Col, Divider, Row, Switch, Typography } from "antd";
 import React, { useState } from "react";
+import tw from "twin.macro";
 
 export default function EmailNotification() {
   const { Title, Text } = Typography;
-  const [switched, setSwitched] = useState(true);
+  const [isCheck, setIsCheck] = useState({
+    recurringInvoice: false,
+    commentIsAdded: false,
+  });
+  const changeisCheck = (type) => {
+    switch (type) {
+      case "recurring":
+        setIsCheck({
+          ...isCheck,
+          recurringInvoice: !isCheck.recurringInvoice,
+        });
+        break;
 
+      case "comment":
+        setIsCheck({
+          ...isCheck,
+          commentIsAdded: !isCheck.commentIsAdded,
+        });
+        break;
+
+      case "all":
+        setIsCheck({
+          commentIsAdded: !isCheck.commentIsAdded,
+
+          recurringInvoice: !isCheck.recurringInvoice,
+        });
+        break;
+
+      default:
+        setIsCheck({
+          recurringInvoice: false,
+          commentIsAdded: false,
+        });
+        break;
+    }
+  };
+console.log(isCheck,"isCheck")
   return (
     <>
       <div className="layout-content">
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mt-25 mb-24">
             <Title level={3}>Email Notifications</Title>
-            <p className="text-dark">
-              Turn on or off notification emails FreshBooks sends you.{" "}
-              <a>Learn more</a>
-            </p>
+           
           </Col>
           <div style={{ width: "90%" }}>
             <Col xs={24} md={24} sm={24} lg={20} xl={24} className="mb-24">
@@ -34,9 +67,9 @@ export default function EmailNotification() {
                   >
                     <div className="h-full col-content p-20">
                       <div>
-                        <div className="ant-progress-project">
+                        <div tw="flex justify-between">
                           <Title level={3}>Email Notifications to me</Title>
-                          <div>
+                          {/* <div>
                             <a
                               role="button"
                               style={{ color: "#0063c1", marginRight: "5px" }}
@@ -44,10 +77,10 @@ export default function EmailNotification() {
                               Turn on/off all email notifications
                             </a>
                             <Switch
-                              defaultChecked
-                              onChange={() => setSwitched(!switched)}
+                            checked={isCheck.recurringInvoice && isCheck.commentIsAdded}
+                              onChange={() => changeisCheck('all')}
                             />
-                          </div>
+                          </div> */}
                         </div>
                         <Divider />
                         <p className="text-secondary">Send me email when</p>
@@ -62,73 +95,18 @@ export default function EmailNotification() {
                       <p className="font-small">Invoices</p>
                       <Checkbox
                         className="font-normal"
-                        onChange={(e) => console.log(e.target.value)}
+                        checked={isCheck.recurringInvoice}
+                        onChange={() => changeisCheck('recurring')}
                         style={{ marginLeft: "7px" }}
                       >
                         A recurring Invoice is sent
                       </Checkbox>
                       <Checkbox
                         className="font-normal"
-                        onChange={(e) => console.log(e.target.value)}
+                        checked={isCheck.commentIsAdded}
+                        onChange={() => changeisCheck('comment')}
                       >
                         A comment is Added on an Invoice
-                      </Checkbox>
-                    </div>
-                  </Col>
-                  <Col span={12}>
-                    <div
-                      className="h-full"
-                      style={{ padding: "20px", display: "grid" }}
-                    >
-                      <p className="font-small"> Payments</p>
-                      <Checkbox
-                        className="font-normal"
-                        onChange={(e) => console.log(e.target.value)}
-                        style={{ marginLeft: "7px" }}
-                      >
-                        An online payment is received{" "}
-                      </Checkbox>
-                    </div>
-                  </Col>
-                  <Col span={12}>
-                    <div
-                      className="h-full"
-                      style={{ padding: "20px", display: "grid" }}
-                    >
-                      <p className="font-small">Estimates and Proposals</p>
-                      <Checkbox
-                        className="font-normal"
-                        onChange={(e) => console.log(e.target.value)}
-                        style={{ marginLeft: "7px" }}
-                      >
-                        A comment is added on an Estimate/Proposal
-                      </Checkbox>
-                      <Checkbox
-                        className="font-normal"
-                        onChange={(e) => console.log(e.target.value)}
-                      >
-                        An Estimate/Proposal is accepted
-                      </Checkbox>
-                    </div>
-                  </Col>
-                  <Col span={12}>
-                    <div
-                      className="h-full"
-                      style={{ padding: "20px", display: "grid" }}
-                    >
-                      <p className="font-small">Projects</p>
-                      <Checkbox
-                        className="font-normal"
-                        onChange={(e) => console.log(e.target.value)}
-                        style={{ marginLeft: "7px" }}
-                      >
-                        A comment is added on a Project
-                      </Checkbox>
-                      <Checkbox
-                        className="font-normal"
-                        onChange={(e) => console.log(e.target.value)}
-                      >
-                        An post is made on a Project
                       </Checkbox>
                     </div>
                   </Col>

@@ -31,6 +31,7 @@ import { NavLink, Link, useHistory } from "react-router-dom";
 import { styled } from "twin.macro";
 import Button from "../Button";
 import avtar from "../../assets/images/team-2.jpg";
+import tw from "twin.macro";
 
 const ButtonContainer = styled.div`
   .ant-btn-primary {
@@ -296,7 +297,9 @@ function Header({
   );
 
   const createList = (
-    <Menu theme="light" mode="inline" style={{ width: "250px" }}>
+    <div  tw="border border-[#7f8c9f]">
+
+    <Menu theme="light" mode="inline"  >
       <Menu.Item>
         <NavLink to="/global-settings">
           <AppstoreOutlined />
@@ -317,6 +320,8 @@ function Header({
         </NavLink>
       </Menu.Item>
     </Menu>
+    </div>
+
   );
   const handleClick = (key) => {
     history.push(`${key}`);
@@ -339,12 +344,12 @@ function Header({
             </Breadcrumb.Item>
           </Breadcrumb> */}
           <div className="ant-page-header-heading">
-            <Title level={2} style={{ textTransform: "capitalize" }}>
+            <Title level={2} style={{ textTransform: "capitalize", marginLeft:'-15px' }}>
               {subName.replace("/", "")}
             </Title>
           </div>
         </Col>
-        <Col span={24} md={18} className="header-control">
+        <Col span={24} md={18} className="header-control" tw="flex items-center">
           {/* <Badge size="small" count={4}>
             <Dropdown overlay={menu} trigger={["click"]}>
               <a
@@ -497,7 +502,7 @@ function Header({
             <div
               style={{
                 display: "flex",
-                alignItems: " baseline",
+                alignItems: "baseline",
                 marginRight: "30px",
                 cursor: "pointer",
               }}
@@ -509,15 +514,9 @@ function Header({
             </div>
           </Popover>
         </Col>
-        {name.includes("items") || name.includes("services") ? (
-          <Tabs defaultActiveKey={name} onChange={handleClick}>
-            <Tabs.TabPane tab="Items" key="/items" />
-
-            <Tabs.TabPane tab="Services" key="/services" />
-          </Tabs>
-        ) : (
+     
           <Divider />
-        )}
+      
       </Row>
     </>
   );

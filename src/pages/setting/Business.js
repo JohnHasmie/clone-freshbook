@@ -168,7 +168,7 @@ export default function Business() {
                 name="base_currency"
               >
                 <Select
-                  defaultValue="USD-US dollar"
+                  defaultValue="usd"
                   style={{
                     width: "50%",
                   }}
@@ -176,20 +176,14 @@ export default function Business() {
                   options={[
                     {
                       value: "usd",
-                      label: "USD-US dollar",
+                      label: "USD - US dollar",
                     },
-                    {
-                      value: "cad",
-                      label: "CAD-Canadian dollar",
-                    },
+                    
                     {
                       value: "euro",
-                      label: "EUR-Euro",
+                      label: "EUR- Euro",
                     },
-                    {
-                      value: "pacific_niue",
-                      label: "Pacific Niue",
-                    },
+                    
                   ]}
                 />
               </Form.Item>
@@ -201,25 +195,25 @@ export default function Business() {
                 name="business_time_zone"
               >
                 <Select
-                  defaultValue="Asia Jakarta"
+                  defaultValue="(utc+0:00)"
                   style={{
                     width: "50%",
                   }}
                   onChange={handleChange}
                   options={[
                     {
-                      value: "asia_jakarta",
-                      label: "Asia Jakarta",
+                      value: "(utc+0:00)",
+                      label: "(UTC+0:00) Etc - GMT",
                     },
-                    {
-                      value: "antartica_davis",
-                      label: "Antartica Davis",
-                    },
+                    // {
+                    //   value: "antartica_davis",
+                    //   label: "Antartica Davis",
+                    // },
                   ]}
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            {/* <Col span={12}>
               <Form.Item
                 label="Fiscal Year End Month"
                 name="fiscal_year_end_month"
@@ -385,25 +379,10 @@ export default function Business() {
                   ]}
                 />
               </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item label="Standart Rate" name="standart_rate">
-                <div style={{display:"flex"}}>
-
-                <Input  style={{
-                    width: "50%", marginRight:"5px"
-                  }} name="standart_rate" type="text" placeholder="$0.00" />
-                  <p className="text-secondary" >/hr</p>
-                </div>
-
-              </Form.Item>
-            </Col>
+            </Col> */}
+       
           </Row>
-          <Divider style={{width:"90rem"}} />
-          <p>
-            Looking for a way to update your <strong>Invoice due dates</strong>?{" "}
-            <a>Click here</a>
-          </p>
+          
       </div>
       <ButtonSubmit/>
         </Form>

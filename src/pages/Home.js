@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 import {
@@ -38,7 +37,7 @@ import team3 from "../assets/images/team-3.jpg";
 import team4 from "../assets/images/team-4.jpg";
 import card from "../assets/images/info-card-1.jpg";
 import ReactApexChart from "react-apexcharts";
-import  tw from 'twin.macro';
+import tw from "twin.macro";
 
 function Home() {
   const { Title, Text } = Typography;
@@ -336,12 +335,16 @@ function Home() {
 
   return (
     <>
-      <div className="layout-content" style={{width:"97%"}}>
-        <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
+      <div className="layout-content" style={{ width:'98%' }}>
+        <Row gutter={[24, 0]} style={{ marginBottom: "2rem"}}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <div className="ant-progress-project">
-              <Title level={5}>Outstanding Invoices</Title>
-              <a tw="text-2xl" role="button" style={{ color: "#0063c1" }}>
+            <div tw="flex justify-between">
+              <Title level={3}>Outstanding Invoices</Title>
+              <a
+                tw="text-base hover:opacity-60"
+                role="button"
+                style={{ color: "#0063c1" }}
+              >
                 View Account Aging Report
               </a>
             </div>
@@ -560,7 +563,6 @@ function Home() {
                       </div>
                     </div>
                   </div>
-                 
                 </Col>
                 <Col xs={24} md={6} sm={24} lg={6} xl={6}>
                   <div className="h-full col-content p-20">
@@ -682,12 +684,17 @@ function Home() {
 
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <div className="ant-progress-project">
-              <Title level={5}>Monthly Recurring Revenue</Title>
-              <a role="button" style={{ color: "#0063c1" }}>
+            <div tw="flex justify-between">
+              <Title level={3}>Monthly Recurring Revenue</Title>
+              <a
+                tw="text-base hover:opacity-60"
+                role="button"
+                style={{ color: "#0063c1" }}
+              >
                 View Recurring Revenue Annual Report
               </a>
             </div>
+
             <Card
               bordered={true}
               style={{
@@ -730,12 +737,17 @@ function Home() {
 
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <div className="ant-progress-project">
-              <Title level={5}>Total Profit</Title>
-              <a role="button" style={{ color: "#0063c1" }}>
+            <div tw="flex justify-between">
+              <Title level={3}>Total Profit</Title>
+              <a
+                tw="text-base hover:opacity-60"
+                role="button"
+                style={{ color: "#0063c1" }}
+              >
                 View Profit & Loss Report
               </a>
             </div>
+
             <Card
               bordered={true}
               style={{
@@ -784,125 +796,6 @@ function Home() {
             </Card>
           </Col>
         </Row>
-
-        <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
-          <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <Title level={5}>Revenue Streams</Title>
-
-            <Card
-              bordered={true}
-              style={{
-                width: "300",
-                borderColor: "#cdd4d9",
-                position: "relative",
-              }}
-              className="criclebox "
-            >
-              <div
-                className="h-full col-content p-20"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <Col xs={24} md={20} sm={24} lg={20} xl={20}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minHeight: "300px",
-                    }}
-                  >
-                    No transactions found. Adjust the date range and try again
-                  </div>
-                </Col>
-                <div
-                  style={{
-                    position: "absolute",
-                    textAlign: "right",
-                    top: "20px",
-                    right: "20px",
-                  }}
-                >
-                  <div
-                    style={{
-                      color: "#0063c1",
-                      fontWeight: "bold",
-                      fontSize: "30px",
-                    }}
-                  >
-                    $0
-                  </div>
-                  <div>total revenue</div>
-                </div>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
-          <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <Title level={5}>Spending</Title>
-
-            <Card
-              bordered={true}
-              style={{
-                width: "300",
-                borderColor: "#cdd4d9",
-                position: "relative",
-              }}
-              className="criclebox "
-            >
-              <div
-                className="h-full col-content p-20"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minHeight: "300px",
-                  }}
-                >
-                  Cooming Soon
-                </div>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
-          <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <Title level={5}>Unbilled Time</Title>
-
-            <Card
-              bordered={true}
-              style={{
-                width: "300",
-                borderColor: "#cdd4d9",
-                position: "relative",
-              }}
-              className="criclebox "
-            >
-              <div
-                className="h-full col-content p-20"
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minHeight: "300px",
-                  }}
-                >
-                  Cooming Soon
-                </div>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-
-     
       </div>
     </>
   );
