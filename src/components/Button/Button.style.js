@@ -11,7 +11,7 @@ export const StyledButton = styled(Button)(({ hidden }) => [
             }
     
             .anticon {
-                ${tw`inline-block pl-2 ml-2 border-l border-l-gray-100 text-white`}
+                ${tw`inline-block pl-2 ml-2 -mr-3 border-l border-l-gray-100 text-white`}
 
                 path {
                     ${tw`fill-current`}

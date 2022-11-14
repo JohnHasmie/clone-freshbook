@@ -502,14 +502,15 @@ function Header({
             <div
               style={{
                 display: "flex",
-                alignItems: "baseline",
-                marginRight: "30px",
+                alignItems: "center",
+                marginRight: "60px",
                 cursor: "pointer",
+                height:'auto'
               }}
             >
-              <Title level={4} style={{ marginRight: "20px" }}>
+              <span tw="font-bold text-xl text-gray-600" style={{ marginRight: "10px" }}>
                 Invite
-              </Title>
+              </span>
               <DownOutlined />
             </div>
           </Popover>
