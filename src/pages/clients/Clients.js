@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Card, Checkbox, Col, Row, Table, Tabs, Typography } from "antd";
 import React, { useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
 import CardClient from "../../components/CardClient";
 import InputSearch from "../../components/InputSearch";
@@ -133,6 +133,7 @@ export default function Clients() {
                   <span tw="text-lg text-2xl font-bold">New Client</span>
               </div>
               </div>
+              <Link to={`clients/1`}>
               <CardClient
                 title="Default size card"
                 size="small"
@@ -141,7 +142,7 @@ export default function Clients() {
                 }}
               >
                 <div tw="flex justify-around">
-                  <img src={Photo} tw="w-14 h-14"/>
+                  <img src={Photo} alt="profile" tw="w-14 h-14"/>
                   <div tw="grid">
                     <h3 tw="font-bold text-lg">Card content</h3>
                     <p tw="text-sm">Company Name</p>
@@ -156,6 +157,7 @@ export default function Clients() {
                   <span>+6289669235897</span>
                 </div>
               </CardClient>
+              </Link>
               
             </div>
           </div>

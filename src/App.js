@@ -27,6 +27,8 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import Items from "./pages/item-service/Items";
 // import Service from "./pages/item-service/Service";
 import Clients from "./pages/clients/Clients";
+import Detail from "./pages/clients/Detail";
+import DetailReports from "./pages/clients/DetailReports";
 
 function App() {
   let { pathname } = useLocation();
@@ -60,6 +62,9 @@ function App() {
           <Main>
             <Route exact path="/dashboard" component={Home} />
             <Route exact path="/clients" component={Clients} />
+            <Route exact path="/clients/:id" component={Detail} />
+            <Route exact path="/clients/:id/reports" component={DetailReports} />
+
 
             <Route exact path="/global-settings" component={GlobalSetting} />
             <Route
@@ -78,7 +83,7 @@ function App() {
             <Route exact path="/billing" component={Billing} />
             <Route exact path="/rtl" component={Rtl} />
             <Route exact path="/profile" component={Profile} />
-            {/* <Redirect from="*" component={<div>Error...</div>} /> */}
+            {/* <Redirect from="*" to="/dashboard" /> */}
           </Main>
 
 
