@@ -29,6 +29,8 @@ import Items from "./pages/item-service/Items";
 import Clients from "./pages/clients/Clients";
 import Detail from "./pages/clients/Detail";
 import DetailReports from "./pages/clients/DetailReports";
+import AccountAging from "./pages/report/AccountAging";
+import RecurringRevenue from './pages/report/RecurringRevenue';
 
 function App() {
   let { pathname } = useLocation();
@@ -59,8 +61,12 @@ function App() {
           <Route path="/sign-up" component={SignUp} />
           <Route path="/sign-in" component={SignIn} />
 
+            <Route exact path="/dashboard/reports/account-aging" component={AccountAging} />
+            <Route exact path="/dashboard/reports/recurring-revenue" component={RecurringRevenue} />
+
           <Main>
             <Route exact path="/dashboard" component={Home} />
+
             <Route exact path="/clients" component={Clients} />
             <Route exact path="/clients/:id" component={Detail} />
             <Route exact path="/clients/:id/reports" component={DetailReports} />

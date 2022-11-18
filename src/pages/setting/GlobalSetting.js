@@ -142,20 +142,7 @@ export default function GlobalSetting() {
                     {
                       value: "(utc+0:00)",
                       label: "(UTC+0:00) Etc - GMT",
-                    },
-                    // {
-                    //   value: "antartica_davis",
-                    //   label: "Antartica Davis",
-                    // },
-                    // {
-                    //   value: "all_time_zone",
-                    //   disabled: true,
-                    //   label: "All Time Zones",
-                    // },
-                    // {
-                    //   value: "pacific_niue",
-                    //   label: "Pacific Niue",
-                    // },
+                    }
                   ]}
                 />
               </Form.Item>

@@ -38,9 +38,11 @@ import team4 from "../assets/images/team-4.jpg";
 import card from "../assets/images/info-card-1.jpg";
 import ReactApexChart from "react-apexcharts";
 import tw from "twin.macro";
+import { useHistory } from "react-router-dom";
 
 function Home() {
   const { Title, Text } = Typography;
+  let history = useHistory();
 
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
 
@@ -335,12 +337,13 @@ function Home() {
 
   return (
     <>
-      <div className="layout-content" style={{ width:'98%' }}>
-        <Row gutter={[24, 0]} style={{ marginBottom: "2rem"}}>
+      <div className="layout-content" style={{ width: "98%" }}>
+        <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="flex justify-between">
               <Title level={3}>Outstanding Invoices</Title>
               <a
+                onClick={() => history.push("dashboard/reports/account-aging")}
                 tw="text-base hover:opacity-60"
                 role="button"
                 style={{ color: "#0063c1" }}
@@ -687,6 +690,7 @@ function Home() {
             <div tw="flex justify-between">
               <Title level={3}>Monthly Recurring Revenue</Title>
               <a
+                onClick={() => history.push("dashboard/reports/recurring-revenue")}
                 tw="text-base hover:opacity-60"
                 role="button"
                 style={{ color: "#0063c1" }}
