@@ -10,9 +10,18 @@ export const StyledButtonInvite = styled(Button)(({ hidden }) => [
             width: 125px;
             align-items: normal;
             padding-bottom: 5px;
-            
+
             span {
-                ${tw`text-xl text-black`}
+                ${tw`text-xl text-[#576981]`}
+            }
+
+            &:hover {
+                span {
+                    ${tw`text-black`}
+                }
+                svg path {
+                    fill: black;
+                }
             }
     
             .anticon {
@@ -25,6 +34,10 @@ export const StyledButtonInvite = styled(Button)(({ hidden }) => [
 
             &:not(:hover) {
                 border: 2px solid white
+            }
+
+            svg path {
+                fill: #576981;
             }
         }
     `,
