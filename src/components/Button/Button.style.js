@@ -6,6 +6,11 @@ export const StyledButton = styled(Button)(({ hidden }) => [
     css`
         /* Add specifity so that we don't need to add ! rule to override */
         && {
+            width: 180px;
+            justify-content: space-between;
+            align-items: self-start;
+            padding-bottom: 5px;
+
             span {
                 ${tw`text-lg`},
                 // font-family: "Familjen Grotesk", Helvetica, Arial, sans-serif;
@@ -20,10 +25,14 @@ export const StyledButton = styled(Button)(({ hidden }) => [
             }
 
             &:hover {
-                ${tw`text-primary border-primary`}
+                ${tw`bg-[#348e09] text-white`}
+            }
 
-                .anticon {
-                    ${tw`text-primary border-l-primary`}
+            svg {
+                margin-top: 2px;
+
+                path {
+                    fill: #fff;
                 }
             }
         }
