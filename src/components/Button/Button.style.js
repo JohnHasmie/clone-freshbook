@@ -7,7 +7,8 @@ export const StyledButton = styled(Button)(({ hidden }) => [
         /* Add specifity so that we don't need to add ! rule to override */
         && {
             span {
-                ${tw`text-lg`}
+                ${tw`text-lg`},
+                font-family: "Familjen Grotesk", Helvetica, Arial, sans-serif;
             }
     
             .anticon {
