@@ -11,7 +11,7 @@ import {
   Space,
   Typography,
 } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
@@ -21,6 +21,8 @@ import Filter from "../../components/Reports/Filter";
 export default function InvoiceDetail() {
   const { Title } = Typography;
   let history = useHistory();
+  const [open, setOpen] = useState(false)
+
   const onFinish = (values) => {
     console.log("Success:", values);
   };
@@ -28,7 +30,7 @@ export default function InvoiceDetail() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
-  const FilterAccountAging = (
+  const FilterInvoiceDetail = (
     <div>
       <div tw="flex justify-between ">
         <Title level={3}>Filters</Title>
@@ -46,36 +48,97 @@ export default function InvoiceDetail() {
           <Col span={24}>
             <Form.Item name="time">
               <Select
-                defaultValue="today"
+               defaultValue="this-year"
+               options={[
+                 {
+                   value: "this-year",
+                   label: "This Year",
+                 },
+                 {
+                   value: "this-month",
+                   label: "This Month",
+                 },
+                 {
+                   value: "this-month",
+                   label: "This Month",
+                 },        {
+                   value: "last-year",
+                   label: "Last Year",
+                 },
+               
+                ]}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item  name="group">
+              <Radio.Group>
+                <Space direction="vertical">
+                  <Radio value="issue">Issue Date</Radio>
+                  <Radio value="paid">Paid Date</Radio>
+                </Space>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+     
+          <Col span={24}>
+            <Form.Item label="Clients" name="clients">
+              <Select
+                placeholder="All Clients"
+                 mode="multiple"
                 options={[
                   {
-                    value: "today",
-                    label: "Today",
+                    value: "andre",
+                    label: "Andre",
                   },
                   {
-                    value: "last-month",
-                    label: "End of Last Month",
-                  },
-                  {
-                    value: "last-quarter",
-                    label: "End of Last Quarter",
-                  },
-                  {
-                    value: "last-year",
-                    label: "End of Last Year",
+                    value: "company-name",
+                    label: "Company Name",
                   },
                 ]}
               />
             </Form.Item>
           </Col>
           <Col span={24}>
-            <Form.Item label="Group By" name="group">
-              <Radio.Group>
-                <Space direction="vertical">
-                  <Radio value="outstanding">Outstanding</Radio>
-                  <Radio value="overdue">Overdue</Radio>
-                </Space>
-              </Radio.Group>
+            <Form.Item label="Invoice Status" name="invoice-status">
+              <Select
+                defaultValue="All"
+           
+                options={[
+                  {
+                    value: "outstanding",
+                    label: "Outstanding",
+                  },
+                  {
+                    value: "paid",
+                    label: "Paid",
+                  },
+                  {
+                    value: "auto-paid",
+                    label: "Auto Paid",
+                  },
+                  {
+                    value: "partially-paid",
+                    label: "Partially Paid",
+                  },
+                  {
+                    value: "sent",
+                    label: "Sent",
+                  },
+                  {
+                    value: "viewed",
+                    label: "Viewed",
+                  },
+                  {
+                    value: "disputed",
+                    label: "Disputed",
+                  },
+                  {
+                    value: "draft",
+                    label: "Draft",
+                  },
+                ]}
+              />
             </Form.Item>
           </Col>
           <Col span={24}>
@@ -97,7 +160,7 @@ export default function InvoiceDetail() {
           </Col>
           <Divider />
           <Col span={12}>
-            <Button tw="text-lg px-8">Close</Button>
+            <Button tw="text-lg px-8" onClick={()=>setOpen(false)}>Close</Button>
           </Col>
           <Col span={12}>
             <Button tw="text-lg text-white bg-success px-8">Apply</Button>
@@ -138,8 +201,7 @@ export default function InvoiceDetail() {
             </span>
           </div>
           <div tw="overflow-x-auto ">
-            <table /* style={{borderCollapse:'separate', borderSpacing:'0rem 2.5rem'}} */
-            >
+            <table>
               <thead className="theadCustom">
                 <tr>
                   <th tw="pt-12 text-left py-4 ">
@@ -151,28 +213,108 @@ export default function InvoiceDetail() {
                 </tr>
               </thead>
               <tbody>
-                <tr tw='border-b border-gray-300'>
+                <tr tw="border-b border-gray-300">
                   <th tw="pt-12 pb-2 text-left ">
-                    <span >Summary</span>
+                    <span>Summary</span>
                   </th>
                 </tr>
                 <tr tw="border-b border-dotted">
-                  <th tw='text-left pl-3 py-2'>
-                Total Invoice
-                  </th>
-                <td tw='text-right'>6,00.000</td>
+                  <th tw="text-left pl-3 py-2">Total Invoice</th>
+                  <td tw="text-right">6,00.000</td>
                 </tr>
                 <tr tw="border-b border-dotted">
-                  <th tw='pl-3 text-left py-2'>
-                Amount Paid
-                  </th>
-                <td tw='text-right'>0,00</td>
+                  <th tw="pl-3 text-left py-2">Amount Paid</th>
+                  <td tw="text-right">0,00</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr className="double">
                   <td tw=" text-left font-semibold">Amount Due</td>
+
+                  <td tw="pt-3  flex flex-col items-end ">
+                    <span tw="font-semibold ">$6,000.00</span>
+                    <span tw="text-gray-600 text-right">USD</span>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <table tw="mt-10">
+              <tbody>
+                <tr>
+                  <th tw="text-left">Invoice #: 00148</th>
+                </tr>
+                <tr tw="border-b border-gray-300">
+                  <th tw=" text-left ">
+                    <span>Issued: Oct 25, 2022</span>
+                  </th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+
+                  <th tw=" text-right ">
+                    <span>Status: Sent</span>
+                  </th>
+                </tr>
+                <tr tw="border-b border-gray-300 text-right font-bold">
+                  <th tw="text-left  py-2">Description</th>
+                  <th>Rate</th>
+                  <th>Quantity</th>
+                  <th>Tax 1</th>
+                  <th>Tax 2</th>
+                  <th>Line Total</th>
+                </tr>
+                <tr tw="border-b  border-gray-300 text-right">
+                  <th tw="pl-3 text-left py-2">Frontend Development</th>
+                  <td>$6,000.00</td>
+                  <td>1</td>
+                  <td>0.00</td>
+                  <td>0.00</td>
+                  <td>$6,000.00</td>
+                </tr>
+                <tr tw="text-right">
+                  <th ></th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td tw="py-2">Subtotal</td>
+                  <td>6,000.00</td>
+                </tr>
+                <tr tw="border-b  border-gray-300 text-right">
+                  <th ></th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td tw="py-2">Tax</td>
+                  <td>0.00</td>
+                </tr>
+                <tr tw="text-right font-bold">
+                  <th ></th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td tw="py-2">Invoice Total</td>
+                  <td>6,000.00</td>
+                </tr>
+                <tr tw="text-right">
+                  <th ></th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td tw="py-2">Amount Paid</td>
+                  <td>0.00</td>
+                </tr>
                 
+              </tbody>
+              <tfoot>
+                <tr className="double">
+                <th tw='invisible'></th>
+                  <td ></td>
+                  <td ></td>
+                  <td ></td>
+                  <td tw=" text-right font-semibold">Amount Due</td>
+
                   <td tw="pt-3  flex flex-col items-end ">
                     <span tw="font-semibold ">$6,000.00</span>
                     <span tw="text-gray-600 text-right">USD</span>
@@ -182,7 +324,7 @@ export default function InvoiceDetail() {
             </table>
           </div>
         </CardReporting>
-        <Filter Filtering={FilterAccountAging} />
+        <Filter Filtering={FilterInvoiceDetail} open={open} setOpen={setOpen} />
       </div>
     </div>
   );

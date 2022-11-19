@@ -3,9 +3,8 @@ import { Typography } from "antd";
 import React, { useState } from "react";
 import tw from "twin.macro";
 
-export default function Filter({Filtering}) {
+export default function Filter({Filtering,open,setOpen}) {
   const { Title } = Typography;
-  const [open, setOpen] = useState(false)
   return (
     <div tw="col-span-3">
     {!open ? <>
