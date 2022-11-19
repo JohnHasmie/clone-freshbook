@@ -34,6 +34,7 @@ import RecurringRevenue from "./pages/report/RecurringRevenue";
 import RevenueByClient from "./pages/report/RevenueByClient";
 import PaymentsCollected from "./pages/report/PaymentsCollected";
 import AccountStatement from './pages/report/AccountStatement';
+import InvoiceDetail from "./pages/report/InvoiceDetail";
 
 function App() {
   let { pathname } = useLocation();
@@ -88,6 +89,11 @@ function App() {
             exact
             path="/dashboard/reports/account-statement"
             component={AccountStatement}
+          />
+           <Route
+            exact
+            path="/dashboard/reports/invoice-detail"
+            component={InvoiceDetail}
           />
 
           <Main>

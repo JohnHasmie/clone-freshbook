@@ -1,7 +1,7 @@
 import { Card } from "antd";
 import tw, { styled, css } from "twin.macro";
 
-export const StyledCardReporting = styled(Card)(({ hidden }) => [
+export const StyledCardReporting = styled(Card)(({ hidden,bordered  }) => [
     tw`  border-gray-200 rounded-lg min-h-[50rem]`,
     css`
    
@@ -19,6 +19,11 @@ export const StyledCardReporting = styled(Card)(({ hidden }) => [
             }
             thead{
                 ${tw`text-right h-10 border-b-4 border-primary text-primary`}
+            }
+
+            .theadCustom{
+                ${tw`text-right h-10 border-b-4 border-gray-400 text-primary`}
+
             }
             tbody{
                 ${tw`align-baseline`}
