@@ -2,11 +2,17 @@ import { Button } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledButtonInvite = styled(Button)(({ hidden }) => [
-    tw`p-button bg-transparent border-0 shadow-none px-4 h-auto flex items-center justify-center`,
+    tw`p-button bg-transparent border-0 shadow-none px-4 h-auto flex items-center justify-center hover:ring hover:ring-offset-2`,
     css`
         && {
+            display: flex;
+            justify-content: space-between;
+            width: 125px;
+            align-items: normal;
+            padding-bottom: 5px;
+            
             span {
-                ${tw`text-xl text-gray-400`}
+                ${tw`text-xl text-black`}
             }
     
             .anticon {
@@ -17,12 +23,8 @@ export const StyledButtonInvite = styled(Button)(({ hidden }) => [
 
             }
 
-            &:hover {
-                ${tw`border rounded-md border-gray-400 bg-transparent`}
-                span {
-                    ${tw`text-xl text-black`}
-                }
-           
+            &:not(:hover) {
+                border: 2px solid white
             }
         }
     `,

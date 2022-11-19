@@ -198,20 +198,20 @@ function Sidenav({ color, user, setting }) {
   const content = (
     <Menu theme="light" mode="inline" style={{ width: "300px" }}>
       <Menu.Item className="menu-border">
-        <NavLink onClick={() => setVisible(!visible)} to="/global-settings">
+        <NavLink tw="text-base" onClick={() => setVisible(!visible)} to="/global-settings">
           <SettingOutlined />
           <span>Settings</span>
         </NavLink>
       </Menu.Item>
 
       <Menu.Item className="menu-border">
-        <NavLink onClick={() => setVisible(!visible)} to="/items">
+        <NavLink tw="text-base" onClick={() => setVisible(!visible)} to="/items">
           <TagOutlined />
           <span>Items</span>
         </NavLink>
       </Menu.Item>
       <Menu.Item>
-        <NavLink onClick={() => setVisible(!visible)} to="/">
+        <NavLink tw="text-base" onClick={() => setVisible(!visible)} to="/">
           <LogoutOutlined />
           <span>Log Out</span>
         </NavLink>
@@ -243,7 +243,6 @@ function Sidenav({ color, user, setting }) {
           {bell}
         </div> */}
         {/* <NavLink to="/global-settings" style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }}>{logsetting}</NavLink> */}
-
         <Popover
           placement="rightTop"
           title={text}
@@ -251,15 +250,7 @@ function Sidenav({ color, user, setting }) {
           trigger="click"
           visible={visible}
         >
-          <div
-            style={{
-              position: "absolute",
-              right: "-8px",
-              top: "40px",
-              cursor: "pointer",
-            }}
-            onClick={() => setVisible(!visible)}
-          >
+          <div style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }} onClick={()=>setVisible(!visible)}>
             {logsetting}
           </div>
         </Popover>

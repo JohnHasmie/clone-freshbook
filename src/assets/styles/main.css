@@ -1,6 +1,6 @@
 body {
   padding: 0 0 30px 0;
-  background-color: #fafafa;
+  background-color: white;
   letter-spacing: -0.3px;
   color: rgba(0, 0, 0, 0.65);
   font-size: 14px;
@@ -9,13 +9,13 @@ body {
   font-family: "IBM Plex Sans", Helvetica, Arial, sans-serif;
 }
 
-.font-familjen{
+/* .font-familjen{
   font-family: "Familjen Grotesk", Helvetica, Arial, sans-serif;
 }
 
 .ant-typography{
   font-family: "Familjen Grotesk", Helvetica, Arial, sans-serif;;
-}
+} */
 
 
 .profile-photo {
@@ -311,12 +311,39 @@ body {
   border-bottom: 1px solid #f0f0f0;
 }
 
+.ant-popover {
+  position: fixed;
+}
+
+.ant-popover-placement-rightTop .ant-popover-inner {
+  border: 2px solid #7f8c9f;
+  border-radius: 3px;
+  box-shadow: 4px 4px rgba(6,41,66,.1);
+  position: absolute;
+  top: -25px;
+  left: 20px;
+}
+
 .ant-popover-inner-content {
   padding: 0;
 }
 
 .ant-popover-title {
   padding: 20px 16px 4px;
+}
+
+.ant-popover-placement-rightTop .ant-popover-arrow {
+  z-index: 1;
+  display: table;
+}
+
+.ant-popover-placement-rightTop .ant-popover-arrow-content {
+  width: 20px;
+  height: 20px;
+  border-bottom: 2px solid #7f8c9f;
+  border-left: 2px solid #7f8c9f;
+  left: 4.5px;
+  top: -10px;
 }
 
 /* .ant-popover-content{
@@ -439,7 +466,7 @@ body {
 .ant-dropdown-menu.ant-dropdown-menu-split.header-notifications-dropdown .ant-avatar {
   width: 36px;
   height: 36px;
-  background-color: #fafafa;
+  background-color: white;
   box-shadow: 0 4px 6px rgb(0 0 0 / 12%);
   display: flex;
   justify-content: center;
@@ -775,7 +802,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
 }
 
 .ant-layout {
-  background: #fafafa;
+  background: white;
 }
 
 .pageheader {
@@ -2588,7 +2615,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 
 .card-billing-info.ant-card {
   box-shadow: none;
-  background-color: #fafafa;
+  background-color: white;
   border: 1px solid #f5f5f5;
 }
 
@@ -3022,7 +3049,7 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile .btn-sig
 }
 
 .ant-list-box table tr:hover td {
-  background: #fafafa;
+  background: white;
 }
 
 .layout-dashboard-rtl .icon-box {

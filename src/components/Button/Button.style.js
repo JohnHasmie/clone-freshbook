@@ -8,7 +8,7 @@ export const StyledButton = styled(Button)(({ hidden }) => [
         && {
             span {
                 ${tw`text-lg`},
-                font-family: "Familjen Grotesk", Helvetica, Arial, sans-serif;
+                // font-family: "Familjen Grotesk", Helvetica, Arial, sans-serif;
             }
     
             .anticon {
