@@ -10,8 +10,8 @@ export default function Filter({Filtering}) {
     <div tw="col-span-3">
     {!open ? <>
          <Title level={3}>Settings</Title>
-         <div tw="border-y border-black px-2 py-4 cursor-pointer" onClick={()=>setOpen(!open)}>
-           <div tw="bg-transparent rounded-md p-2 hover:bg-blue-300">
+         <div tw="border-y border-black px-1 py-2 cursor-pointer" onClick={()=>setOpen(!open)}>
+           <div tw="bg-transparent rounded-md p-2 hover:bg-blue-100">
              <div tw=" flex justify-between items-center">
                <div tw="flex items-center ">
                  <BarsOutlined />

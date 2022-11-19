@@ -3,6 +3,7 @@ import React from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 import ButtonSubmit from '../../components/ButtonSubmit';
+import tw from 'twin.macro';
 
 export default function GlobalSetting() {
   const { Title } = Typography;
@@ -47,6 +48,7 @@ export default function GlobalSetting() {
               <img
                 src={data?.data?.user?.avatar + "Heri Setiawan"}
                 className="profile-photo"
+                tw='w-20 h-20'
                 alt="profile"
               />
 

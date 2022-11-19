@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
-import Footer from "./Footer";
 import TabsSettting from "./TabsSettting";
 import {useQuery} from "react-query"
 import tw from "twin.macro";
@@ -121,7 +120,7 @@ function Main({ children }) {
               />
             </AntHeader>
           </Affix>
-        ) : !pathname.includes("global-settings") ? (
+        ) : /* !pathname.includes("global-settings") ? */ (
           <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
             <Header
               onPress={openDrawer}
@@ -132,9 +131,9 @@ function Main({ children }) {
               handleFixedNavbar={handleFixedNavbar}
             />
           </AntHeader>
-        ) : (
+        ) /* : (
           <TabsSettting/>
-        ) 
+        )  */
         }
         <Content className="content-ant" >{children}</Content>
         {/* <Footer /> */}

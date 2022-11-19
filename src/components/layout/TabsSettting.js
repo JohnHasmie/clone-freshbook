@@ -13,15 +13,15 @@ export default function TabsSettting() {
         // console.log(key,"key");
     }
   return (
-    <>
+    <div style={{marginLeft: "-15px"}}>
          <Row gutter={[24, 0]}>
         <Col span={24} md={6} >
    
-          <div className="ant-page-header-heading">
+          {/* <div className="ant-page-header-heading">
             <Title level={1} style={{ textTransform: "capitalize" }}>
             Settings
             </Title>
-          </div>
+          </div> */}
           <Tabs defaultActiveKey={pathname} onChange={handleClick} tw="w-screen md:w-[60rem]">
     <Tabs.TabPane tab="Account" key="/global-settings"/>
     
@@ -32,17 +32,7 @@ export default function TabsSettting() {
   </Tabs>
         </Col>
         </Row>
-    {/* <div style={{paddingTop:"20px"}}>
-    <Title level={1}>Settings</Title>
-    <Tabs defaultActiveKey={pathname} onChange={handleClick}>
-    <Tabs.TabPane tab="Account" key="/global-settings"/>
-    
-    <Tabs.TabPane tab="Business" key="/global-settings/business" />
-    
-    <Tabs.TabPane tab="Email Notifications" key="/global-settings/email-notifications" />
-     
-  </Tabs>
-  </div> */}
-    </>
+  
+    </div>
   )
 }

@@ -32,6 +32,9 @@ import { styled } from "twin.macro";
 import Button from "../Button";
 import avtar from "../../assets/images/team-2.jpg";
 import tw from "twin.macro";
+import ButtonMore from "../Reports/ButtonMore";
+import ButtonInvite from "../ButtonInvite";
+import TabsSettting from "./TabsSettting";
 
 const ButtonContainer = styled.div`
   .ant-btn-primary {
@@ -297,31 +300,29 @@ function Header({
   );
 
   const createList = (
-    <div  tw="border border-[#7f8c9f]">
+    <div tw="border border-[#7f8c9f]">
+      <Menu theme="light" mode="inline">
+        <Menu.Item>
+          <NavLink to="/global-settings">
+            <AppstoreOutlined />
+            <span>Client</span>
+          </NavLink>
+        </Menu.Item>
 
-    <Menu theme="light" mode="inline"  >
-      <Menu.Item>
-        <NavLink to="/global-settings">
-          <AppstoreOutlined />
-          <span>Client</span>
-        </NavLink>
-      </Menu.Item>
-
-      <Menu.Item>
-        <NavLink to="/">
-          <FileDoneOutlined />
-          <span>Invoice</span>
-        </NavLink>
-      </Menu.Item>
-      <Menu.Item>
-        <NavLink to="/">
-          <FileTextOutlined />
-          <span>Recurring Template</span>
-        </NavLink>
-      </Menu.Item>
-    </Menu>
+        <Menu.Item>
+          <NavLink to="/">
+            <FileDoneOutlined />
+            <span>Invoice</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item>
+          <NavLink to="/">
+            <FileTextOutlined />
+            <span>Recurring Template</span>
+          </NavLink>
+        </Menu.Item>
+      </Menu>
     </div>
-
   );
   const handleClick = (key) => {
     history.push(`${key}`);
@@ -329,13 +330,26 @@ function Header({
   };
   return (
     <>
-      {/* <div className="setting-drwer" onClick={showDrawer}>
-        {setting}
-      </div> */}
+      {name.includes("global-settings") ? (
+        <Row gutter={[24, 0]}>
+          <Col span={24} md={6} style={{ paddingLeft: "none" }}>
+            <div className="ant-page-header-heading">
+              <Title
+                level={2}
+                style={{ textTransform: "capitalize", marginLeft: "-15px" }}
+                // className='font-familjen'
+              >
+                Settings
+              </Title>
+            </div>
+          </Col>
 
-      <Row gutter={[24, 0]}>
-        <Col span={24} md={6} style={{ paddingLeft: "none" }}>
-          {/* <Breadcrumb>
+          <TabsSettting />
+        </Row>
+      ) : (
+        <Row gutter={[24, 0]}>
+          <Col span={24} md={6} style={{ paddingLeft: "none" }}>
+            {/* <Breadcrumb>
             <Breadcrumb.Item>
               <NavLink to="/">Pages</NavLink>
             </Breadcrumb.Item>
@@ -343,14 +357,22 @@ function Header({
               {name.replace("/", "")}
             </Breadcrumb.Item>
           </Breadcrumb> */}
-          <div className="ant-page-header-heading">
-            <Title level={2} style={{ textTransform: "capitalize", marginLeft:'-15px' }}>
-              {subName.replace("/", "")}
-            </Title>
-          </div>
-        </Col>
-        <Col span={24} md={18} className="header-control" tw="flex items-center">
-          {/* <Badge size="small" count={4}>
+            <div className="ant-page-header-heading">
+              <Title
+                level={2}
+                style={{ textTransform: "capitalize", marginLeft: "-15px" }}
+              >
+                {subName.replace("/", "")}
+              </Title>
+            </div>
+          </Col>
+          <Col
+            span={24}
+            md={18}
+            className="header-control"
+            tw="flex items-center"
+          >
+            {/* <Badge size="small" count={4}>
             <Dropdown overlay={menu} trigger={["click"]}>
               <a
                 href="#pablo"
@@ -364,14 +386,14 @@ function Header({
           <Button type="link" onClick={showDrawer}>
             {logsetting}
           </Button> */}
-          <Button
-            type="link"
-            className="sidebar-toggler"
-            onClick={() => onPress()}
-          >
-            {toggler}
-          </Button>
-          {/* <Drawer
+            <Button
+              type="link"
+              className="sidebar-toggler"
+              onClick={() => onPress()}
+            >
+              {toggler}
+            </Button>
+            {/* <Drawer
             className="settings-drawer"
             mask={true}
             width={360}
@@ -478,47 +500,54 @@ function Header({
               </div>
             </div>
           </Drawer> */}
-          {/* <Link to="/sign-in" className="btn-sign-in">
+            {/* <Link to="/sign-in" className="btn-sign-in">
             {profile}
             <span>Sign in</span>
           </Link> */}
 
-          {/* <Input
+            {/* <Input
             className="header-search"
             placeholder="Type here..."
             prefix={<SearchOutlined />}
           /> */}
-          <Popover placement="bottom" content={createList} trigger="click">
-            <div className="flex-justify-center">
-              <Button tw="bg-success text-white">
-                <span>
-                  Create New
-                </span>
-                <DownOutlined />
-              </Button>
-            </div>
-          </Popover>
-          <Popover placement="bottom" content={content} trigger="click">
-            <div
+            <Popover placement="bottom" content={createList} trigger="click">
+              <div className="flex-justify-center">
+                <Button tw="bg-success text-white">
+                  <span>Create New</span>
+                  <DownOutlined />
+                </Button>
+              </div>
+            </Popover>
+
+            <Popover placement="bottom" content={content} trigger="click">
+              <ButtonInvite tw="hover:border-2 hover:border-[#cdd4d9] mr-5">
+                <span>Invite</span>
+                
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" tw="text-gray-500">
+                  <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/>
+                </svg>
+              </ButtonInvite>
+              {/* <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 marginRight: "60px",
                 cursor: "pointer",
-                height:'auto'
+                height: "auto",
               }}
             >
+       
               <span tw="font-bold text-xl text-gray-600" style={{ marginRight: "10px" }}>
                 Invite
               </span>
               <DownOutlined />
-            </div>
-          </Popover>
-        </Col>
-     
+            </div> */}
+            </Popover>
+          </Col>
+
           <Divider />
-      
-      </Row>
+        </Row>
+      )}
     </>
   );
 }

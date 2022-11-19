@@ -30,7 +30,10 @@ import Clients from "./pages/clients/Clients";
 import Detail from "./pages/clients/Detail";
 import DetailReports from "./pages/clients/DetailReports";
 import AccountAging from "./pages/report/AccountAging";
-import RecurringRevenue from './pages/report/RecurringRevenue';
+import RecurringRevenue from "./pages/report/RecurringRevenue";
+import RevenueByClient from "./pages/report/RevenueByClient";
+import PaymentsCollected from "./pages/report/PaymentsCollected";
+import AccountStatement from './pages/report/AccountStatement';
 
 function App() {
   let { pathname } = useLocation();
@@ -50,10 +53,10 @@ function App() {
     Accept: "Application/json",
   };
   useEffect(() => {
-    if (isAuthenticated === false && !pathname.includes('sign')) {
+    if (isAuthenticated === false && !pathname.includes("sign")) {
       history.push("/sign-in");
     }
-  }, [pathname,isAuthenticated]);
+  }, [pathname, isAuthenticated]);
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
@@ -61,16 +64,42 @@ function App() {
           <Route path="/sign-up" component={SignUp} />
           <Route path="/sign-in" component={SignIn} />
 
-            <Route exact path="/dashboard/reports/account-aging" component={AccountAging} />
-            <Route exact path="/dashboard/reports/recurring-revenue" component={RecurringRevenue} />
+          <Route
+            exact
+            path="/dashboard/reports/account-aging"
+            component={AccountAging}
+          />
+          <Route
+            exact
+            path="/dashboard/reports/recurring-revenue"
+            component={RecurringRevenue}
+          />
+          <Route
+            exact
+            path="/dashboard/reports/revenue-by-client"
+            component={RevenueByClient}
+          />
+          <Route
+            exact
+            path="/dashboard/reports/payments-collected"
+            component={PaymentsCollected}
+          />
+              <Route
+            exact
+            path="/dashboard/reports/account-statement"
+            component={AccountStatement}
+          />
 
           <Main>
             <Route exact path="/dashboard" component={Home} />
 
             <Route exact path="/clients" component={Clients} />
             <Route exact path="/clients/:id" component={Detail} />
-            <Route exact path="/clients/:id/reports" component={DetailReports} />
-
+            <Route
+              exact
+              path="/clients/:id/reports"
+              component={DetailReports}
+            />
 
             <Route exact path="/global-settings" component={GlobalSetting} />
             <Route
@@ -91,8 +120,6 @@ function App() {
             <Route exact path="/profile" component={Profile} />
             {/* <Redirect from="*" to="/dashboard" /> */}
           </Main>
-
-
         </Switch>
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>

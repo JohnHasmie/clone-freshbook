@@ -4,7 +4,7 @@ import {
   SettingOutlined,
   TagOutlined,
 } from "@ant-design/icons";
-import { Menu, Button, Popover, Typography, Divider } from "antd";
+import { Menu, Button, Popover, Typography, Divider, Skeleton } from "antd";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
@@ -218,25 +218,26 @@ function Sidenav({ color, user, setting }) {
       </Menu.Item>
     </Menu>
   );
-  
+
   const text = <Title level={5}>{setting?.company_name}</Title>;
   return (
     <>
       <div className="profile" style={{ position: "relative" }}>
-        {user ? 
-        <>
-        <img
-          src={user?.avatar + "Heri Setiawan"}
-          className="profile-photo"
-          alt="profile"
-        />
-        <span style={{ marginTop: "1rem" }}>
-          {user?.first_name ? user?.first_name : "Heri"}
-        </span>
-        <span>{setting?.company_name}</span>
-        </>:
-        <p>Loading...</p>
-        }
+        {user ? (
+          <>
+            <img
+              src={user?.avatar + "Heri Setiawan"}
+              className="profile-photo"
+              alt="profile"
+            />
+            <span style={{ marginTop: "1rem" }}>
+              {user?.first_name ? user?.first_name : "Heri"}
+            </span>
+            <span tw="font-bold">{setting?.company_name}</span>
+          </>
+        ) : (
+          <Skeleton.Avatar size={90} shape="circle" />
+        )}
         {/* bell dihidden sementara */}
         {/* <div style={{ position: "absolute", right: "-8px", top: "4px" }}>
           {bell}
@@ -270,7 +271,7 @@ function Sidenav({ color, user, setting }) {
             <span className="text-light">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2" >
+        <Menu.Item key="2">
           <NavLink to="/clients">
             <span
               className=""

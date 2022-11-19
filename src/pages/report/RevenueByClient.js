@@ -18,7 +18,7 @@ import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 
-export default function AccountAging() {
+export default function RevenueByClient() {
   const { Title } = Typography;
   let history = useHistory();
   const onFinish = (values) => {
@@ -28,13 +28,13 @@ export default function AccountAging() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
-  const FilterAccountAging = (
+  const FilterRevenueByClient = (
     <div>
       <div tw="flex justify-between ">
         <Title level={3}>Filters</Title>
         <p tw="text-base text-primary">Reset All</p>
       </div>
-      <span tw="text-black ">AS OF</span>
+      <span tw="text-black ">DATE RANGE</span>
       <Form
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
@@ -46,36 +46,68 @@ export default function AccountAging() {
           <Col span={24}>
             <Form.Item name="time">
               <Select
-                defaultValue="today"
+                defaultValue="this-year"
                 options={[
                   {
-                    value: "today",
-                    label: "Today",
+                    value: "this-month",
+                    label: "This Month",
                   },
                   {
-                    value: "last-month",
-                    label: "End of Last Month",
-                  },
-                  {
-                    value: "last-quarter",
-                    label: "End of Last Quarter",
+                    value: "this-year",
+                    label: "This Year",
                   },
                   {
                     value: "last-year",
-                    label: "End of Last Year",
+                    label: "Last Year",
+                  },
+                  {
+                    value: "this-quarter",
+                    label: "This Quarter",
+                  },
+                  {
+                    value: "last-quarter",
+                    label: "Last Quarter",
                   },
                 ]}
               />
             </Form.Item>
           </Col>
           <Col span={24}>
-            <Form.Item label="Group By" name="group">
-              <Radio.Group>
-                <Space direction="vertical">
-                  <Radio value="outstanding">Outstanding</Radio>
-                  <Radio value="overdue">Overdue</Radio>
-                </Space>
-              </Radio.Group>
+            <Form.Item label="Clients" name="clients">
+              <Select
+                defaultValue="All Clients"
+                options={[
+                  {
+                    value: "andre",
+                    label: "Andre",
+                  },
+                  {
+                    value: "company-name",
+                    label: "Company Name",
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item label="type" name="type">
+              <Select
+                defaultValue="billed"
+                options={[
+                  {
+                    value: "billed",
+                    label: "Total Billed",
+                  },
+                  {
+                    value: "collecte",
+                    label: "Total Collected",
+                  },
+                  {
+                    value: "outstanding",
+                    label: "Total Outstanding",
+                  },
+                ]}
+              />
             </Form.Item>
           </Col>
           <Col span={24}>
@@ -116,7 +148,7 @@ export default function AccountAging() {
         <span tw="ml-1">Reports</span>
       </div>
       <div tw="flex justify-between items-center my-2">
-        <Title level={2}>Accounts Aging</Title>
+        <Title level={2}>Revenue by Client</Title>
         <div tw="flex">
           <ButtonMore>
             <span>More Actions</span>
@@ -129,10 +161,10 @@ export default function AccountAging() {
       </div>
       <div tw="grid grid-cols-12 gap-10">
         <CardReporting tw="col-span-9 mb-10">
-          <h1 tw="text-blueDefault">Accounts Aging</h1>
+          <h1 tw="text-blueDefault">Revenue by Client</h1>
           <div tw="my-3 flex flex-col">
             <span tw="text-sm text-gray-600">Oasis Land</span>
-            <span tw="text-sm text-gray-600">Amounts Outstanding (USD)</span>
+            <span tw="text-sm text-gray-600">Total Billed (USD)</span>
             <span tw="text-sm text-gray-600">As of November 17,2022</span>
           </div>
           <div tw="overflow-x-auto ">
@@ -140,13 +172,9 @@ export default function AccountAging() {
             >
               <thead>
                 <tr>
-                  <th tw="text-left py-4 ">Client</th>
-                  <th tw="py-4 ">0-30 Days</th>
-                  <th tw="py-4 ">31-60 Days</th>
-                  <th tw="py-4 ">61-90 Days</th>
-                  <th tw="py-4 ">90 Days</th>
+                  <th tw="text-left py-4 ">Primary Contact/ Organization</th>
 
-                  <th tw="py-4  ">Total</th>
+                  <th tw="py-4 ">Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -158,19 +186,12 @@ export default function AccountAging() {
                     <span tw="text-primary">Company Name</span>
                   </th>
                   <td tw="py-5  text-primary">6,000.00</td>
-                  <td tw="py-5  ">0.00</td>
-                  <td tw="py-5 ">0.00</td>
-                  <td tw="py-5  ">0.00</td>
-                  <td tw="py-5 ">6,000.00</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr className="double">
                   <td tw=" text-left font-semibold">Total</td>
-                  <td tw="  font-bold ">$6,000.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
+
                   <td tw="pt-3  flex flex-col items-end ">
                     <span tw="font-semibold ">$6,000.00</span>
                     <span tw="text-gray-600 text-right">USD</span>
@@ -180,7 +201,7 @@ export default function AccountAging() {
             </table>
           </div>
         </CardReporting>
-        <Filter Filtering={FilterAccountAging} />
+        <Filter Filtering={FilterRevenueByClient} />
       </div>
     </div>
   );

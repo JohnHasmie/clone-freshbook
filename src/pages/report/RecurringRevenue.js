@@ -1,16 +1,5 @@
 import { DownOutlined, LeftOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Radio,
-  Row,
-  Select,
-  Space,
-  Typography,
-} from "antd";
+import { Button, Col, Divider, Form, Row, Select, Typography } from "antd";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
@@ -40,7 +29,7 @@ export default function RecurringRevenue() {
         onFinishFailed={onFinishFailed}
         layout="vertical"
         size={"large"}
-        tw='mt-5'
+        tw="mt-5"
       >
         <Row gutter={24}>
           <Col span={24}>
@@ -55,8 +44,7 @@ export default function RecurringRevenue() {
                   {
                     value: "next",
                     label: "Next 12 Month",
-                  }
-                 
+                  },
                 ]}
               />
             </Form.Item>
@@ -78,7 +66,7 @@ export default function RecurringRevenue() {
               />
             </Form.Item>
           </Col>
-       
+
           <Col span={24}>
             <Form.Item label="Currency" name="currency">
               <Select
@@ -110,7 +98,7 @@ export default function RecurringRevenue() {
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div
-        onClick={() => history.push("/dashboard")}
+        onClick={() => history.goBack()}
         tw="flex items-center mt-5 text-primary cursor-pointer"
       >
         <LeftOutlined />
