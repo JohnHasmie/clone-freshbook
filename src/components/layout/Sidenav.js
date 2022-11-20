@@ -262,9 +262,7 @@ function Sidenav({ color, user, setting }) {
             <span
               className=""
               style={{ marginRight: "10px" }}
-              /* style={{
-                background: page === "dashboard" ? color : "",
-              }} */
+           
             >
               {dashboard}
             </span>
@@ -276,9 +274,7 @@ function Sidenav({ color, user, setting }) {
             <span
               className=""
               style={{ marginRight: "10px" }}
-              /* style={{
-                background: page === "clients" ? color : "",
-              }} */
+              
             >
               {billing}
             </span>
@@ -287,6 +283,19 @@ function Sidenav({ color, user, setting }) {
         </Menu.Item>
 
         <Menu.Item key="3">
+          <NavLink to="/invoices">
+            <span
+              className=""
+              style={{ marginRight: "10px" }}
+              
+            >
+              {tables}
+            </span>
+            <span className="text-light">Invoices</span>
+          </NavLink>
+        </Menu.Item>
+
+        {/* <Menu.Item key="3">
           <NavLink to="/sign-in">
             <span className="" style={{ marginRight: "10px" }}>
               {signin}
@@ -301,7 +310,7 @@ function Sidenav({ color, user, setting }) {
             </span>
             <span className="text-light">Sign Up</span>
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
       {/* <div className="aside-footer">
         <div

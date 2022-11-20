@@ -8,7 +8,7 @@ import ClientTabs from "../../components/ClientsComponent/ClientTabs";
 import { PlusOutlined } from "@ant-design/icons";
 
 export default function Detail() {
-
+const {id}=useParams()
 
   const { Title } = Typography;
 
@@ -65,6 +65,7 @@ export default function Detail() {
       ),
     },
   ];
+  console.log(id,"id")
   return (
     <>
       <div className="layout-content">

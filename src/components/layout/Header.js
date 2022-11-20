@@ -26,8 +26,9 @@ import {
   FileDoneOutlined,
   FileTextOutlined,
   AppstoreOutlined,
+  LeftOutlined,
 } from "@ant-design/icons";
-import { NavLink, Link, useHistory } from "react-router-dom";
+import { NavLink, Link, useHistory, useParams } from "react-router-dom";
 import { styled } from "twin.macro";
 import Button from "../Button";
 import avtar from "../../assets/images/team-2.jpg";
@@ -35,6 +36,7 @@ import tw from "twin.macro";
 import ButtonMore from "../Reports/ButtonMore";
 import ButtonInvite from "../ButtonInvite";
 import TabsSettting from "./TabsSettting";
+import AccordionInvoice from "../AccordionInvoice";
 
 const ButtonContainer = styled.div`
   .ant-btn-primary {
@@ -258,6 +260,8 @@ function Header({
 }) {
   const { Title, Text } = Typography;
   const history = useHistory();
+  const { id } = useParams();
+  const [open, setOpen] = useState(false);
 
   const [visible, setVisible] = useState(false);
   const [sidenavType, setSidenavType] = useState("transparent");
@@ -337,7 +341,6 @@ function Header({
               <Title
                 level={2}
                 style={{ textTransform: "capitalize", marginLeft: "-15px" }}
-                // className='font-familjen'
               >
                 Settings
               </Title>
@@ -346,17 +349,37 @@ function Header({
 
           <TabsSettting />
         </Row>
+      ) : name.includes(`invoices/`) ? (
+        <>
+          <Row gutter={[24, 0]}>
+            <Col span={24} style={{ paddingLeft: "none" }}>
+              <div
+                onClick={() => history.goBack()}
+                tw="flex items-center mt-5 text-primary cursor-pointer"
+              >
+                <LeftOutlined />
+                <span tw="ml-1">Invoices</span>
+              </div>
+              <div tw="flex justify-between items-center my-2">
+                <Title level={2}>Invoice 00146</Title>
+
+                <div tw="flex">
+                  <ButtonMore>
+                    <span>More Actions</span>
+                    <DownOutlined />
+                  </ButtonMore>
+                  <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center justify-center">
+                    <span tw="text-lg">Send...</span>
+                  </Button>
+                </div>
+              </div>
+            </Col>
+          </Row>
+          <AccordionInvoice />
+        </>
       ) : (
         <Row gutter={[24, 0]}>
           <Col span={24} md={6} style={{ paddingLeft: "none" }}>
-            {/* <Breadcrumb>
-            <Breadcrumb.Item>
-              <NavLink to="/">Pages</NavLink>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item style={{ textTransform: "capitalize" }}>
-              {name.replace("/", "")}
-            </Breadcrumb.Item>
-          </Breadcrumb> */}
             <div className="ant-page-header-heading">
               <Title
                 level={2}
@@ -372,20 +395,6 @@ function Header({
             className="header-control"
             tw="flex items-center"
           >
-            {/* <Badge size="small" count={4}>
-            <Dropdown overlay={menu} trigger={["click"]}>
-              <a
-                href="#pablo"
-                className="ant-dropdown-link"
-                onClick={(e) => e.preventDefault()}
-              >
-                {bell}
-              </a>
-            </Dropdown>
-          </Badge>
-          <Button type="link" onClick={showDrawer}>
-            {logsetting}
-          </Button> */}
             <Button
               type="link"
               className="sidebar-toggler"
@@ -393,123 +402,7 @@ function Header({
             >
               {toggler}
             </Button>
-            {/* <Drawer
-            className="settings-drawer"
-            mask={true}
-            width={360}
-            onClose={hideDrawer}
-            placement={placement}
-            visible={visible}
-          >
-            <div layout="vertical">
-              <div className="header-top">
-                <Title level={4}>
-                  Configurator
-                  <Text className="subtitle">See our dashboard options.</Text>
-                </Title>
-              </div>
 
-              <div className="sidebar-color">
-                <Title level={5}>Sidebar Color</Title>
-                <div className="theme-color mb-2">
-                  <ButtonContainer>
-                    <Button
-                      type="primary"
-                      onClick={() => handleSidenavColor("#1890ff")}
-                    >
-                      1
-                    </Button>
-                    <Button
-                      type="success"
-                      onClick={() => handleSidenavColor("#52c41a")}
-                    >
-                      1
-                    </Button>
-                    <Button
-                      type="danger"
-                      onClick={() => handleSidenavColor("#d9363e")}
-                    >
-                      1
-                    </Button>
-                    <Button
-                      type="yellow"
-                      onClick={() => handleSidenavColor("#fadb14")}
-                    >
-                      1
-                    </Button>
-
-                    <Button
-                      type="black"
-                      onClick={() => handleSidenavColor("#111")}
-                    >
-                      1
-                    </Button>
-                  </ButtonContainer>
-                </div>
-
-                <div className="sidebarnav-color mb-2">
-                  <Title level={5}>Sidenav Type</Title>
-                  <Text>Choose between 2 different sidenav types.</Text>
-                  <ButtonContainer className="trans">
-                    <Button
-                      type={sidenavType === "transparent" ? "primary" : "white"}
-                      onClick={() => {
-                        handleSidenavType("transparent");
-                        setSidenavType("transparent");
-                      }}
-                    >
-                      TRANSPARENT
-                    </Button>
-                    <Button
-                      type={sidenavType === "white" ? "primary" : "white"}
-                      onClick={() => {
-                        handleSidenavType("#fff");
-                        setSidenavType("white");
-                      }}
-                    >
-                      WHITE
-                    </Button>
-                  </ButtonContainer>
-                </div>
-                <div className="fixed-nav mb-2">
-                  <Title level={5}>Navbar Fixed </Title>
-                  <Switch onChange={(e) => handleFixedNavbar(e)} />
-                </div>
-                <div className="ant-docment">
-                  <ButtonContainer>
-                    <Button type="black" size="large">
-                      FREE DOWNLOAD
-                    </Button>
-                    <Button size="large">VIEW DOCUMENTATION</Button>
-                  </ButtonContainer>
-                </div>
-                <div className="viewstar">
-                  <a href="#pablo">{<StarOutlined />} Star</a>
-                  <a href="#pablo"> 190</a>
-                </div>
-
-                <div className="ant-thank">
-                  <Title level={5} className="mb-2">
-                    Thank you for sharing!
-                  </Title>
-                  <ButtonContainer className="social">
-                    <Button type="black">{<TwitterOutlined />}TWEET</Button>
-                    <Button type="black">{<FacebookFilled />}SHARE</Button>
-                  </ButtonContainer>
-                </div>
-              </div>
-            </div>
-          </Drawer> */}
-            {/* <Link to="/sign-in" className="btn-sign-in">
-            {profile}
-            <span>Sign in</span>
-          </Link> */}
-
-            {/* <Input
-            className="header-search"
-            placeholder="Type here..."
-            prefix={<SearchOutlined />}
-          /> */}
             <Popover placement="bottom" content={createList} trigger="click">
               <div className="flex-justify-center">
                 <Button tw="bg-success text-white">
@@ -526,26 +419,15 @@ function Header({
             <Popover placement="bottom" content={content} trigger="click">
               <ButtonInvite tw="hover:border-2 hover:border-[#cdd4d9] mr-5">
                 <span>Invite</span>
-                
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" tw="text-gray-500">
-                  <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/>
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  tw="text-gray-500"
+                >
+                  <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
                 </svg>
               </ButtonInvite>
-              {/* <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginRight: "60px",
-                cursor: "pointer",
-                height: "auto",
-              }}
-            >
-       
-              <span tw="font-bold text-xl text-gray-600" style={{ marginRight: "10px" }}>
-                Invite
-              </span>
-              <DownOutlined />
-            </div> */}
             </Popover>
           </Col>
 
