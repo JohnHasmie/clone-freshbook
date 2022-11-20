@@ -39,6 +39,7 @@ import card from "../assets/images/info-card-1.jpg";
 import ReactApexChart from "react-apexcharts";
 import tw from "twin.macro";
 import { useHistory } from "react-router-dom";
+import NewItem from "../components/NewItem";
 
 function Home() {
   const { Title, Text } = Typography;
@@ -338,6 +339,7 @@ function Home() {
   return (
     <>
       <div className="layout-content" style={{ width: "98%" }}>
+        {/* <NewItem/> */}
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="flex justify-between">

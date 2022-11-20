@@ -33,8 +33,10 @@ import AccountAging from "./pages/report/AccountAging";
 import RecurringRevenue from "./pages/report/RecurringRevenue";
 import RevenueByClient from "./pages/report/RevenueByClient";
 import PaymentsCollected from "./pages/report/PaymentsCollected";
-import AccountStatement from './pages/report/AccountStatement';
+import AccountStatement from "./pages/report/AccountStatement";
 import InvoiceDetail from "./pages/report/InvoiceDetail";
+import Invoices from "./pages/invoices/Invoices";
+import DetailInvoice from './pages/invoices/Detail';
 
 function App() {
   let { pathname } = useLocation();
@@ -85,12 +87,12 @@ function App() {
             path="/dashboard/reports/payments-collected"
             component={PaymentsCollected}
           />
-              <Route
+          <Route
             exact
             path="/dashboard/reports/account-statement"
             component={AccountStatement}
           />
-           <Route
+          <Route
             exact
             path="/dashboard/reports/invoice-detail"
             component={InvoiceDetail}
@@ -106,6 +108,9 @@ function App() {
               path="/clients/:id/reports"
               component={DetailReports}
             />
+
+            <Route exact path="/invoices" component={Invoices} />
+            <Route exact path="/invoices/:id" component={DetailInvoice} />
 
             <Route exact path="/global-settings" component={GlobalSetting} />
             <Route
