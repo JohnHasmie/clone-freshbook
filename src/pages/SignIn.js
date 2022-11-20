@@ -105,7 +105,7 @@ export default class SignIn extends Component {
           });
         })
         .catch((error) => {
-          if (process.env.REACT_APP_CHECK_LOGIN === false) {
+          if (process.env.REACT_APP_CHECK_LOGIN === true) {
             alert(error);
           } else {
             window.location.href = "/dashboard";
