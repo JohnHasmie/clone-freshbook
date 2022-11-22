@@ -19,9 +19,9 @@ import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
 import Business from "./pages/setting/Business";
 import EmailNotification from "./pages/setting/EmailNotification";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import useAuth from "./hooks/useAuth";
+import useAuth, { unsetClientCredential } from "./hooks/useAuth";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import Items from "./pages/item-service/Items";
@@ -37,19 +37,20 @@ import AccountStatement from "./pages/report/AccountStatement";
 import InvoiceDetail from "./pages/report/InvoiceDetail";
 import Invoices from "./pages/invoices/Invoices";
 import DetailInvoice from './pages/invoices/Detail';
+import AppContext from "./components/context/AppContext";
+import ItemsArchived from "./pages/item-service/ItemsArchived";
+import ItemsDeleted from "./pages/item-service/ItemsDeleted";
 
 function App() {
   let { pathname } = useLocation();
   const queryClient = new QueryClient();
   const { isAuthenticated } = useAuth();
   const { token } = useAuth();
+  const [user, setUser] = useState("");
+
 
   let history = useHistory();
-  useEffect(() => {
-    if (pathname === "/") {
-      history.push("/dashboard");
-    }
-  }, [pathname]);
+
 
   axios.defaults.headers.common = {
     Authorization: `Bearer ${token}`,
@@ -58,11 +59,43 @@ function App() {
   useEffect(() => {
     if (isAuthenticated === false && !pathname.includes("sign")) {
       history.push("/sign-in");
+    } 
+    if(isAuthenticated === true && pathname.includes("sign")){
+      history.push("/dashboard");
+
+    }
+    if (pathname === "/") {
+      history.push("/dashboard");
     }
   }, [pathname, isAuthenticated]);
+
+  axios.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      if (error.response.status === 403) {
+        unsetClientCredential();
+        window.location.href = "/sign-in";
+      }
+      if (error.response.status === 401) {
+        unsetClientCredential();
+        window.location.href = "/sign-in";
+      }
+
+      return Promise.reject(error);
+    }
+  );
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
+      <AppContext.Provider
+        value={{
+          user: user,
+          setUser: setUser,
+         
+        }}
+      >
         <Switch>
           <Route path="/sign-up" component={SignUp} />
           <Route path="/sign-in" component={SignIn} />
@@ -124,6 +157,10 @@ function App() {
               component={EmailNotification}
             />
             <Route exact path="/items" component={Items} />
+            <Route exact path="/items/archived" component={ItemsArchived} />
+            <Route exact path="/items/deleted" component={ItemsDeleted} />
+
+
 
             <Route exact path="/tables" component={Tables} />
             <Route exact path="/billing" component={Billing} />
@@ -132,6 +169,7 @@ function App() {
             {/* <Redirect from="*" to="/dashboard" /> */}
           </Main>
         </Switch>
+        </AppContext.Provider>
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </div>

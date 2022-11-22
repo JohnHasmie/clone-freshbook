@@ -37,6 +37,7 @@ import ButtonMore from "../Reports/ButtonMore";
 import ButtonInvite from "../ButtonInvite";
 import TabsSettting from "./TabsSettting";
 import AccordionInvoice from "../AccordionInvoice";
+import NewItem from '../NewItem';
 
 const ButtonContainer = styled.div`
   .ant-btn-primary {
@@ -336,7 +337,7 @@ function Header({
     <>
       {name.includes("global-settings") ? (
         <Row gutter={[24, 0]}>
-          <Col span={24} md={6} style={{ paddingLeft: "none" }}>
+          <Col xs={24} md={6}>
             <div className="ant-page-header-heading">
               <Title
                 level={2}
@@ -377,6 +378,54 @@ function Header({
           </Row>
           <AccordionInvoice />
         </>
+      ) : name.includes(`items`) ? (
+        <Row gutter={[24, 0]}>
+          <Col span={24} md={6} style={{ paddingLeft: "none" }}>
+            <div className="ant-page-header-heading">
+              <Title
+                level={2}
+                style={{ textTransform: "capitalize", marginLeft: "-15px" }}
+              >
+                Items
+              </Title>
+            </div>
+          </Col>
+          <Col
+            span={24}
+            md={18}
+            className="header-control"
+            tw="flex items-center"
+          >
+            <Button
+              type="link"
+              className="sidebar-toggler"
+              onClick={() => onPress()}
+            >
+              {toggler}
+            </Button>
+
+            <Popover placement="bottom" content={NewItem} trigger="click">
+              <div className="flex items-center justify-center">
+                <Button tw="bg-success text-white">
+                  <span>Create New</span>
+                  {/* <DownOutlined /> */}
+
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    tw="text-gray-500"
+                  >
+                    <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
+                  </svg>
+                </Button>
+              </div>
+            </Popover>
+
+            
+          </Col>
+
+          <Divider />
+        </Row>
       ) : (
         <Row gutter={[24, 0]}>
           <Col span={24} md={6} style={{ paddingLeft: "none" }}>
@@ -409,8 +458,12 @@ function Header({
                   <span>Create New</span>
                   {/* <DownOutlined /> */}
 
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" tw="text-gray-500">
-                    <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    tw="text-gray-500"
+                  >
+                    <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
                   </svg>
                 </Button>
               </div>

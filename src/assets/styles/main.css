@@ -1428,9 +1428,9 @@ span.ismobile {
     padding: 0px 24px 0px 0px;
   }
 
-  main.ant-layout-content.content-ant {
+  /* main.ant-layout-content.content-ant {
     padding-left: 200px !important;
-  }
+  } */
 
   .ant-row {
     margin-left: -12px;
@@ -1493,9 +1493,9 @@ span.ismobile {
   opacity: 0;
 }
 
-.mb-2 {
+/* .mb-2 {
   margin-bottom: 25px;
-}
+} */
 
 .sidebarnav-color button {
   width: 100%;
@@ -2050,6 +2050,10 @@ body {
 
 .ant-input {
   border-radius: 6px;
+}
+
+.ant-select-selector{
+  border-radius: 6px !important;
 }
 
 .ant-input {

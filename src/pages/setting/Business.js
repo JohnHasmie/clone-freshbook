@@ -1,22 +1,78 @@
 import {
-  Button,
+ 
   Col,
-  Divider,
+
   Form,
   Input,
   Row,
   Select,
   Typography,
 } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 import ButtonSubmit from "../../components/ButtonSubmit";
+import tw  from 'twin.macro';
+import { countryList } from "../../components/Countries";
 
 export default function Business() {
   const { Title } = Typography;
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
+  const [selectedItems, setSelectedItems] = useState({
+    country:'Indonesia',
+    base_currency:'usd',
+    business_time_zone:'(utc+0:00)',
+    fiscal_year_end_month:'Dec',
+    fiscal_year_end_day:'1',
+    date_format:'dd/mm/yy'
+  })
+  const [form] = Form.useForm();
+  const handleChange = (value,type) => {
+    switch(type) {
+      case 'country':
+        setSelectedItems({
+          ...selectedItems,
+          type:value
+        });
+      break;
+
+      case 'base_currency':
+        setSelectedItems({
+          ...selectedItems,
+          type:value
+        });
+      break;
+
+      case 'business_time_zone':
+        setSelectedItems({
+          ...selectedItems,
+          type:value
+        });
+      break;
+
+      case 'fiscal_year_end_month':
+        setSelectedItems({
+          ...selectedItems,
+          type:value
+        });
+      break;
+
+      case 'fiscal_year_end_day':
+        setSelectedItems({
+          ...selectedItems,
+          type:value
+        });
+      break;
+      case 'date_format':
+        setSelectedItems({
+          ...selectedItems,
+          type:value
+        });
+      break;
+
+      default:
+        return 'You are a User';
+    }
+
   };
   const { data:settingData } = useQuery(
     "settings",
@@ -30,9 +86,11 @@ export default function Business() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+  
   return (
     <>
        <Form
+       tw='w-full'
          onFinish={onFinish}
          onFinishFailed={onFinishFailed}
           layout="vertical"
@@ -51,6 +109,30 @@ export default function Business() {
               value: settingData?.data?.setting?.address,
             },
             {
+              name: ["country"],
+              value: selectedItems.country,
+            },
+            {
+              name: ["base_currency"],
+              value: selectedItems.base_currency,
+            },
+            {
+              name: ["business_time_zone"],
+              value: selectedItems.business_time_zone,
+            },
+            {
+              name: ["fiscal_year_end_month"],
+              value: selectedItems.fiscal_year_end_month,
+            },
+            {
+              name: ["fiscal_year_end_day"],
+              value: selectedItems.fiscal_year_end_day,
+            },
+            {
+              name: ["date_format"],
+              value: selectedItems.date_format,
+            },
+            {
               name: ["city"],
               value: settingData?.data?.setting?.city,
             },
@@ -59,31 +141,32 @@ export default function Business() {
               value: settingData?.data?.setting?.zip,
             },
           ]}
+
+      
         >
-      <div style={{ width: "75%" }}>
+      <div tw='w-full md:w-9/12	'  >
      
-          <Row gutter={24}>
-            <Col span={24} style={{ marginBottom: "20px" }}>
+          <Row gutter={24} tw='mb-20'>
+            <Col lg={24} style={{ marginBottom: "20px" }}>
               <Title level={3}>Business Details</Title>
             </Col>
-            <Col span={24}>
+            <Col lg={24}>
               <Form.Item
                 label="Business Name"
-                //   rules={[{ required: true }]}
+        
                 name="business_name"
               >
                 <Input
                   name="business_name"
                   type="text"
-                  // defaultValue={name_business || ""}
-                  // onChange={onChange}
+            
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} lg={12}>
               <Form.Item
                 label="Business Phone"
-                //   rules={[{ required: true }]}
+             
                 name="business_phone"
               >
                 <Input
@@ -94,66 +177,77 @@ export default function Business() {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} lg={12}>
               <Form.Item
                 label="Mobile Phone"
-                //   rules={[{ required: true }]}
+             
                 name="mobile_phone"
               >
                 <Input
                   name="mobile_phone"
                   type="text"
-                  // defaultValue={name_business || ""}
-                  // onChange={onChange}
+            
                 />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
                 label="Address Line 1"
-                //   rules={[{ required: true }]}
+              
                 name="addres_line_1"
               >
                 <Input
                   name="addres_line_1"
                   type="text"
-                  // defaultValue={name_business || ""}
-                  // onChange={onChange}
+               
                 />
               </Form.Item>
             </Col>
             <Col span={24}>
               <Form.Item
                 label="Address Line 2"
-                //   rules={[{ required: true }]}
+           
                 name="addres_line_2"
               >
                 <Input
                   name="addres_line_2"
                   type="text"
-                  // defaultValue={name_business || ""}
-                  // onChange={onChange}
+           
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} lg={12}>
               <Form.Item label="City" name="city">
                 <Input name="city" type="text" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} lg={12}>
               <Form.Item label="ZIP Code" name="zip_code">
                 <Input name="zip_code" type="text" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} lg={12}>
               <Form.Item label="State" name="state">
                 <Input name="state" type="text" />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} lg={12}>
               <Form.Item label="Country" name="country">
-                <Input name="country" type="text" />
+                <Select
+                  defaultValue="Indonesia"
+                  style={{
+                    width: "100%",
+                  }}
+                  
+                  onChange={(e)=>handleChange(e,'country')}
+                  options={
+                      countryList.map((item)=> ({
+                        label:item,
+                        value:item
+                      }))
+
+                  }
+                />
               </Form.Item>
             </Col>
 
@@ -161,7 +255,7 @@ export default function Business() {
               <Title level={3}>Preferences</Title>
             </Col>
 
-            <Col span={24}>
+            <Col xs={24} lg={12}>
               <Form.Item
                 label="Base Currency"
                 //   rules={[{ required: true }]}
@@ -169,9 +263,7 @@ export default function Business() {
               >
                 <Select
                   defaultValue="usd"
-                  style={{
-                    width: "50%",
-                  }}
+                  
                   onChange={handleChange}
                   options={[
                     {
@@ -188,38 +280,37 @@ export default function Business() {
                 />
               </Form.Item>
             </Col>
-            <Col span={24}>
+            <Col xs={24} lg={12}>
+            </Col>
+            <Col xs={24} lg={12}>
               <Form.Item
                 label="Business Time Zone"
-                //   rules={[{ required: true }]}
                 name="business_time_zone"
               >
                 <Select
+                tw='rounded-lg'
                   defaultValue="(utc+0:00)"
-                  style={{
-                    width: "50%",
-                  }}
+                  
                   onChange={handleChange}
                   options={[
                     {
                       value: "(utc+0:00)",
                       label: "(UTC+0:00) Etc - GMT",
                     },
-                    // {
-                    //   value: "antartica_davis",
-                    //   label: "Antartica Davis",
-                    // },
+             
                   ]}
                 />
               </Form.Item>
             </Col>
-            {/* <Col span={12}>
+            <Col xs={24} lg={12}>
+            </Col>
+            <Col xs={24} lg={12}>
               <Form.Item
                 label="Fiscal Year End Month"
                 name="fiscal_year_end_month"
               >
                 <Select
-                  defaultValue="December"
+                  defaultValue="Dec"
                   style={{
                     width: "100%",
                   }}
@@ -277,7 +368,7 @@ export default function Business() {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} lg={12}>
               <Form.Item label="Fiscal Year End Day" name="fiscal_year_end_day">
                 <Select
                   defaultValue={1}
@@ -347,13 +438,11 @@ export default function Business() {
                 reflected by reports and dashboard widgets.
               </p>
             </Col>
-            <Col span={24}>
+            <Col xs={24} lg={12}>
               <Form.Item label="Date Format" name="date_format">
                 <Select
                   defaultValue="dd/mm/yy"
-                  style={{
-                    width: "50%",
-                  }}
+                
                   onChange={handleChange}
                   options={[
                     {
@@ -379,12 +468,12 @@ export default function Business() {
                   ]}
                 />
               </Form.Item>
-            </Col> */}
+            </Col>
        
           </Row>
           
       </div>
-      <ButtonSubmit/>
+      <ButtonSubmit type='submit'/>
         </Form>
     </>
   );

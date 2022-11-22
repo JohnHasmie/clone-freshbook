@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import {
   Card,
@@ -40,6 +40,7 @@ import ReactApexChart from "react-apexcharts";
 import tw from "twin.macro";
 import { useHistory } from "react-router-dom";
 import NewItem from "../components/NewItem";
+import AppContext from "../components/context/AppContext";
 
 function Home() {
   const { Title, Text } = Typography;
@@ -335,6 +336,9 @@ function Home() {
       }
     },
   };
+
+  const { user} = useContext(AppContext);
+
 
   return (
     <>
