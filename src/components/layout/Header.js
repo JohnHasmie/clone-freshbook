@@ -404,7 +404,7 @@ function Header({
               {toggler}
             </Button>
 
-            <Popover placement="bottom" content={NewItem} trigger="click">
+            <Popover placement="rightBottom" content={NewItem} trigger="click">
               <div className="flex items-center justify-center">
                 <Button tw="bg-success text-white">
                   <span>Create New</span>

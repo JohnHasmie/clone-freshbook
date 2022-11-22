@@ -311,9 +311,9 @@ body {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.ant-popover {
+/* .ant-popover {
   position: fixed;
-}
+} */
 
 .ant-popover-title {
   padding: 20px 16px 4px;
@@ -346,9 +346,15 @@ body {
   top: -10px;
 }
 
+.ant-popover ant-popover-placement-bottom{
+  left: 475px;
+  top: 180px;
+}
+
 .ant-popover-placement-bottom .ant-popover-inner {
   border: 2px solid #7f8c9f;
   box-shadow: 4px 4px rgba(6,41,66,.1);
+  
 }
 
 .ant-popover-placement-bottom .ant-popover-arrow-content {

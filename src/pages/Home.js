@@ -12,11 +12,14 @@ import {
   Button,
   Timeline,
   Radio,
+  Popover,
+  Menu,
 } from "antd";
 import {
   ToTopOutlined,
   MenuUnfoldOutlined,
   RightOutlined,
+  DownOutlined,
 } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 
@@ -41,10 +44,12 @@ import tw from "twin.macro";
 import { useHistory } from "react-router-dom";
 import NewItem from "../components/NewItem";
 import AppContext from "../components/context/AppContext";
+import FilterRecurring from '../components/FilterRecurring';
 
 function Home() {
   const { Title, Text } = Typography;
   let history = useHistory();
+  const [filterInvoice, setFilterInvoice] = useState("usd");
 
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
 
@@ -289,65 +294,47 @@ function Home() {
     },
   ];
 
-  const timelineList = [
-    {
-      title: "$2,400 - Redesign store",
-      time: "09 JUN 7:20 PM",
-      color: "green",
-    },
-    {
-      title: "New order #3654323",
-      time: "08 JUN 12:20 PM",
-      color: "green",
-    },
-    {
-      title: "Company server payments",
-      time: "04 JUN 3:10 PM",
-    },
-    {
-      title: "New card added for order #4826321",
-      time: "02 JUN 2:45 PM",
-    },
-    {
-      title: "Unlock folders for development",
-      time: "18 MAY 1:30 PM",
-    },
-    {
-      title: "New order #46282344",
-      time: "14 MAY 3:30 PM",
-      color: "gray",
-    },
-  ];
+  const { user } = useContext(AppContext);
+  const invoiceList = (
+    <div tw="border border-[#7f8c9f]">
+      <Menu>
+        <Menu.Item>
+          <div>
+            <span tw="cursor-pointer" onClick={() => setFilterInvoice("idr")}>
+              IDR - Rupiah
+            </span>
+          </div>
+        </Menu.Item>
 
-  const uploadProps = {
-    name: "file",
-    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-    headers: {
-      authorization: "authorization-text",
-    },
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
-
-  const { user} = useContext(AppContext);
-
+        <Menu.Item>
+          <div>
+            <span tw="cursor-pointer" onClick={() => setFilterInvoice("usd")}>
+              USD - US dollar
+            </span>
+          </div>
+        </Menu.Item>
+      </Menu>
+    </div>
+  );
 
   return (
     <>
       <div className="layout-content" style={{ width: "98%" }}>
-        {/* <NewItem/> */}
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="flex justify-between">
-              <Title level={3}>Outstanding Invoices</Title>
+              <div tw="flex items-baseline">
+                <Title level={3}>Outstanding Invoices</Title>
+                <Popover
+                  tw="ml-5 px-2 py-1 hover:border hover:rounded-md hover:border-blue-500 flex items-center justify-center "
+                  placement="bottom"
+                  content={invoiceList}
+                  trigger="click"
+                >
+                  <span tw="mr-2 text-base uppercase">{filterInvoice}</span>
+                  <DownOutlined />
+                </Popover>
+              </div>
               <a
                 onClick={() => history.push("dashboard/reports/account-aging")}
                 tw="text-base hover:opacity-60"
@@ -694,9 +681,24 @@ function Home() {
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="flex justify-between">
-              <Title level={3}>Monthly Recurring Revenue</Title>
+              <div tw="flex items-baseline">
+                <Title level={3}>Monthly Recurring Revenue</Title>
+                <Popover
+                    tw="ml-5  flex items-center justify-center "
+                    placement="bottom"
+                    content={FilterRecurring}
+                    trigger="click"
+                  >
+                  
+                      <span tw="mr-2 text-base ">for Dec 1, 2021 to Nov 30, 2022 (IDR)</span>
+                      <DownOutlined />
+                
+                  </Popover>
+              </div>
               <a
-                onClick={() => history.push("dashboard/reports/recurring-revenue")}
+                onClick={() =>
+                  history.push("dashboard/reports/recurring-revenue")
+                }
                 tw="text-base hover:opacity-60"
                 role="button"
                 style={{ color: "#0063c1" }}
@@ -748,14 +750,7 @@ function Home() {
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="flex justify-between">
-              <Title level={3}>Total Profit</Title>
-              <a
-                tw="text-base hover:opacity-60"
-                role="button"
-                style={{ color: "#0063c1" }}
-              >
-                View Profit & Loss Report
-              </a>
+              <Title level={3}>Revenue Streams</Title>
             </div>
 
             <Card
@@ -800,7 +795,7 @@ function Home() {
                   >
                     $0
                   </div>
-                  <div>total profit</div>
+                  <div>total revenue</div>
                 </div>
               </div>
             </Card>
