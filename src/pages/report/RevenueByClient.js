@@ -5,21 +5,26 @@ import {
   Divider,
   Form,
   Input,
+  Popover,
   Radio,
   Row,
   Select,
   Space,
   Typography,
 } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
+import MoreAction from "../../components/Reports/MoreAction";
+import SendEmail from "../../components/Reports/SendEmail";
 
 export default function RevenueByClient() {
   const { Title } = Typography;
+  const [open, setOpen] = useState(false);
+
   let history = useHistory();
   const onFinish = (values) => {
     console.log("Success:", values);
@@ -129,7 +134,7 @@ export default function RevenueByClient() {
           </Col>
           <Divider />
           <Col span={12}>
-            <Button tw="text-lg px-8">Close</Button>
+            <Button tw="text-lg px-8"  onClick={() => setOpen(false)}>Close</Button>
           </Col>
           <Col span={12}>
             <Button tw="text-lg text-white bg-success px-8">Apply</Button>
@@ -142,24 +147,28 @@ export default function RevenueByClient() {
     <div tw="max-w-screen-lg mx-auto">
       <div
         onClick={() => history.goBack()}
-        tw="flex items-center mt-5 text-primary cursor-pointer"
+        tw="flex w-10 items-center mt-5 text-primary cursor-pointer"
       >
         <LeftOutlined />
         <span tw="ml-1">Reports</span>
       </div>
       <div tw="flex justify-between items-center my-2">
         <Title level={2}>Revenue by Client</Title>
-        <div tw="flex">
-          <ButtonMore>
-            <span>More Actions</span>
-            <DownOutlined />
-          </ButtonMore>
-          <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center justify-center">
-            <span tw="text-lg">Send...</span>
-          </Button>
+        <div tw="flex ">
+          <Popover placement="bottom" content={MoreAction} trigger="click">
+            <ButtonMore>
+              <span>More Actions</span>
+              <DownOutlined />
+            </ButtonMore>
+          </Popover>
+          <Popover placement="bottom" content={SendEmail} trigger="click">
+            <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center ">
+              <span tw="text-lg">Send...</span>
+            </Button>
+          </Popover>
         </div>
       </div>
-      <div tw="grid grid-cols-12 gap-10">
+      <div tw="grid grid-cols-12 gap-5">
         <CardReporting tw="col-span-9 mb-10">
           <h1 tw="text-blueDefault">Revenue by Client</h1>
           <div tw="my-3 flex flex-col">
@@ -201,7 +210,7 @@ export default function RevenueByClient() {
             </table>
           </div>
         </CardReporting>
-        <Filter Filtering={FilterRevenueByClient} />
+        <Filter Filtering={FilterRevenueByClient} setOpen={setOpen} open={open} />
       </div>
     </div>
   );

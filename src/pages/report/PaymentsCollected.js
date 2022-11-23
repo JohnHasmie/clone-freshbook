@@ -5,21 +5,26 @@ import {
   Divider,
   Form,
   Input,
+  Popover,
   Radio,
   Row,
   Select,
   Space,
   Typography,
 } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
+import MoreAction from "../../components/Reports/MoreAction";
+import SendEmail from '../../components/Reports/SendEmail';
 
 export default function PaymentsCollected() {
   const { Title } = Typography;
+  const [open, setOpen] = useState(false);
+
   let history = useHistory();
   const onFinish = (values) => {
     console.log("Success:", values);
@@ -152,7 +157,7 @@ export default function PaymentsCollected() {
           </Col>
           <Divider />
           <Col span={12}>
-            <Button tw="text-lg px-8">Close</Button>
+            <Button tw="text-lg px-8" onClick={() => setOpen(false)}>Close</Button>
           </Col>
           <Col span={12}>
             <Button tw="text-lg text-white bg-success px-8">Apply</Button>
@@ -172,17 +177,21 @@ export default function PaymentsCollected() {
       </div>
       <div tw="flex justify-between items-center my-2">
         <Title level={2}>Payments Collected</Title>
-        <div tw="flex">
-          <ButtonMore>
-            <span>More Actions</span>
-            <DownOutlined />
-          </ButtonMore>
-          <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center justify-center">
-            <span tw="text-lg">Send...</span>
-          </Button>
+        <div tw="flex ">
+          <Popover placement="bottom" content={MoreAction} trigger="click">
+            <ButtonMore>
+              <span>More Actions</span>
+              <DownOutlined />
+            </ButtonMore>
+          </Popover>
+          <Popover placement="bottom" content={SendEmail} trigger="click">
+            <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center ">
+              <span tw="text-lg">Send...</span>
+            </Button>
+          </Popover>
         </div>
       </div>
-      <div tw="grid grid-cols-12 gap-10">
+      <div tw="grid grid-cols-12 gap-5">
         <CardReporting tw="col-span-9 mb-10">
           <h1 tw="text-blueDefault">Payments Collected</h1>
           <div tw="my-3 flex flex-col">
@@ -227,7 +236,7 @@ export default function PaymentsCollected() {
             </table>
           </div> */}
         </CardReporting>
-        <Filter Filtering={FilterRevenueByClient} />
+        <Filter Filtering={FilterRevenueByClient} setOpen={setOpen} open={open} />
       </div>
     </div>
   );

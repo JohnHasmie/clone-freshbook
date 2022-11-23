@@ -63,18 +63,7 @@ export default function DetailReports() {
       path:'/dashboard/reports/payments-collected',
 
       desc: <span>Payments you have collected over a period of time</span>,
-    },
-    {
-      icon: <FieldTimeOutlined />,
-      title: <h1>Time Entry Details</h1>,
-
-      desc: <span>A summary of how much time your team tracked</span>,
-    },
-    {
-      icon: <SnippetsOutlined />,
-      title: <h1>Retainer Summary</h1>,
-      desc: <span>A detailed work summary for your retainer clients</span>,
-    },
+    }
   ];
   return (
     <>

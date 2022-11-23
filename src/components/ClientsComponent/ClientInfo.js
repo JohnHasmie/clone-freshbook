@@ -13,7 +13,6 @@ import CardDetail from "../CardDetail";
 import Photo from "../../assets/images/mask-group.svg";
 import tw from "twin.macro";
 
-
 export default function ClientInfo() {
   return (
     <Row gutter={24} tw="mb-1.5 max-w-full">
@@ -251,11 +250,6 @@ export default function ClientInfo() {
               <FileDoneOutlined />
               <span>$0</span>
               <p>in draft</p>
-            </div>
-            <div tw="col-span-4 grid justify-items-center">
-              <ClockCircleOutlined />
-              <span>0h 00m</span>
-              <p>unbilled time</p>
             </div>
 
             <div tw="col-span-4 grid justify-items-center">

@@ -10,7 +10,7 @@ export const StyledButtonMore = styled(Button)(({ hidden }) => [
             }
     
             .anticon {
-                ${tw`ml-2 font-bold text-gray-400 mt-1.5`}
+                ${tw`ml-2 font-bold text-gray-400 mt-[1px]`}
 
             }
 

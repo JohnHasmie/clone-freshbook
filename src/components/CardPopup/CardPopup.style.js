@@ -7,7 +7,7 @@ export const StyledCardPopup = styled(Card)(({ hidden }) => [
         /* Add specifity so that we don't need to add ! rule to override */
         && {
             .ant-card-head {
-                ${tw`bg-gray-200 flex items-center  h-10`}
+                ${tw`bg-gray-200 flex justify-start items-center  h-10 pl-2`}
                 
             }
            .ant-card-body{
@@ -15,10 +15,7 @@ export const StyledCardPopup = styled(Card)(({ hidden }) => [
            }
         
 
-            span{
-                ${tw`text-sm text-gray-600 mb-2`}
-            }
-    
+         
           
 
         }

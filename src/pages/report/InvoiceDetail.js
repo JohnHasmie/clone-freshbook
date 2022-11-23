@@ -5,6 +5,7 @@ import {
   Divider,
   Form,
   Input,
+  Popover,
   Radio,
   Row,
   Select,
@@ -17,6 +18,8 @@ import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
+import MoreAction from "../../components/Reports/MoreAction";
+import SendEmail from '../../components/Reports/SendEmail';
 
 export default function InvoiceDetail() {
   const { Title } = Typography;
@@ -173,21 +176,25 @@ export default function InvoiceDetail() {
     <div tw="max-w-screen-lg mx-auto">
       <div
         onClick={() => history.goBack()}
-        tw="flex items-center mt-5 text-primary cursor-pointer"
+        tw="flex w-10 items-center mt-5 text-primary cursor-pointer"
       >
         <LeftOutlined />
         <span tw="ml-1">Reports</span>
       </div>
       <div tw="flex justify-between items-center my-2">
         <Title level={2}>Invoice Detail</Title>
-        <div tw="flex">
-          <ButtonMore>
-            <span>More Actions</span>
-            <DownOutlined />
-          </ButtonMore>
-          <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center justify-center">
-            <span tw="text-lg">Send...</span>
-          </Button>
+        <div tw="flex ">
+          <Popover placement="bottom" content={MoreAction} trigger="click">
+            <ButtonMore>
+              <span>More Actions</span>
+              <DownOutlined />
+            </ButtonMore>
+          </Popover>
+          <Popover placement="bottom" content={SendEmail} trigger="click">
+            <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center ">
+              <span tw="text-lg">Send...</span>
+            </Button>
+          </Popover>
         </div>
       </div>
       <div tw="grid grid-cols-12 gap-10">

@@ -15,6 +15,7 @@ import {
   Popover,
   Menu,
   Tabs,
+  Button,
 } from "antd";
 import {
   SearchOutlined,
@@ -30,14 +31,15 @@ import {
 } from "@ant-design/icons";
 import { NavLink, Link, useHistory, useParams } from "react-router-dom";
 import { styled } from "twin.macro";
-import Button from "../Button";
+import ButtonCustom from "../Button";
 import avtar from "../../assets/images/team-2.jpg";
 import tw from "twin.macro";
 import ButtonMore from "../Reports/ButtonMore";
 import ButtonInvite from "../ButtonInvite";
 import TabsSettting from "./TabsSettting";
 import AccordionInvoice from "../AccordionInvoice";
-import NewItem from '../NewItem';
+import NewItem from "../NewItem";
+import MoreAction from "../Reports/MoreAction";
 
 const ButtonContainer = styled.div`
   .ant-btn-primary {
@@ -364,19 +366,44 @@ function Header({
               <div tw="flex justify-between items-center my-2">
                 <Title level={2}>Invoice 00146</Title>
 
-                <div tw="flex">
-                  <ButtonMore>
-                    <span>More Actions</span>
-                    <DownOutlined />
-                  </ButtonMore>
-                  <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center justify-center">
-                    <span tw="text-lg">Send...</span>
+                <div tw="flex ">
+                  <Popover
+                    placement="bottom"
+                    content={MoreAction}
+                    trigger="click"
+                  >
+                    <ButtonMore>
+                      <span>More Actions</span>
+                      <DownOutlined />
+                    </ButtonMore>
+                  </Popover>
+
+                  <Button tw=" ml-2 bg-success text-white  h-auto flex items-center ">
+                    <span tw="text-lg">Edit</span>
                   </Button>
                 </div>
               </div>
             </Col>
           </Row>
           <AccordionInvoice />
+        </>
+      ) : name.includes(`invoices`) ? (
+        <>
+          <Row gutter={[24, 0]}>
+            <Col span={24} style={{ paddingLeft: "none" }}>
+          
+              <div tw="flex justify-between items-center my-2">
+                <Title level={2}>Invoice</Title>
+
+                <div tw="flex ">
+                  <Button tw=" ml-2 bg-success text-white p-2  h-auto flex items-center ">
+                    <span tw="text-lg">New Invoice</span>
+                  </Button>
+                </div>
+              </div>
+            </Col>
+          </Row>
+   
         </>
       ) : name.includes(`items`) ? (
         <Row gutter={[24, 0]}>
@@ -396,17 +423,17 @@ function Header({
             className="header-control"
             tw="flex items-center"
           >
-            <Button
+            <ButtonCustom
               type="link"
               className="sidebar-toggler"
               onClick={() => onPress()}
             >
               {toggler}
-            </Button>
+            </ButtonCustom>
 
             <Popover placement="rightBottom" content={NewItem} trigger="click">
               <div className="flex items-center justify-center">
-                <Button tw="bg-success text-white">
+                <ButtonCustom tw="bg-success text-white">
                   <span>Create New</span>
                   {/* <DownOutlined /> */}
 
@@ -417,11 +444,61 @@ function Header({
                   >
                     <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
                   </svg>
-                </Button>
+                </ButtonCustom>
               </div>
             </Popover>
+          </Col>
 
-            
+          <Divider />
+        </Row>
+      ) : name.includes(`clients`) ? (
+        <Row gutter={[24, 0]}>
+          <Col span={24} md={6} style={{ paddingLeft: "none" }}>
+            <div className="ant-page-header-heading">
+              <Title
+                level={2}
+                style={{ textTransform: "capitalize", marginLeft: "-15px" }}
+              >
+                Clients
+              </Title>
+            </div>
+          </Col>
+          <Col
+            span={24}
+            md={18}
+            className="header-control"
+            tw="flex items-center"
+          >
+            <ButtonCustom
+              type="link"
+              className="sidebar-toggler"
+              onClick={() => onPress()}
+            >
+              {toggler}
+            </ButtonCustom>
+            <div tw="flex ">
+              <Popover placement="bottom" content={MoreAction} trigger="click">
+                <ButtonMore>
+                  <span>More Actions</span>
+                  <DownOutlined tw="-mt-2" />
+                </ButtonMore>
+              </Popover>
+
+              <div tw="flex items-center justify-center ml-5">
+                <ButtonCustom tw="bg-success text-white">
+                  <span>New Client</span>
+                  {/* <DownOutlined /> */}
+
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    tw="text-gray-500"
+                  >
+                    <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
+                  </svg>
+                </ButtonCustom>
+              </div>
+            </div>
           </Col>
 
           <Divider />
@@ -444,17 +521,17 @@ function Header({
             className="header-control"
             tw="flex items-center"
           >
-            <Button
+            <ButtonCustom
               type="link"
               className="sidebar-toggler"
               onClick={() => onPress()}
             >
               {toggler}
-            </Button>
+            </ButtonCustom>
 
             <Popover placement="bottom" content={createList} trigger="click">
               <div className="flex-justify-center">
-                <Button tw="bg-success text-white">
+                <ButtonCustom tw="bg-success text-white">
                   <span>Create New</span>
                   {/* <DownOutlined /> */}
 
@@ -465,7 +542,7 @@ function Header({
                   >
                     <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
                   </svg>
-                </Button>
+                </ButtonCustom>
               </div>
             </Popover>
 
