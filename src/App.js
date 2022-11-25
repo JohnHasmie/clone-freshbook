@@ -40,6 +40,8 @@ import DetailInvoice from './pages/invoices/Detail';
 import AppContext from "./components/context/AppContext";
 import ItemsArchived from "./pages/item-service/ItemsArchived";
 import ItemsDeleted from "./pages/item-service/ItemsDeleted";
+import Email from "./pages/clients/Email";
+import NewInvoice from "./pages/invoices/NewInvoice";
 
 function App() {
   let { pathname } = useLocation();
@@ -130,20 +132,28 @@ function App() {
             path="/dashboard/reports/invoice-detail"
             component={InvoiceDetail}
           />
+           <Route
+            exact
+            path="/invoices/new"
+            component={NewInvoice}
+          />
+
 
           <Main>
             <Route exact path="/dashboard" component={Home} />
 
             <Route exact path="/clients" component={Clients} />
-            <Route exact path="/clients/:id" component={Detail} />
+            <Route exact path="/clients/sent-email" component={Email} />
+
+            <Route exact path="/clients/:clientId/client-detail" component={Detail} />
             <Route
               exact
-              path="/clients/:id/reports"
+              path="/clients/:clientId/reports"
               component={DetailReports}
             />
 
             <Route exact path="/invoices" component={Invoices} />
-            <Route exact path="/invoices/:id" component={DetailInvoice} />
+            <Route exact path="/invoices/:invoiceId/invoice-detail" component={DetailInvoice} />
 
             <Route exact path="/global-settings" component={GlobalSetting} />
             <Route

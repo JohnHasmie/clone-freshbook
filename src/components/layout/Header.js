@@ -263,7 +263,7 @@ function Header({
 }) {
   const { Title, Text } = Typography;
   const history = useHistory();
-  const { id } = useParams();
+ 
   const [open, setOpen] = useState(false);
 
   const [visible, setVisible] = useState(false);
@@ -305,7 +305,6 @@ function Header({
       </ul>
     </div>
   );
-
   const createList = (
     <div tw="border border-[#7f8c9f]">
       <Menu theme="light" mode="inline">
@@ -335,6 +334,8 @@ function Header({
     history.push(`${key}`);
     // console.log(key,"key");
   };
+
+
   return (
     <>
       {name.includes("global-settings") ? (
@@ -352,7 +353,7 @@ function Header({
 
           <TabsSettting />
         </Row>
-      ) : name.includes(`invoices/`) ? (
+      ) : name.includes(`invoices`) && name.includes(`detail`) ? (
         <>
           <Row gutter={[24, 0]}>
             <Col span={24} style={{ paddingLeft: "none" }}>
@@ -396,12 +397,14 @@ function Header({
                 <Title level={2}>Invoice</Title>
 
                 <div tw="flex ">
-                  <Button tw=" ml-2 bg-success text-white p-2  h-auto flex items-center ">
+                  <Button onClick={()=>history.push(`/invoices/new`)} tw=" ml-2 bg-success text-white p-2  h-auto flex items-center ">
                     <span tw="text-lg">New Invoice</span>
                   </Button>
                 </div>
               </div>
             </Col>
+          <Divider />
+
           </Row>
    
         </>
@@ -423,13 +426,13 @@ function Header({
             className="header-control"
             tw="flex items-center"
           >
-            <ButtonCustom
+            <Button
               type="link"
               className="sidebar-toggler"
               onClick={() => onPress()}
             >
               {toggler}
-            </ButtonCustom>
+            </Button>
 
             <Popover placement="rightBottom" content={NewItem} trigger="click">
               <div className="flex items-center justify-center">
@@ -485,18 +488,10 @@ function Header({
               </Popover>
 
               <div tw="flex items-center justify-center ml-5">
-                <ButtonCustom tw="bg-success text-white">
+                <Button tw="bg-success text-white text-xl">
                   <span>New Client</span>
-                  {/* <DownOutlined /> */}
-
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    tw="text-gray-500"
-                  >
-                    <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
-                  </svg>
-                </ButtonCustom>
+                  {/* <DownOutlined /> */}                
+                </Button>
               </div>
             </div>
           </Col>

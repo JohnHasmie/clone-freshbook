@@ -1,20 +1,34 @@
 import {
+  EditOutlined,
+  HddOutlined,
   MailOutlined,
   PhoneOutlined,
   PlusOutlined,
+  RestOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Card, Checkbox, Col, Row, Table, Tabs, Typography } from "antd";
+import {
+  Card,
+  Checkbox,
+  Col,
+  Row,
+  Table,
+  Tabs,
+  Tooltip,
+  Typography,
+} from "antd";
 import React, { useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
 import CardClient from "../../components/CardClient";
 import InputSearch from "../../components/InputSearch";
 import Photo from "../../assets/images/mask-group.svg";
-
+import AllClientTabs from "../../components/ClientsComponent/AllClientTabs";
+import TableCustom from "../../components/Button copy/index";
 
 export default function Clients() {
   const { Title, Text } = Typography;
+  const history = useHistory();
   const [checked, setChecked] = useState(false);
   const columns = [
     {
@@ -50,6 +64,7 @@ export default function Clients() {
       title: "Total Outstanding",
       key: "outstanding",
       dataIndex: "outstanding",
+      width: "20%",
     },
   ];
 
@@ -72,34 +87,37 @@ export default function Clients() {
       internal: <span></span>,
 
       credit: <span></span>,
-      outstanding: <span tw="font-bold">$20,000,000.00</span>,
-    },
-
-    {
-      key: "1",
-      checkbox: (
-        <Checkbox
-          className="font-normal"
-          checked={checked}
-          onChange={(e) => console.log(e.target.value)}
-        />
-      ),
-      organization: (
-        <div>
-          <h3>Open Trolley</h3>
-          <p>Mazmur Andreas</p>
+      outstanding: (
+        <div tw="grid justify-start relative">
+          <div
+            className="isVisible"
+            tw="absolute bottom-10 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
+          >
+            <div tw="hover:bg-gray-100 ">
+              <Tooltip placement="top" title="edit">
+                <EditOutlined tw="px-2 py-1  " />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
+              <Tooltip placement="top" title="archive">
+                <HddOutlined tw="px-2 py-1 " />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100 ">
+              <Tooltip placement="top" title="delete">
+                <RestOutlined tw="px-2 py-1 " />
+              </Tooltip>
+            </div>
+          </div>
+          <span tw="font-bold text-black text-right">$20,000,000.00</span>
         </div>
       ),
-      internal: <span></span>,
-
-      credit: <span></span>,
-      outstanding: <span tw="font-bold">$20,000,000.00</span>,
     },
   ];
   return (
     <>
       <div className="layout-content">
-        <div tw="max-w-screen-lg">
+        <div tw="max-w-screen-lg mb-20">
           <div tw="grid grid-cols-3 gap-4 justify-items-center content-center">
             <div>
               <div>
@@ -128,40 +146,40 @@ export default function Clients() {
             <Title level={4}>Recently Active</Title>
             <div tw="flex">
               <div tw="border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center">
-              <div tw="flex flex-col">
-                <PlusOutlined tw="text-3xl text-green-400" />
+                <div tw="flex flex-col">
+                  <PlusOutlined tw="text-3xl text-green-400" />
                   <span tw="text-lg text-2xl font-bold">New Client</span>
+                </div>
               </div>
-              </div>
-              <Link to={`clients/1`}>
-              <CardClient
-                title="Default size card"
-                size="small"
-                style={{
-                  width: 300,
-                }}
-              >
-                <div tw="flex justify-around">
-                  <img src={Photo} alt="profile" tw="w-14 h-14"/>
-                  <div tw="grid">
-                    <h3 tw="font-bold text-lg">Card content</h3>
-                    <p tw="text-sm">Company Name</p>
+              <Link to={`clients/1/client-detail`}>
+                <CardClient
+                  title="Default size card"
+                  size="small"
+                  style={{
+                    width: 300,
+                  }}
+                >
+                  <div tw="flex justify-around">
+                    <img src={Photo} alt="profile" tw="w-14 h-14" />
+                    <div tw="grid">
+                      <h3 tw="font-bold text-lg">Card content</h3>
+                      <p tw="text-sm">Company Name</p>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <MailOutlined tw="mr-1" />
-                  <span>kywu@mailinator.com</span>
-                </div>
-                <div>
-                  <PhoneOutlined tw="mr-1" />
-                  <span>+6289669235897</span>
-                </div>
-              </CardClient>
+                  <div>
+                    <MailOutlined tw="mr-1" />
+                    <span>kywu@mailinator.com</span>
+                  </div>
+                  <div>
+                    <PhoneOutlined tw="mr-1" />
+                    <span>+6289669235897</span>
+                  </div>
+                </CardClient>
               </Link>
-              
             </div>
           </div>
           <div tw="mt-20">
+            <AllClientTabs />
             <div
               style={{
                 display: "flex",
@@ -173,12 +191,32 @@ export default function Clients() {
               <InputSearch prefix={<SearchOutlined />} />
             </div>
             <div className="table-responsive">
-              <Table
+              <TableCustom
                 columns={columns}
                 dataSource={data}
-                pagination={true}
+                pagination={false}
                 className="ant-border-space"
               />
+            </div>
+            <div tw="flex justify-between mt-5">
+              <div>
+                <span tw="text-sm text-black font-bold">1-4 of 4 </span>
+              </div>
+              <div tw="flex flex-col items-center">
+                <button
+                  onClick={() => history.push("clients/archived")}
+                  tw="cursor-pointer border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-200 "
+                >
+                  View Archived Service
+                </button>
+                <p tw="text-xs text-gray-500">
+                  or{" "}
+                  <Link tw="underline text-gray-500" to="clients/deleted">
+                    deleted
+                  </Link>
+                </p>
+              </div>
+              <div tw="invisible">hide</div>
             </div>
           </div>
         </div>
@@ -186,5 +224,3 @@ export default function Clients() {
     </>
   );
 }
-
-

@@ -1,7 +1,7 @@
 import axios from "axios"
 
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
@@ -20,7 +20,6 @@ function Main({ children }) {
   const [fixed, setFixed] = useState(false);
   const [user, setUser] = useState(null);
   const [setting, setSetting] = useState(null);
-
 
 
   const openDrawer = () => setVisible(!visible);
@@ -54,8 +53,6 @@ function Main({ children }) {
   useEffect(() => {
     settingData && setSetting(settingData?.data?.setting)
   }, [settingData])
-
-
   return (
     <Layout
       className={`layout-dashboard ${
@@ -120,7 +117,7 @@ function Main({ children }) {
               />
             </AntHeader>
           </Affix>
-        ) : /* !pathname.includes("global-settings") ? */ (
+        ) :  (
           <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
             <Header
               onPress={openDrawer}
@@ -131,10 +128,9 @@ function Main({ children }) {
               handleFixedNavbar={handleFixedNavbar}
             />
           </AntHeader>
-        ) /* : (
-          <TabsSettting/>
-        )  */
+        ) 
         }
+
         <Content className="content-ant" >{children}</Content>
         {/* <Footer /> */}
       </Layout>

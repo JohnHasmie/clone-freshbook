@@ -13,7 +13,7 @@ export default function AccordionInvoice() {
     console.log(key);
   };
   return (
-    <Collapse tw="bg-pink-300" defaultActiveKey={["1"]} onChange={onChange}>
+    <Collapse tw=" bg-pink-300" defaultActiveKey={["1"]} onChange={onChange}>
       <CollapsePanel header="Overdue" key="1">
       
         <Form>
