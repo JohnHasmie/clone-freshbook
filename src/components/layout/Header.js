@@ -316,13 +316,13 @@ function Header({
         </Menu.Item>
 
         <Menu.Item>
-          <NavLink to="/">
+          <NavLink to="/invoices/new">
             <FileDoneOutlined />
             <span>Invoice</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item>
-          <NavLink to="/">
+          <NavLink to="/invoices/new">
             <FileTextOutlined />
             <span>Recurring Template</span>
           </NavLink>
