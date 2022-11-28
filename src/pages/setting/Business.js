@@ -25,7 +25,7 @@ export default function Business() {
     fiscal_year_end_day:'1',
     date_format:'dd/mm/yy'
   })
-  const [form] = Form.useForm();
+
   const handleChange = (value,type) => {
     switch(type) {
       case 'country':

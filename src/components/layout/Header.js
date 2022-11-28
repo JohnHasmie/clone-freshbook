@@ -488,7 +488,7 @@ function Header({
               </Popover>
 
               <div tw="flex items-center justify-center ml-5">
-                <Button tw="bg-success text-white text-xl">
+                <Button onClick={()=>history.push(`/clients/new`)} tw="bg-success text-white text-xl">
                   <span>New Client</span>
                   {/* <DownOutlined /> */}                
                 </Button>

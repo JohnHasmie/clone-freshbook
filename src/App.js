@@ -42,6 +42,7 @@ import ItemsArchived from "./pages/item-service/ItemsArchived";
 import ItemsDeleted from "./pages/item-service/ItemsDeleted";
 import Email from "./pages/clients/Email";
 import NewInvoice from "./pages/invoices/NewInvoice";
+import NewClient from "./pages/clients/NewClient";
 
 function App() {
   let { pathname } = useLocation();
@@ -136,6 +137,11 @@ function App() {
             exact
             path="/invoices/new"
             component={NewInvoice}
+          />
+             <Route
+            exact
+            path="/clients/new"
+            component={NewClient}
           />
 
 

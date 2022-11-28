@@ -1,4 +1,9 @@
-import { DownOutlined, LeftOutlined } from "@ant-design/icons";
+import {
+  CaretDownOutlined,
+  CaretUpOutlined,
+  DownOutlined,
+  LeftOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -21,10 +26,21 @@ import Filter from "../../components/Reports/Filter";
 import MoreAction from "../../components/Reports/MoreAction";
 import SendEmail from "../../components/Reports/SendEmail";
 
+const dummyList = [
+  { name: "Company Name", total: 6000 },
+  { name: "Abc Company", total: 50000 },
+];
+
 export default function RevenueByClient() {
   const { Title } = Typography;
   const [open, setOpen] = useState(false);
+  const [sortState, setSortState] = useState("none");
 
+  const sortMethods = {
+    none: { method: (a, b) => null },
+    true: { method: (a, b) => (a.name > b.name ? 1 : -1) },
+    false: { method: (a, b) => (a.name > b.name ? -1 : 1) },
+  };
   let history = useHistory();
   const onFinish = (values) => {
     console.log("Success:", values);
@@ -134,7 +150,9 @@ export default function RevenueByClient() {
           </Col>
           <Divider />
           <Col span={12}>
-            <Button tw="text-lg px-8"  onClick={() => setOpen(false)}>Close</Button>
+            <Button tw="text-lg px-8" onClick={() => setOpen(false)}>
+              Close
+            </Button>
           </Col>
           <Col span={12}>
             <Button tw="text-lg text-white bg-success px-8">Apply</Button>
@@ -143,6 +161,7 @@ export default function RevenueByClient() {
       </Form>
     </div>
   );
+  console.log(sortState, "Sortt");
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div
@@ -177,27 +196,34 @@ export default function RevenueByClient() {
             <span tw="text-sm text-gray-600">As of November 17,2022</span>
           </div>
           <div tw="overflow-x-auto ">
-            <table /* style={{borderCollapse:'separate', borderSpacing:'0rem 2.5rem'}} */
-            >
+            <table>
               <thead>
                 <tr>
-                  <th tw="text-left py-4 ">Primary Contact/ Organization</th>
+                  <th
+                    tw="text-left py-4 cursor-pointer"
+                    onClick={() => setSortState(!sortState)}
+                  >
+                    Primary Contact/ Organization{" "}
+                    {sortState ? <CaretUpOutlined /> : <CaretDownOutlined />}
+                  </th>
 
                   <th tw="py-4 ">Total</th>
                 </tr>
               </thead>
               <tbody>
-                <tr tw="text-right text-sm" style={{ display: "table-row" }}>
-                  <th tw="pt-12 text-left ">
-                    <span tw="rounded-full border border-orange-500 px-2 py-1 mr-0.5 ">
-                      C
-                    </span>
-                    <span tw="text-primary">Company Name</span>
-                  </th>
-                  <td tw="py-5  text-primary">6,000.00</td>
-                </tr>
+                {dummyList.sort(sortMethods[sortState].method).map((item,i) => (
+                  <tr key={i} tw="text-right text-sm" style={{ display: "table-row" }}>
+                    <th tw="pt-5 text-left ">
+                      <span tw="rounded-full border border-orange-500 px-2 py-1 mr-0.5 ">
+                        C
+                      </span>
+                      <span tw="text-primary">{item.name}</span>
+                    </th>
+                    <td tw="py-2  text-primary">{item.total}</td>
+                  </tr>
+                ))}
               </tbody>
-              <tfoot>
+              <tfoot tw='mt-2'>
                 <tr className="double">
                   <td tw=" text-left font-semibold">Total</td>
 
@@ -210,7 +236,11 @@ export default function RevenueByClient() {
             </table>
           </div>
         </CardReporting>
-        <Filter Filtering={FilterRevenueByClient} setOpen={setOpen} open={open} />
+        <Filter
+          Filtering={FilterRevenueByClient}
+          setOpen={setOpen}
+          open={open}
+        />
       </div>
     </div>
   );

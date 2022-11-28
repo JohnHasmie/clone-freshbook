@@ -1,4 +1,5 @@
 import {
+  CaretDownOutlined,
   EditOutlined,
   HddOutlined,
   MailOutlined,
@@ -6,11 +7,13 @@ import {
   PlusOutlined,
   RestOutlined,
   SearchOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import {
   Card,
   Checkbox,
   Col,
+  Form,
   Row,
   Table,
   Tabs,
@@ -25,11 +28,16 @@ import InputSearch from "../../components/InputSearch";
 import Photo from "../../assets/images/mask-group.svg";
 import AllClientTabs from "../../components/ClientsComponent/AllClientTabs";
 import TableCustom from "../../components/Button copy/index";
+import InputAdvanceSearch from "../../components/InputAdvancedSearch";
+import FormAdvanceSearch from "./FormAdvanceSearch";
 
 export default function Clients() {
   const { Title, Text } = Typography;
   const history = useHistory();
   const [checked, setChecked] = useState(false);
+  const [isAdvance, setIsAdvance] = useState(false);
+  const [form] = Form.useForm();
+
   const columns = [
     {
       title: (
@@ -181,15 +189,25 @@ export default function Clients() {
           <div tw="mt-20">
             <AllClientTabs />
             <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "24px",
-              }}
+            tw='flex justify-between mb-4'
+             
             >
               <Title level={5}>All Clients</Title>
-              <InputSearch prefix={<SearchOutlined />} />
+              <div tw="flex relative cursor-pointer">
+                <InputAdvanceSearch  prefix={<SearchOutlined />} />
+                <div onClick={()=>setIsAdvance(!isAdvance)}  tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36">
+                  <UnorderedListOutlined />
+                  <span tw="text-xs ml-2">Advanced Search </span>
+                  <CaretDownOutlined tw='ml-1' />
+                </div>
+              </div>
             </div>
+           {isAdvance ?  <div tw='bg-gray-100 border-y-2 border-gray-400 p-3 mb-4'>
+           <FormAdvanceSearch form={form} setIsAdvance={setIsAdvance}/>
+
+            </div>
+          : <></>  
+          }
             <div className="table-responsive">
               <TableCustom
                 columns={columns}

@@ -1,10 +1,12 @@
 import {
+  CaretDownOutlined,
     MailOutlined,
     PhoneOutlined,
     PlusOutlined,
     SearchOutlined,
+    UnorderedListOutlined,
   } from "@ant-design/icons";
-  import { Card, Checkbox, Col, Row, Table, Tabs, Typography } from "antd";
+  import { Card, Checkbox, Col, Form, Row, Table, Tabs, Typography } from "antd";
   import React, { useState } from "react";
   import { Link, useHistory, useLocation } from "react-router-dom";
   import tw from "twin.macro";
@@ -12,10 +14,16 @@ import {
   import InputSearch from "../../components/InputSearch";
   import Photo from "../../assets/images/mask-group.svg";
   import AllClientTabs from "../../components/ClientsComponent/AllClientTabs";
+import InputAdvanceSearch from "../../components/InputAdvancedSearch";
+import { FormAdvanceSearchEmail } from "./FormAdvanceSearch";
   
   
   export default function Email() {
+  const [form] = Form.useForm();
+
     const { Title, Text } = Typography;
+  const [isAdvance, setIsAdvance] = useState(false);
+
     const [checked, setChecked] = useState(false);
     const columns = [
       {
@@ -167,15 +175,25 @@ import {
             <div tw="mt-20">
               <AllClientTabs/>
               <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "24px",
-                }}
+                tw='flex justify-between mb-4'
               >
                 <Title level={5}>All Sent Emails</Title>
-                <InputSearch prefix={<SearchOutlined />} />
+                <div tw="flex relative cursor-pointer">
+                <InputAdvanceSearch  prefix={<SearchOutlined />} />
+                <div onClick={()=>setIsAdvance(!isAdvance)}  tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36">
+                  <UnorderedListOutlined />
+                  <span tw="text-xs ml-2">Advanced Search </span>
+                  <CaretDownOutlined tw='ml-1' />
+                </div>
               </div>
+           
+              </div>
+              {isAdvance ?  <div tw='bg-gray-100 border-y-2 border-gray-400 p-3 mb-4'>
+           <FormAdvanceSearchEmail form={form} setIsAdvance={setIsAdvance}/>
+
+            </div>
+          : <></>  
+          }
               <div className="table-responsive">
                 <Table
                   columns={columns}
@@ -184,7 +202,24 @@ import {
                   className="ant-border-space"
                 />
               </div>
+              <div tw="flex justify-between mt-5">
+              <div>
+                <span tw="text-sm text-black font-bold">1-4 of 4 </span>
+              </div>
+              <div tw="flex flex-col items-center">
+                <button
+                  
+                  tw="mb-3 cursor-pointer text-black border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-200 "
+                >
+                  View Deleted Emails                </button>
+                <p tw="text-xs text-gray-500">
+                Emails sent more than 90 days ago are automatically purged
+                </p>
+              </div>
+              <div tw="invisible">hide</div>
             </div>
+            </div>
+            
           </div>
         </div>
       </>
