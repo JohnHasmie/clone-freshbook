@@ -6,6 +6,7 @@ import {
   PhoneOutlined,
   PlusOutlined,
   RestOutlined,
+  RightOutlined,
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
@@ -32,7 +33,7 @@ import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import FormAdvanceSearch from "./FormAdvanceSearch";
 import TabHome from "./TabHome";
 
-export default function Clients() {
+export default function ClientsOverdue() {
   const { Title, Text } = Typography;
   const history = useHistory();
   const [checked, setChecked] = useState(false);
@@ -127,89 +128,22 @@ export default function Clients() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg mb-20">
-          <TabHome/>
-          {/* <div tw="grid grid-cols-3 gap-4 justify-items-center content-center">
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
+          <TabHome />
 
-              <p tw="text-secondary">overdue</p>
-            </div>
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-              <p>total outstanding</p>
-            </div>
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-              <p>in draft</p>
-            </div>
-          </div> */}
           <div tw="mt-20">
-            <Title level={4}>Recently Active</Title>
-            <div tw="flex">
-              <div tw="border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center">
-                <div tw="flex flex-col">
-                  <PlusOutlined tw="text-3xl text-green-400" />
-                  <span tw="text-lg text-2xl font-bold">New Client</span>
-                </div>
-              </div>
-              <Link to={`clients/1/client-detail`}>
-                <CardClient
-                  title="Default size card"
-                  size="small"
-                  style={{
-                    width: 300,
-                  }}
-                >
-                  <div tw="flex justify-around">
-                    <img src={Photo} alt="profile" tw="w-14 h-14" />
-                    <div tw="grid">
-                      <h3 tw="font-bold text-lg">Card content</h3>
-                      <p tw="text-sm">Company Name</p>
-                    </div>
-                  </div>
-                  <div>
-                    <MailOutlined tw="mr-1" />
-                    <span>kywu@mailinator.com</span>
-                  </div>
-                  <div>
-                    <PhoneOutlined tw="mr-1" />
-                    <span>+6289669235897</span>
-                  </div>
-                </CardClient>
-              </Link>
+            <div tw="flex items-center mb-4">
+              <span
+                onClick={() => history.push("/clients")}
+                tw="cursor-pointer text-xl font-bold text-black text-primary"
+              >
+                All Clients
+              </span>
+              <RightOutlined tw=" ml-2" />
+              <span tw="text-xl font-bold text-black ml-2">
+                Clients with Overdue Invoices
+              </span>
             </div>
-          </div>
-          <div tw="mt-20">
-            <AllClientTabs />
-            <div
-            tw='flex justify-between mb-4'
-             
-            >
-              <Title level={5}>All Clients</Title>
-              <div tw="flex relative cursor-pointer">
-                <InputAdvanceSearch  prefix={<SearchOutlined />} />
-                <div onClick={()=>setIsAdvance(!isAdvance)}  tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36">
-                  <UnorderedListOutlined />
-                  <span tw="text-xs ml-2">Advanced Search </span>
-                  <CaretDownOutlined tw='ml-1' />
-                </div>
-              </div>
-            </div>
-           {isAdvance ?  <div tw='bg-gray-100 border-y-2 border-gray-400 p-3 mb-4'>
-           <FormAdvanceSearch form={form} setIsAdvance={setIsAdvance}/>
 
-            </div>
-          : <></>  
-          }
             <div className="table-responsive">
               <TableCustom
                 columns={columns}

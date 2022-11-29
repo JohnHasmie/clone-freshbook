@@ -48,6 +48,9 @@ import DetailRecurring from "./pages/clients/DetailRecurring";
 import RecurringInvoice from "./pages/invoices/Recurring";
 import AccountBalance from "./pages/report/AccountBalance";
 import AccountTrialBalance from "./pages/report/AccountTrialBalance";
+import ClientsDraft from "./pages/clients/ClientsDraft";
+import ClientsOverdue from "./pages/clients/ClientsOverdue";
+import ClientsOutstanding from "./pages/clients/ClientsOutstanding";
 
 function App() {
   let { pathname } = useLocation();
@@ -151,6 +154,14 @@ function App() {
               <Route exact path="/dashboard" component={Home} />
 
               <Route exact path="/clients" component={Clients} />
+              <Route exact path="/clients/draft" component={ClientsDraft} />
+              <Route exact path="/clients/overdue" component={ClientsOverdue} />
+              <Route
+                exact
+                path="/clients/outstanding"
+                component={ClientsOutstanding}
+              />
+
               <Route exact path="/clients/sent-email" component={Email} />
 
               <Route
