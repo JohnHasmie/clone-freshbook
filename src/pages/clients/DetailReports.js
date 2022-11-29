@@ -71,8 +71,9 @@ export default function DetailReports() {
         <ClientInfo />
         <div tw="max-w-screen-xl mr-5 mb-10 mt-20">
           <ClientTabs />
-          <div tw="flex items-center ">
-            <Title level={3}>Reports for Company Name </Title>
+          <div tw="flex items-center mb-5 ">
+            <span tw="text-xl font-bold text-black">Reports for Company Name </span>
+
           </div>
           <div tw="grid grid-cols-2 gap-3">
             {data.map((item, i) => (

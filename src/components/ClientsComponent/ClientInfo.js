@@ -2,18 +2,42 @@ import {
   AimOutlined,
   ClockCircleOutlined,
   CoffeeOutlined,
+  DownOutlined,
   FileDoneOutlined,
   MailOutlined,
   PhoneOutlined,
 } from "@ant-design/icons";
-import { Col, Row } from "antd";
-import React from "react";
+import { Col, Menu, Popover, Row } from "antd";
+import React, { useState } from "react";
 import CardClient from "../CardClient";
 import CardDetail from "../CardDetail";
 import Photo from "../../assets/images/mask-group.svg";
 import tw from "twin.macro";
 
 export default function ClientInfo() {
+  const [filterInvoice, setFilterInvoice] = useState("usd");
+
+  const invoiceList = (
+    <div>
+      <Menu>
+        <Menu.Item>
+          <div>
+            <span tw="cursor-pointer" onClick={() => setFilterInvoice("idr")}>
+              IDR - Rupiah
+            </span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item>
+          <div>
+            <span tw="cursor-pointer" onClick={() => setFilterInvoice("usd")}>
+              USD - US dollar
+            </span>
+          </div>
+        </Menu.Item>
+      </Menu>
+    </div>
+  );
   return (
     <Row gutter={24} tw="mb-1.5 max-w-full">
       <Col span={8}>
@@ -61,6 +85,25 @@ export default function ClientInfo() {
                     width: "screen",
                   }}
                 >
+                  <div tw="flex justify-between mb-5">
+                    <div tw="flex">
+                      <span tw="text-3xl font-bold text-black">
+                        Outstanding Revenue
+                      </span>
+                      <Popover
+                        tw="ml-5  "
+                        placement="bottom"
+                        content={invoiceList}
+                        trigger="click"
+                      >
+                        <span tw="mr-2 text-base uppercase">
+                          {filterInvoice}
+                        </span>
+                        <DownOutlined />
+                      </Popover>
+                    </div>
+                    <div tw="text-primary text-2xl font-bold">Rp0</div>
+                  </div>
                   <div
                     style={{
                       alignItems: "flex-start",

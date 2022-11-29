@@ -1,4 +1,9 @@
-import { DownOutlined, InfoOutlined, LeftOutlined } from "@ant-design/icons";
+import {
+  DownOutlined,
+  InfoOutlined,
+  LeftOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -16,312 +21,233 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
+import { countryList } from "../../components/Countries";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import MoreAction from "../../components/Reports/MoreAction";
-import SendEmail from '../../components/Reports/SendEmail';
+import SendEmail from "../../components/Reports/SendEmail";
+import ClientSetting from "./ClientSetting";
 
 export default function NewClient() {
   const { Title } = Typography;
   let history = useHistory();
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState({
+    sendReminders:false,
+    charge:false,
+    currency:false,
+    invoiceAttachment:false,
+    opened:false
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
+  });
+  const [isAdd, setIsAdd] = useState({
+    business_phone: false,
+    mobile_phone: false,
+    address: false,
+  });
+
+  const handleIsAdd = (type) => {
+    switch (type) {
+      case "business_phone":
+        setIsAdd({
+          ...isAdd,
+          business_phone: true,
+        });
+        break;
+      case "mobile_phone":
+        setIsAdd({
+          ...isAdd,
+          mobile_phone: true,
+        });
+        break;
+      case "address":
+        setIsAdd({
+          ...isAdd,
+          address: true,
+        });
+        break;
+
+      default:
+        setIsAdd({
+          business_phone: false,
+          mobile_phone: false,
+          address: false,
+        });
+        break;
+    }
+  };
+  const [form] = Form.useForm();
+  const handleFinish = (values) => {
+    console.log("values: ", values);
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-  const FilterInvoiceDetail = (
-    <div>
-      <div tw="flex justify-between ">
-        <Title level={3}>Filters</Title>
-        <p tw="text-base text-primary">Reset All</p>
-      </div>
-      <span tw="text-black ">AS OF</span>
-      <Form
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        layout="vertical"
-        size={"large"}
-        tw="mt-5"
-      >
-        <Row gutter={24}>
-          <Col span={24}>
-            <Form.Item name="time">
-              <Select
-               defaultValue="this-year"
-               options={[
-                 {
-                   value: "this-year",
-                   label: "This Year",
-                 },
-                 {
-                   value: "this-month",
-                   label: "This Month",
-                 },
-                 {
-                   value: "this-month",
-                   label: "This Month",
-                 },        {
-                   value: "last-year",
-                   label: "Last Year",
-                 },
-               
-                ]}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item  name="group">
-              <Radio.Group>
-                <Space direction="vertical">
-                  <Radio value="issue">Issue Date</Radio>
-                  <Radio value="paid">Paid Date</Radio>
-                </Space>
-              </Radio.Group>
-            </Form.Item>
-          </Col>
-     
-          <Col span={24}>
-            <Form.Item label="Clients" name="clients">
-              <Select
-                placeholder="All Clients"
-                 mode="multiple"
-                options={[
-                  {
-                    value: "andre",
-                    label: "Andre",
-                  },
-                  {
-                    value: "company-name",
-                    label: "Company Name",
-                  },
-                ]}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item label="Invoice Status" name="invoice-status">
-              <Select
-                defaultValue="All"
-           
-                options={[
-                  {
-                    value: "outstanding",
-                    label: "Outstanding",
-                  },
-                  {
-                    value: "paid",
-                    label: "Paid",
-                  },
-                  {
-                    value: "auto-paid",
-                    label: "Auto Paid",
-                  },
-                  {
-                    value: "partially-paid",
-                    label: "Partially Paid",
-                  },
-                  {
-                    value: "sent",
-                    label: "Sent",
-                  },
-                  {
-                    value: "viewed",
-                    label: "Viewed",
-                  },
-                  {
-                    value: "disputed",
-                    label: "Disputed",
-                  },
-                  {
-                    value: "draft",
-                    label: "Draft",
-                  },
-                ]}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item label="Currency" name="currency">
-              <Select
-                defaultValue="usd"
-                options={[
-                  {
-                    value: "usd",
-                    label: "USD - US dollar",
-                  },
-                  {
-                    value: "idr",
-                    label: "IDR - Rupiah",
-                  },
-                ]}
-              />
-            </Form.Item>
-          </Col>
-          <Divider />
-          <Col span={12}>
-            <Button tw="text-lg px-8" onClick={()=>setOpen(false)}>Close</Button>
-          </Col>
-          <Col span={12}>
-            <Button tw="text-lg text-white bg-success px-8">Apply</Button>
-          </Col>
-        </Row>
-      </Form>
-    </div>
-  );
+
+ 
   return (
     <div tw="max-w-screen-lg mx-auto">
-  
       <div tw="flex justify-between items-center my-2">
         <Title level={2}>New Client</Title>
         <div tw="flex ">
-            <ButtonMore onClick={() => history.goBack()}>
-              <span>Cancel</span>
-            </ButtonMore>
-            <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center ">
-              <span tw="text-lg">Save</span>
-            </Button>
+          <ButtonMore onClick={() => history.goBack()}>
+            <span>Cancel</span>
+          </ButtonMore>
+          <Button
+            onClick={() => form.submit()}
+            tw=" ml-2 bg-success text-white px-4 h-auto flex items-center "
+          >
+            <span tw="text-lg">Save</span>
+          </Button>
         </div>
       </div>
-      <div tw="grid grid-cols-12 gap-10">
+      <div tw="grid grid-cols-12 gap-5">
         <CardReporting tw="col-span-9 mb-10">
-            <span tw="text-xs text-gray-500"><InfoOutlined tw='mr-1 rounded-full border p-0.5' /> Either First and Last Name or Company Name is required to save this Client.</span>
-          <h1 tw="text-blueDefault">Invoice Detail</h1>
-          <div tw="my-3 flex flex-col">
-            <span tw="text-sm text-gray-600">Oasis Land</span>
-            <span tw="text-sm text-gray-600">Total Invoiced: 0.00 (USD)</span>
-            <span tw="text-sm text-gray-600">
-              For Jan 1, 2022 - Dec 31, 2022
-            </span>
-          </div>
-          <div tw="overflow-x-auto ">
-            <table>
-              <thead className="theadCustom">
-                <tr>
-                  <th tw="pt-12 text-left py-4 ">
-                    <span tw="rounded-full border border-orange-500 px-2 py-1 mr-0.5 ">
-                      C
-                    </span>
-                    <span tw="text-primary ml-1">Company Name</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr tw="border-b border-gray-300">
-                  <th tw="pt-12 pb-2 text-left ">
-                    <span>Summary</span>
-                  </th>
-                </tr>
-                <tr tw="border-b border-dotted">
-                  <th tw="text-left pl-3 py-2">Total Invoice</th>
-                  <td tw="text-right">6,00.000</td>
-                </tr>
-                <tr tw="border-b border-dotted">
-                  <th tw="pl-3 text-left py-2">Amount Paid</th>
-                  <td tw="text-right">0,00</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr className="double">
-                  <td tw=" text-left font-semibold">Amount Due</td>
+          <span tw="text-xs text-gray-500">
+            <InfoOutlined tw="mr-1 rounded-full border p-0.5" /> Either First
+            and Last Name or Company Name is required to save this Client.
+          </span>
+          <Form
+            form={form}
+            onFinish={handleFinish}
+            // onFinishFailed={onFinishFailed}
+            layout="vertical"
+          >
+            <div tw="grid grid-cols-1 md:grid-cols-2 gap-3 mt-10">
+              <div>
+                <Form.Item label="First Name" name="first_name">
+                  <Input type="text" />
+                </Form.Item>
+              </div>
+              <div>
+                <Form.Item label="Last Name" name="last_name">
+                  <Input type="text" />
+                </Form.Item>
+              </div>
+              <div tw="col-span-2">
+                <Form.Item label="Company Name" name="company_name">
+                  <Input type="text" />
+                </Form.Item>
+              </div>
+              <Divider tw="col-span-2" />
+              <div tw="col-span-2 w-6/12">
+                <Form.Item label="Email Address" name="email_address">
+                  <Input type="email" />
+                </Form.Item>
+              </div>
+              <div tw="col-span-2 w-6/12">
+                <Form.Item label="Phone Number" name="phone_number">
+                  <Input type="number" />
+                </Form.Item>
+              </div>
+              {isAdd.business_phone ? (
+                <div tw="col-span-2 w-6/12">
+                  <Form.Item
+                    label="Business Phone Number"
+                    name="business_phone_number"
+                  >
+                    <Input type="text" />
+                  </Form.Item>
+                </div>
+              ) : (
+                <div tw="col-span-2 w-6/12">
+                  <span
+                    onClick={() => handleIsAdd("business_phone")}
+                    tw="cursor-pointer text-primary hover:text-blue-400"
+                  >
+                    <PlusOutlined tw="text-lg" />
+                    <span>Add Business Phone</span>
+                  </span>
+                </div>
+              )}
 
-                  <td tw="pt-3  flex flex-col items-end ">
-                    <span tw="font-semibold ">$6,000.00</span>
-                    <span tw="text-gray-600 text-right">USD</span>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-
-            <table tw="mt-10">
-              <tbody>
-                <tr>
-                  <th tw="text-left">Invoice #: 00148</th>
-                </tr>
-                <tr tw="border-b border-gray-300">
-                  <th tw=" text-left ">
-                    <span>Issued: Oct 25, 2022</span>
-                  </th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-
-                  <th tw=" text-right ">
-                    <span>Status: Sent</span>
-                  </th>
-                </tr>
-                <tr tw="border-b border-gray-300 text-right font-bold">
-                  <th tw="text-left  py-2">Description</th>
-                  <th>Rate</th>
-                  <th>Quantity</th>
-                  <th>Tax 1</th>
-                  <th>Tax 2</th>
-                  <th>Line Total</th>
-                </tr>
-                <tr tw="border-b  border-gray-300 text-right">
-                  <th tw="pl-3 text-left py-2">Frontend Development</th>
-                  <td>$6,000.00</td>
-                  <td>1</td>
-                  <td>0.00</td>
-                  <td>0.00</td>
-                  <td>$6,000.00</td>
-                </tr>
-                <tr tw="text-right">
-                  <th ></th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td tw="py-2">Subtotal</td>
-                  <td>6,000.00</td>
-                </tr>
-                <tr tw="border-b  border-gray-300 text-right">
-                  <th ></th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td tw="py-2">Tax</td>
-                  <td>0.00</td>
-                </tr>
-                <tr tw="text-right font-bold">
-                  <th ></th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td tw="py-2">Invoice Total</td>
-                  <td>6,000.00</td>
-                </tr>
-                <tr tw="text-right">
-                  <th ></th>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td tw="py-2">Amount Paid</td>
-                  <td>0.00</td>
-                </tr>
-                
-              </tbody>
-              <tfoot>
-                <tr className="double">
-                <th tw='invisible'></th>
-                  <td ></td>
-                  <td ></td>
-                  <td ></td>
-                  <td tw=" text-right font-semibold">Amount Due</td>
-
-                  <td tw="pt-3  flex flex-col items-end ">
-                    <span tw="font-semibold ">$6,000.00</span>
-                    <span tw="text-gray-600 text-right">USD</span>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+              {isAdd.mobile_phone ? (
+                <div tw="col-span-2 w-6/12">
+                  <Form.Item
+                    label="Mobile Phone Number"
+                    name="mobile_phone_number"
+                  >
+                    <Input type="text" />
+                  </Form.Item>
+                </div>
+              ) : (
+                <div tw="col-span-2 w-6/12">
+                  <span
+                    onClick={() => handleIsAdd("mobile_phone")}
+                    tw="cursor-pointer text-primary hover:text-blue-400"
+                  >
+                    <PlusOutlined tw="text-lg" />
+                    <span>Add Mobile Phone</span>
+                  </span>
+                </div>
+              )}
+              <Divider tw="col-span-2" />
+              {isAdd.address ? (
+                <>
+                  <div tw="col-span-2 w-6/12">
+                    <Form.Item label="Country" name="country">
+                      <Select
+                        defaultValue="Indonesia"
+                        options={countryList.map((item) => ({
+                          label: item,
+                          value: item,
+                        }))}
+                      />
+                    </Form.Item>
+                  </div>
+                  <div tw="col-span-2">
+                    <Form.Item label="Address Line 1" name="address_line_1">
+                      <Input type="text" />
+                    </Form.Item>
+                  </div>
+                  <div tw="col-span-2">
+                    <Form.Item label="Address Line 2" name="address_line_2">
+                      <Input type="text" />
+                    </Form.Item>
+                  </div>
+                  <div tw="col-span-2 w-6/12">
+                    <Form.Item label="City" name="city">
+                      <Input type="text" />
+                    </Form.Item>
+                  </div>
+                  <div tw="col-span-2 w-6/12">
+                    <Form.Item label="State" name="state">
+                      <Input type="text" />
+                    </Form.Item>
+                  </div>
+                  <div tw="col-span-2 w-6/12">
+                    <Form.Item label="ZIP Code" name="zip">
+                      <Input type="text" />
+                    </Form.Item>
+                  </div>
+                  <Divider tw="col-span-2" />
+                  <div>
+                    <Form.Item label="Tax Name" name="tax_number">
+                      <Input type="text" defaultValue="VAT Number" />
+                    </Form.Item>
+                  </div>
+                  <div>
+                    <Form.Item label="Tax Number" name="tax_name">
+                      <Input type="text" />
+                    </Form.Item>
+                  </div>
+                </>
+              ) : (
+                <div tw="col-span-2 w-6/12">
+                  <span
+                    onClick={() => handleIsAdd("address")}
+                    tw="cursor-pointer text-primary hover:text-blue-400"
+                  >
+                    <PlusOutlined tw="text-lg" />
+                    <span>Add Address</span>
+                  </span>
+                </div>
+              )}
+            </div>
+          </Form>
         </CardReporting>
-        <Filter Filtering={FilterInvoiceDetail} open={open} setOpen={setOpen} />
+        <ClientSetting
+         
+          open={open}
+          setOpen={setOpen}
+        />
       </div>
     </div>
   );

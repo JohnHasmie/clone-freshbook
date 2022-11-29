@@ -180,23 +180,29 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
         </div>
         <div>
           <Form.Item label="Date Range" name="date">
-            <Input 
-            type="text"
-            />
-           
+            <Input type="text" />
           </Form.Item>
         </div>
         <div>
           <Form.Item label="Email Type" name="email_type">
-          <Select
+            <Select
               mode="multiple"
-                placeholder="Type to add email types"
+              placeholder="Type to add email types"
               options={[
-                { label: "Checkout Link Payments", value: "Checkout Link Payments" },
+                {
+                  label: "Checkout Link Payments",
+                  value: "Checkout Link Payments",
+                },
                 { label: "Client Invite ", value: "Client Invite " },
                 { label: "Credit ", value: "Credit " },
-                { label: "Declined Checkout Link Payment ", value: "Declined Checkout Link Payment " },
-                { label: "Declined Invoice Payment ", value: "Declined Invoice Payment " },
+                {
+                  label: "Declined Checkout Link Payment ",
+                  value: "Declined Checkout Link Payment ",
+                },
+                {
+                  label: "Declined Invoice Payment ",
+                  value: "Declined Invoice Payment ",
+                },
                 { label: "Direct Debit ", value: "Direct Debit " },
 
                 { label: "Estimate ", value: "Estimate " },
@@ -209,35 +215,162 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
                 { label: "Proposal ", value: "Proposal " },
                 { label: "Proposal Comment ", value: "Proposal Comment " },
                 { label: "Recurring Invoice ", value: "Recurring Invoice " },
-                { label: "Recurring Online Payment ", value: "Recurring Online Payment " },
+                {
+                  label: "Recurring Online Payment ",
+                  value: "Recurring Online Payment ",
+                },
                 { label: "Refund ", value: "Refund " },
                 { label: "Report ", value: "Report " },
                 { label: "Retainer Invoice ", value: "Retainer Invoice " },
-
-
-
-
-
               ]}
             />
           </Form.Item>
         </div>
         <div>
           <Form.Item label="Email Subject" name="email_subject">
-            <Input 
-            type="text"
-            placeholder="Type to add subject"
-            />
-           
+            <Input type="text" placeholder="Type to add subject" />
           </Form.Item>
         </div>
         <div>
           <Form.Item label="Email Body" name="email_body">
-            <Input 
-            type="text"
-            placeholder="Type to add body"
+            <Input type="text" placeholder="Type to add body" />
+          </Form.Item>
+        </div>
+      </div>
+      <div tw="flex justify-between items-start">
+        <span tw="text-primary cursor-pointer " onClick={handleReset}>
+          Reset all
+        </span>
+        <div tw="flex">
+          <div>
+            <ButtonMore
+              tw="text-lg px-8 mr-2"
+              onClick={() => setIsAdvance(false)}
+            >
+              Cancel
+            </ButtonMore>
+          </div>
+          <div>
+            <Button htmlType="submit" tw="text-lg text-white bg-success px-8">
+              Apply
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Form>
+  );
+}
+
+export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
+  const onFinish = (values) => {
+    console.log("Success:", values);
+  };
+  const handleReset = () => {
+    form.resetFields();
+    console.log(form,"Form");
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
+  return (
+    <Form
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+      layout="vertical"
+      size={"large"}
+    >
+      <div tw="grid grid-cols-3 gap-3">
+        <div>
+          <Form.Item label="Clients" name="clients">
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Type to add clients"
+              options={[
+                { label: "Suzie Jones", value: "Suzie Jones" },
+                { label: "John Doe ", value: "John Doe " },
+              ]}
             />
-           
+          </Form.Item>
+        </div>
+        <div>
+          <Form.Item label="Invoice Status" name="invoice_status">
+            <Select
+              mode="multiple"
+              allowClear
+              placeholder="Type to add invoice status"
+              options={[
+                { label: "Outstanding", value: "Outstanding" },
+                { label: "Paid", value: "Paid" },
+                { label: "Auto-Paid", value: "Auto-Paid" },
+                { label: "Partially Paid", value: "Partially Paid" },
+                { label: "Sent", value: "Sent" },
+                { label: "Viewed", value: "Viewed" },
+                { label: "Disputed", value: "Disputed" },
+                { label: "Draft", value: "Draft" },
+                { label: "Overdue", value: "Overdue" },
+              ]}
+            />
+          </Form.Item>
+        </div>
+        <div>
+          <Form.Item label="Date Range" name="date">
+            <Input type="text" />
+          </Form.Item>
+        </div>
+        <div tw="col-span-2 ">
+          <Form.Item label="Keyword Search" name="keyword">
+            <div tw="flex relative">
+              <InputKeyword type="text" placeholder="Keyword or Number" />
+              <SelectKeyword
+                tw="inline-flex "
+                defaultValue="all"
+                options={[
+                  {
+                    value: "all",
+                    label: "All Fields",
+                  },
+                  {
+                    value: "Item Description",
+                    label: "Item Description",
+                  },
+                  {
+                    value: "Item Name",
+                    label: "Item Name",
+                  },
+                  {
+                    value: "Invoice Number",
+                    label: "Invoice Number",
+                  },
+                  {
+                    value: "Invoice Amount",
+                    label: "Invoice Amount",
+                  },
+                  {
+                    value: "Reference Number",
+                    label: "Reference Number",
+                  },
+
+                  {
+                    value: "Note",
+                    label: "Note",
+                  },
+                ]}
+              />
+            </div>
+          </Form.Item>
+        </div>
+        <div>
+          <Form.Item label="Currency" name="currency">
+            <Select
+              placeholder="Type to add invoice status"
+              defaultValue="all"
+              options={[
+                { label: "All Currencies", value: "all" },
+                { label: "IDR-Rupiah", value: "idr" },
+              ]}
+            />
           </Form.Item>
         </div>
       </div>

@@ -36,13 +36,18 @@ import PaymentsCollected from "./pages/report/PaymentsCollected";
 import AccountStatement from "./pages/report/AccountStatement";
 import InvoiceDetail from "./pages/report/InvoiceDetail";
 import Invoices from "./pages/invoices/Invoices";
-import DetailInvoice from './pages/invoices/Detail';
+import DetailInvoice from "./pages/invoices/Detail";
 import AppContext from "./components/context/AppContext";
 import ItemsArchived from "./pages/item-service/ItemsArchived";
 import ItemsDeleted from "./pages/item-service/ItemsDeleted";
 import Email from "./pages/clients/Email";
 import NewInvoice from "./pages/invoices/NewInvoice";
 import NewClient from "./pages/clients/NewClient";
+import DetailInvoiceClient from "./pages/clients/DetailInvoice";
+import DetailRecurring from "./pages/clients/DetailRecurring";
+import RecurringInvoice from "./pages/invoices/Recurring";
+import AccountBalance from "./pages/report/AccountBalance";
+import AccountTrialBalance from "./pages/report/AccountTrialBalance";
 
 function App() {
   let { pathname } = useLocation();
@@ -51,9 +56,7 @@ function App() {
   const { token } = useAuth();
   const [user, setUser] = useState("");
 
-
   let history = useHistory();
-
 
   axios.defaults.headers.common = {
     Authorization: `Bearer ${token}`,
@@ -62,10 +65,9 @@ function App() {
   useEffect(() => {
     if (isAuthenticated === false && !pathname.includes("sign")) {
       history.push("/sign-in");
-    } 
-    if(isAuthenticated === true && pathname.includes("sign")){
+    }
+    if (isAuthenticated === true && pathname.includes("sign")) {
       history.push("/dashboard");
-
     }
     if (pathname === "/") {
       history.push("/dashboard");
@@ -92,99 +94,121 @@ function App() {
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
-      <AppContext.Provider
-        value={{
-          user: user,
-          setUser: setUser,
-         
-        }}
-      >
-        <Switch>
-          <Route path="/sign-up" component={SignUp} />
-          <Route path="/sign-in" component={SignIn} />
+        <AppContext.Provider
+          value={{
+            user: user,
+            setUser: setUser,
+          }}
+        >
+          <Switch>
+            <Route path="/sign-up" component={SignUp} />
+            <Route path="/sign-in" component={SignIn} />
 
-          <Route
-            exact
-            path="/dashboard/reports/account-aging"
-            component={AccountAging}
-          />
-          <Route
-            exact
-            path="/dashboard/reports/recurring-revenue"
-            component={RecurringRevenue}
-          />
-          <Route
-            exact
-            path="/dashboard/reports/revenue-by-client"
-            component={RevenueByClient}
-          />
-          <Route
-            exact
-            path="/dashboard/reports/payments-collected"
-            component={PaymentsCollected}
-          />
-          <Route
-            exact
-            path="/dashboard/reports/account-statement"
-            component={AccountStatement}
-          />
-          <Route
-            exact
-            path="/dashboard/reports/invoice-detail"
-            component={InvoiceDetail}
-          />
-           <Route
-            exact
-            path="/invoices/new"
-            component={NewInvoice}
-          />
-             <Route
-            exact
-            path="/clients/new"
-            component={NewClient}
-          />
-
-
-          <Main>
-            <Route exact path="/dashboard" component={Home} />
-
-            <Route exact path="/clients" component={Clients} />
-            <Route exact path="/clients/sent-email" component={Email} />
-
-            <Route exact path="/clients/:clientId/client-detail" component={Detail} />
             <Route
               exact
-              path="/clients/:clientId/reports"
-              component={DetailReports}
-            />
-
-            <Route exact path="/invoices" component={Invoices} />
-            <Route exact path="/invoices/:invoiceId/invoice-detail" component={DetailInvoice} />
-
-            <Route exact path="/global-settings" component={GlobalSetting} />
-            <Route
-              exact
-              path="/global-settings/business"
-              component={Business}
+              path="/dashboard/reports/account-aging"
+              component={AccountAging}
             />
             <Route
               exact
-              path="/global-settings/email-notifications"
-              component={EmailNotification}
+              path="/dashboard/reports/recurring-revenue"
+              component={RecurringRevenue}
             />
-            <Route exact path="/items" component={Items} />
-            <Route exact path="/items/archived" component={ItemsArchived} />
-            <Route exact path="/items/deleted" component={ItemsDeleted} />
+            <Route
+              exact
+              path="/dashboard/reports/revenue-by-client"
+              component={RevenueByClient}
+            />
+            <Route
+              exact
+              path="/dashboard/reports/payments-collected"
+              component={PaymentsCollected}
+            />
+            <Route
+              exact
+              path="/dashboard/reports/account-statement"
+              component={AccountStatement}
+            />
+            <Route
+              exact
+              path="/dashboard/reports/invoice-detail"
+              component={InvoiceDetail}
+            />
+            <Route
+              exact
+              path="/dashboard/reports/balance"
+              component={AccountBalance}
+            />
+            <Route
+              exact
+              path="/dashboard/reports/trial-balance"
+              component={AccountTrialBalance}
+            />
+            <Route exact path="/invoices/new" component={NewInvoice} />
+            <Route exact path="/clients/new" component={NewClient} />
 
+            <Main>
+              <Route exact path="/dashboard" component={Home} />
 
+              <Route exact path="/clients" component={Clients} />
+              <Route exact path="/clients/sent-email" component={Email} />
 
-            <Route exact path="/tables" component={Tables} />
-            <Route exact path="/billing" component={Billing} />
-            <Route exact path="/rtl" component={Rtl} />
-            <Route exact path="/profile" component={Profile} />
-            {/* <Redirect from="*" to="/dashboard" /> */}
-          </Main>
-        </Switch>
+              <Route
+                exact
+                path="/clients/:clientId/client-detail"
+                component={Detail}
+              />
+              <Route
+                exact
+                path="/clients/:clientId/reports"
+                component={DetailReports}
+              />
+              <Route
+                exact
+                path="/clients/:clientId/invoices"
+                component={DetailInvoiceClient}
+              />
+              <Route
+                exact
+                path="/clients/:clientId/recurring-templates"
+                component={DetailRecurring}
+              />
+
+              <Route exact path="/invoices" component={Invoices} />
+
+              <Route
+                exact
+                path="/invoices/recurring-templates"
+                component={RecurringInvoice}
+              />
+              <Route
+                exact
+                path="/invoices/:invoiceId/invoice-detail"
+                component={DetailInvoice}
+              />
+
+              <Route exact path="/global-settings" component={GlobalSetting} />
+              <Route
+                exact
+                path="/global-settings/business"
+                component={Business}
+              />
+              <Route
+                exact
+                path="/global-settings/email-notifications"
+                component={EmailNotification}
+              />
+              <Route exact path="/items" component={Items} />
+              <Route exact path="/items/archived" component={ItemsArchived} />
+              <Route exact path="/items/deleted" component={ItemsDeleted} />
+
+              <Route exact path="/tables" component={Tables} />
+              <Route exact path="/billing" component={Billing} />
+              <Route exact path="/rtl" component={Rtl} />
+              <Route exact path="/profile" component={Profile} />
+              {/* <Redirect from="*" to="/dashboard" /> */}
+            </Main>
+          </Switch>
         </AppContext.Provider>
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>

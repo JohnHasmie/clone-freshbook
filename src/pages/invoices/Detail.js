@@ -1,9 +1,10 @@
 import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { Checkbox, Collapse, Table, Typography } from "antd";
+import { Checkbox, Collapse, Popover, Table, Typography } from "antd";
 
 import React, { useState } from "react";
 import tw from "twin.macro";
 import CardDetailInvoice from "../../components/CardDetailInvoice";
+import PopupNewInvoice from "./PopupNewInvoice";
 
 
 
@@ -225,7 +226,10 @@ export default function Detail() {
               >
                  <div tw="flex items-center ">
             <Title level={4}>All Payment for Invoices 00148 </Title>
+            <Popover placement="top" content={PopupNewInvoice} trigger="click">
+
             <PlusOutlined tw='ml-2 text-white bg-success text-base  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer -mt-3  '/>
+         </Popover>
           </div>
                
               </div>

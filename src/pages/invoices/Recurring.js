@@ -1,4 +1,5 @@
 import {
+  CalendarOutlined,
   CaretDownOutlined,
   CopyOutlined,
   DollarOutlined,
@@ -8,6 +9,7 @@ import {
   MailOutlined,
   PhoneOutlined,
   PlusOutlined,
+  RestOutlined,
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
@@ -32,10 +34,13 @@ import Photo from "../../assets/images/mask-group.svg";
 import CardInvoice from "../../components/CardInvoice/index";
 import TableCustom from "../../components/Button copy";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
-import FormAdvanceSearch, { FormAdvanceSearchClient, FormAdvanceSearchInvoice } from "../clients/FormAdvanceSearch";
+import FormAdvanceSearch, {
+  FormAdvanceSearchClient,
+  FormAdvanceSearchInvoice,
+} from "../clients/FormAdvanceSearch";
 import InvoiceTabs from "./InvoicesTabs";
 
-export default function Invoices() {
+export default function Recurring() {
   const { Title, Text } = Typography;
   const [checked, setChecked] = useState(false);
   const [status, setStatus] = useState("sent");
@@ -52,22 +57,23 @@ export default function Invoices() {
       ),
       dataIndex: "checkbox",
       key: "checkbox",
+      width:"5%"
     },
     {
-      title: "Client/Invoice Number",
-      dataIndex: "client_invoice_number",
-      key: "client_invoice_number",
+      title: "Client",
+      dataIndex: "client",
+      key: "client",
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: "Last Issued",
+      dataIndex: "last_issued",
+      key: "last_issued",
     },
 
     {
-      title: "Issued Date/Due Date",
-      key: "date",
-      dataIndex: "date",
+      title: "Frequency /Duration",
+      key: "frequency_duration",
+      dataIndex: "frequency_duration",
     },
 
     {
@@ -87,18 +93,13 @@ export default function Invoices() {
           onChange={(e) => console.log(e.target.value)}
         />
       ),
-      client_invoice_number: (
-        <div>
-          <h3>Company Name</h3>
-          <p>00148</p>
-        </div>
-      ),
-      description: <span tw="flex items-start">PSD to HTML</span>,
+      client: <div>Sutton Rowland Inc</div>,
+      last_issued: <span tw="text-primary text-xs">28/11/2022</span>,
 
-      date: (
+      frequency_duration: (
         <div>
-          <h3>25/10/2022</h3>
-          <p>Due in 4 days</p>
+          <h3 tw="text-sm">Every month</h3>
+          <p tw="text-primary text-xs">Infinite</p>
         </div>
       ),
       amount: (
@@ -112,30 +113,12 @@ export default function Invoices() {
                 <EditOutlined tw="px-2 py-1  " />
               </Tooltip>
             </div>
-            <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
-              <Tooltip placement="top" title="duplicate">
-                <CopyOutlined tw="px-2 py-1" />
+            <div tw="hover:bg-gray-100  ">
+              <Tooltip placement="top" title="delete">
+                <RestOutlined tw="px-2 py-1" />
               </Tooltip>
             </div>
-
-            {status === "paid" ? (
-              <div tw="hover:bg-gray-100   border-r border-gray-200 ">
-                <Tooltip placement="top" title="archive">
-                  <HddOutlined tw="px-2 py-1 " />
-                </Tooltip>
-              </div>
-            ) : (
-              <div tw="hover:bg-gray-100   border-r border-gray-200 ">
-                <Tooltip placement="top" title="add payment">
-                  <DollarOutlined tw="px-2 py-1 " />
-                </Tooltip>
-              </div>
-            )}
-            <div tw="hover:bg-gray-100   ">
-              <Tooltip placement="top" title="More">
-                <EllipsisOutlined tw="text-xs px-2 py-1" />
-              </Tooltip>
-            </div>
+          
           </div>
           <h3>$6,000.000 USD</h3>
           <span tw="bg-green-400 rounded p-1">{status}</span>
@@ -147,31 +130,7 @@ export default function Invoices() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg">
-          <div tw="grid grid-cols-3 gap-4 justify-items-center content-center">
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-
-              <p tw="text-secondary">overdue</p>
-            </div>
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-              <p>total outstanding</p>
-            </div>
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-              <p>in draft</p>
-            </div>
-          </div>
-          <div tw="mt-20">
+          <div>
             <Title level={4}>Recently Active</Title>
             <div tw="flex">
               <div tw="border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center">
@@ -199,7 +158,7 @@ export default function Invoices() {
             </div>
           </div>
           <div tw="mt-20">
-            <InvoiceTabs/>
+            <InvoiceTabs />
             <div
               style={{
                 display: "flex",
@@ -208,24 +167,18 @@ export default function Invoices() {
               }}
             >
               <div tw="flex items-center ">
-                <Title level={3}>All Invoices </Title>
+                <Title level={3}>All Recurring Templates </Title>
                 <PlusOutlined tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer -mt-5 " />
               </div>
               <div tw="flex relative cursor-pointer">
-                <InputAdvanceSearch  prefix={<SearchOutlined />} />
-                <div onClick={()=>setIsAdvance(!isAdvance)}  tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center px-1">
-                  <UnorderedListOutlined />
-                  <span tw="text-xs ml-2">Advanced Search </span>
-                  <CaretDownOutlined tw='ml-1' />
+                <InputAdvanceSearch prefix={<SearchOutlined />} />
+                <div tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center px-2">
+                  <CalendarOutlined />
+                  <CaretDownOutlined tw="ml-1" />
                 </div>
               </div>
             </div>
-            {isAdvance ?  <div tw='bg-gray-100 border-y-2 border-gray-400 p-3 mb-4'>
-           <FormAdvanceSearchInvoice form={form} setIsAdvance={setIsAdvance}/>
 
-            </div>
-          : <></>  
-          }
             <div className="table-responsive">
               <TableCustom
                 columns={columns}

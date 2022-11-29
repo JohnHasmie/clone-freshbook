@@ -2,7 +2,6 @@ import {
   Button,
   Checkbox,
   Menu,
-  Modal,
   Popover,
   Table,
   Tooltip,
@@ -34,24 +33,9 @@ import {
 import CardReport from "../../components/CardReport";
 import tw from "twin.macro";
 import TableCustom from "../../components/Button copy";
-import FormAddContact from "./FormAddContact";
 
-export default function Detail() {
+export default function DetailInvoice() {
   const { Title } = Typography;
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  console.log(isModalOpen, "isModal");
   const [checked, setChecked] = useState([]);
   const handleCheck = (v) => {
     const newChecked = [...checked];
@@ -95,28 +79,50 @@ export default function Detail() {
           onChange={(e) => handleCheck(e.target.value)}
         />
       ),
-      name: <span>John Doe</span>,
-      email: <span tw="text-primary">28/11/2022</span>,
+      client_invoice_number: (
+        <div>
+          <span>Ahmad</span>
+          <p tw="text-gray-400 text-xs">0989</p>
+        </div>
+      ),
+      description: <span tw="text-primary text-xs">Recurring</span>,
 
-      phone_number: (
+      issued_due_date: (
+        <div>
+          <span>28/11/2022</span>
+          <p tw="text-gray-400 text-sm">Due in 1 Month</p>
+        </div>
+      ),
+      amount_status: (
         <div tw="text-right relative">
           <div
             className="isVisible"
-            tw="absolute bottom-14 right-0 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
+            tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
                 <EditOutlined tw="px-2 py-1  " />
               </Tooltip>
             </div>
-            <div tw="hover:bg-gray-100 ">
-              <Tooltip placement="top" title="delete">
-                <RestOutlined tw="px-2 py-1" />
+
+            <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
+              <Tooltip placement="top" title="duplicate">
+                <CopyOutlined tw="px-2 py-1" />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100   border-r border-gray-200 ">
+              <Tooltip placement="top" title="add payment">
+                <DollarOutlined tw="px-2 py-1 " />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100   ">
+              <Tooltip placement="top" title="More">
+                <EllipsisOutlined tw="text-xs px-2 py-1" />
               </Tooltip>
             </div>
           </div>
-          <h3 tw="text-sm">089669235896</h3>
-          <span tw="text-gray-400 text-xs ">08123456789</span>
+          <h3 tw="text-base">Rp 0.00 IDR</h3>
+          <span tw="bg-gray-300 text-xs rounded p-1">Draft</span>
         </div>
       ),
     },
@@ -130,28 +136,50 @@ export default function Detail() {
           onChange={(e) => handleCheck(e.target.value)}
         />
       ),
-      name: <span>John Doe Ahmadi</span>,
-      email: <span>ahmadi@gmail.com</span>,
+      client_invoice_number: (
+        <div>
+          <span>Sutton Rowland Inc</span>
+          <p tw="text-gray-400 text-xs">0999</p>
+        </div>
+      ),
+      description: <span></span>,
 
-      phone_number: (
+      issued_due_date: (
+        <div>
+          <span>28/11/2022</span>
+          <p tw="text-gray-400 text-sm">Due in 1 month</p>
+        </div>
+      ),
+      amount_status: (
         <div tw="text-right relative">
           <div
             className="isVisible"
-            tw="absolute bottom-14 right-0 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
+            tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
                 <EditOutlined tw="px-2 py-1  " />
               </Tooltip>
             </div>
-            <div tw="hover:bg-gray-100 ">
-              <Tooltip placement="top" title="delete">
-                <RestOutlined tw="px-2 py-1" />
+
+            <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
+              <Tooltip placement="top" title="duplicate">
+                <CopyOutlined tw="px-2 py-1" />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100   border-r border-gray-200 ">
+              <Tooltip placement="top" title="add payment">
+                <DollarOutlined tw="px-2 py-1 " />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100   ">
+              <Tooltip placement="top" title="More">
+                <EllipsisOutlined tw="text-xs px-2 py-1" />
               </Tooltip>
             </div>
           </div>
-          <h3 tw="text-sm">089669235896</h3>
-          <span tw="text-gray-400 text-xs">08123456789</span>
+          <h3 tw="text-base">Rp 600.00 IDR</h3>
+          <span tw="bg-orange-400 text-xs rounded p-1">Paid</span>
         </div>
       ),
     },
@@ -179,22 +207,28 @@ export default function Detail() {
       width: "5%",
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Client/Invoice Number",
+      dataIndex: "client_invoice_number",
+      key: "client_invoice_number",
       width: "30%",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      width: "30%",
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      width: "40%",
     },
 
     {
-      title: <div tw="text-right">Phone Number 1 /Phone Number 2</div>,
-      key: "phone_number",
-      dataIndex: "phone_number",
+      title: "Issued Date /Due Date",
+      key: "issued_due_date",
+      dataIndex: "issued_due_date",
+      width: "20%",
+    },
+    {
+      title: "Amount /Status",
+      key: "amount_status",
+      dataIndex: "amount_status",
       width: "20%",
     },
   ];
@@ -205,9 +239,10 @@ export default function Detail() {
         <ClientInfo />
         <div tw="max-w-screen-xl mr-5 mb-10 mt-20">
           <ClientTabs />
+
           <div tw="flex items-center ">
             <span tw="text-xl font-bold text-black">
-              Contacts for Sutton Rowland Inc
+              Recurring Templates for Sutton Rowland Inc{" "}
             </span>
             {checked.length > 0 ? (
               <>
@@ -226,22 +261,9 @@ export default function Detail() {
                 </Popover>
               </>
             ) : (
-              <PlusOutlined
-                onClick={showModal}
-                tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer "
-              />
+              <PlusOutlined tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer " />
             )}
           </div>
-
-          <Modal
-            footer={null}
-            visible={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            width={800}
-          >
-            <FormAddContact handleOk={handleOk} />
-          </Modal>
           <div className="table-responsive">
             <TableCustom
               columns={columns}

@@ -2,7 +2,6 @@ import {
   Button,
   Checkbox,
   Menu,
-  Modal,
   Popover,
   Table,
   Tooltip,
@@ -34,24 +33,9 @@ import {
 import CardReport from "../../components/CardReport";
 import tw from "twin.macro";
 import TableCustom from "../../components/Button copy";
-import FormAddContact from "./FormAddContact";
 
-export default function Detail() {
+export default function DetailRecurring() {
   const { Title } = Typography;
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  console.log(isModalOpen, "isModal");
   const [checked, setChecked] = useState([]);
   const handleCheck = (v) => {
     const newChecked = [...checked];
@@ -95,14 +79,20 @@ export default function Detail() {
           onChange={(e) => handleCheck(e.target.value)}
         />
       ),
-      name: <span>John Doe</span>,
-      email: <span tw="text-primary">28/11/2022</span>,
+      client: <span>John Doe</span>,
+      last_issued: <span tw="text-primary">28/11/2022</span>,
 
-      phone_number: (
+      frequency: (
+        <div>
+          <span>Every Month</span>
+          <p tw="text-gray-400 text-sm">Infinite</p>
+        </div>
+      ),
+      amount_status: (
         <div tw="text-right relative">
           <div
             className="isVisible"
-            tw="absolute bottom-14 right-0 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
+            tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
@@ -114,9 +104,10 @@ export default function Detail() {
                 <RestOutlined tw="px-2 py-1" />
               </Tooltip>
             </div>
+        
           </div>
-          <h3 tw="text-sm">089669235896</h3>
-          <span tw="text-gray-400 text-xs ">08123456789</span>
+          <h3>Rp 0.00 IDR</h3>
+          <span tw="bg-green-400 rounded p-1">Auto-Sent</span>
         </div>
       ),
     },
@@ -130,14 +121,20 @@ export default function Detail() {
           onChange={(e) => handleCheck(e.target.value)}
         />
       ),
-      name: <span>John Doe Ahmadi</span>,
-      email: <span>ahmadi@gmail.com</span>,
+      client: <span>John Doe Ahmadi</span>,
+      last_issued: <span>ahmadi@gmail.com</span>,
 
-      phone_number: (
+      frequency: (
+        <div>
+          <span>0888</span>
+          <p tw="text-gray-400 text-sm">0999</p>
+        </div>
+      ),
+      amount_status: (
         <div tw="text-right relative">
           <div
             className="isVisible"
-            tw="absolute bottom-14 right-0 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
+            tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
@@ -149,9 +146,10 @@ export default function Detail() {
                 <RestOutlined tw="px-2 py-1" />
               </Tooltip>
             </div>
+        
           </div>
-          <h3 tw="text-sm">089669235896</h3>
-          <span tw="text-gray-400 text-xs">08123456789</span>
+          <h3>Rp 600.00 IDR</h3>
+          <span tw="bg-green-400 rounded p-1">Paid</span>
         </div>
       ),
     },
@@ -164,6 +162,7 @@ export default function Detail() {
     } else {
       setChecked(all);
     }
+    console.log(checked, "All");
   };
   const columns = [
     {
@@ -179,22 +178,28 @@ export default function Detail() {
       width: "5%",
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Client",
+      dataIndex: "client",
+      key: "client",
       width: "30%",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "Last Issued",
+      dataIndex: "last_issued",
+      key: "last_issued",
       width: "30%",
     },
 
     {
-      title: <div tw="text-right">Phone Number 1 /Phone Number 2</div>,
-      key: "phone_number",
-      dataIndex: "phone_number",
+      title: "Frequency /Duration",
+      key: "frequency",
+      dataIndex: "frequency",
+      width: "20%",
+    },
+    {
+      title: "Amount /Status",
+      key: "amount_status",
+      dataIndex: "amount_status",
       width: "20%",
     },
   ];
@@ -207,7 +212,7 @@ export default function Detail() {
           <ClientTabs />
           <div tw="flex items-center ">
             <span tw="text-xl font-bold text-black">
-              Contacts for Sutton Rowland Inc
+              Recurring Templates for Sutton Rowland Inc{" "}
             </span>
             {checked.length > 0 ? (
               <>
@@ -226,22 +231,9 @@ export default function Detail() {
                 </Popover>
               </>
             ) : (
-              <PlusOutlined
-                onClick={showModal}
-                tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer "
-              />
+              <PlusOutlined tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer " />
             )}
           </div>
-
-          <Modal
-            footer={null}
-            visible={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            width={800}
-          >
-            <FormAddContact handleOk={handleOk} />
-          </Modal>
           <div className="table-responsive">
             <TableCustom
               columns={columns}

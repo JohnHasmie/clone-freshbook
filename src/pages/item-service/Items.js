@@ -195,7 +195,7 @@ export default function Items() {
                     </Button>
                   </div>
                 </Popover>
-                <Modal
+                {/* <Modal
                   title="Basic Modal"
                   open={isModalOpen}
                   onOk={handleOk}
@@ -204,7 +204,7 @@ export default function Items() {
                   <p>Some contents...</p>
                   <p>Some contents...</p>
                   <p>Some contents...</p>
-                </Modal>
+                </Modal> */}
               </>
             )}
           </div>

@@ -28,6 +28,7 @@ import {
   FileTextOutlined,
   AppstoreOutlined,
   LeftOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import { NavLink, Link, useHistory, useParams } from "react-router-dom";
 import { styled } from "twin.macro";
@@ -40,27 +41,7 @@ import TabsSettting from "./TabsSettting";
 import AccordionInvoice from "../AccordionInvoice";
 import NewItem from "../NewItem";
 import MoreAction from "../Reports/MoreAction";
-
-const ButtonContainer = styled.div`
-  .ant-btn-primary {
-    background-color: #1890ff;
-  }
-  .ant-btn-success {
-    background-color: #52c41a;
-  }
-  .ant-btn-yellow {
-    background-color: #fadb14;
-  }
-  .ant-btn-black {
-    background-color: #262626;
-    color: #fff;
-    border: 0px;
-    border-radius: 5px;
-  }
-  .ant-switch-active {
-    background-color: #1890ff;
-  }
-`;
+import InvoiceSetting from '../../pages/invoices/InvoiceSetting';
 
 const bell = [
   <svg
@@ -263,7 +244,7 @@ function Header({
 }) {
   const { Title, Text } = Typography;
   const history = useHistory();
- 
+
   const [open, setOpen] = useState(false);
 
   const [visible, setVisible] = useState(false);
@@ -335,7 +316,6 @@ function Header({
     // console.log(key,"key");
   };
 
-
   return (
     <>
       {name.includes("global-settings") ? (
@@ -357,15 +337,24 @@ function Header({
         <>
           <Row gutter={[24, 0]}>
             <Col span={24} style={{ paddingLeft: "none" }}>
-              <div
+              <button
                 onClick={() => history.goBack()}
-                tw="flex items-center mt-5 text-primary cursor-pointer"
+                tw="bg-transparent flex items-center mt-5 text-primary cursor-pointer"
               >
                 <LeftOutlined />
                 <span tw="ml-1">Invoices</span>
-              </div>
+              </button>
               <div tw="flex justify-between items-center my-2">
-                <Title level={2}>Invoice 00146</Title>
+                <div tw="flex items-end">
+                  <span tw="text-3xl font-bold text-black">Invoice 00146</span>
+                  <Popover
+                    placement="bottom"
+                    content={InvoiceSetting}
+                    trigger="click"
+                  >
+                    <UnorderedListOutlined tw="ml-3 text-2xl" />
+                  </Popover>
+                </div>
 
                 <div tw="flex ">
                   <Popover
@@ -392,21 +381,21 @@ function Header({
         <>
           <Row gutter={[24, 0]}>
             <Col span={24} style={{ paddingLeft: "none" }}>
-          
               <div tw="flex justify-between items-center my-2">
                 <Title level={2}>Invoice</Title>
 
                 <div tw="flex ">
-                  <Button onClick={()=>history.push(`/invoices/new`)} tw=" ml-2 bg-success text-white p-2  h-auto flex items-center ">
+                  <Button
+                    onClick={() => history.push(`/invoices/new`)}
+                    tw=" ml-2 bg-success text-white p-2  h-auto flex items-center "
+                  >
                     <span tw="text-lg">New Invoice</span>
                   </Button>
                 </div>
               </div>
             </Col>
-          <Divider />
-
+            <Divider />
           </Row>
-   
         </>
       ) : name.includes(`items`) ? (
         <Row gutter={[24, 0]}>
@@ -488,9 +477,12 @@ function Header({
               </Popover>
 
               <div tw="flex items-center justify-center ml-5">
-                <Button onClick={()=>history.push(`/clients/new`)} tw="bg-success text-white text-xl">
+                <Button
+                  onClick={() => history.push(`/clients/new`)}
+                  tw="bg-success text-white text-xl"
+                >
                   <span>New Client</span>
-                  {/* <DownOutlined /> */}                
+                  {/* <DownOutlined /> */}
                 </Button>
               </div>
             </div>
