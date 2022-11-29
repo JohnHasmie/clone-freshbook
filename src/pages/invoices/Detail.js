@@ -2,6 +2,7 @@ import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Checkbox, Collapse, Popover, Table, Typography } from "antd";
 
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardDetailInvoice from "../../components/CardDetailInvoice";
 import PopupNewInvoice from "./PopupNewInvoice";
@@ -11,6 +12,7 @@ import PopupNewInvoice from "./PopupNewInvoice";
 export default function Detail() {
     const { Title } = Typography;
     const [checked, setChecked] = useState(false);
+    const history= useHistory()
   
     const columns = [
         {
@@ -87,7 +89,7 @@ export default function Detail() {
               {" "}
               <ExclamationCircleOutlined tw="mr-2" />
               Company Name has{" "}
-              <span tw="text-primary underline">
+              <span onClick={()=>history.push("/invoices/outstanding-balance")} tw="cursor-pointer text-primary underline">
                 1 outstanding invoices
               </span>{" "}
               totalling $6,000.00 USD
@@ -95,7 +97,7 @@ export default function Detail() {
             <CardDetailInvoice>
               <div tw="flex justify-between mb-10">
                 <img
-                  src="https://source.unsplash.com/200x200?company"
+                  src="https://via.placeholder.com/200x200?company"
                   alt="profile company"
                 />
                 <div tw="flex justify-between">

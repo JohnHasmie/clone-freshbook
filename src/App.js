@@ -51,6 +51,7 @@ import AccountTrialBalance from "./pages/report/AccountTrialBalance";
 import ClientsDraft from "./pages/clients/ClientsDraft";
 import ClientsOverdue from "./pages/clients/ClientsOverdue";
 import ClientsOutstanding from "./pages/clients/ClientsOutstanding";
+import OutstandingBalance from "./pages/invoices/OutstandingBalance";
 
 function App() {
   let { pathname } = useLocation();
@@ -191,6 +192,12 @@ function App() {
                 exact
                 path="/invoices/recurring-templates"
                 component={RecurringInvoice}
+              />
+
+              <Route
+                exact
+                path="/invoices/outstanding-balance"
+                component={OutstandingBalance}
               />
               <Route
                 exact
