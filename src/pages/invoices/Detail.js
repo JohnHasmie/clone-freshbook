@@ -1,95 +1,168 @@
-import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { Checkbox, Collapse, Popover, Table, Typography } from "antd";
-
+import {
+  DownOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  ExclamationCircleOutlined,
+  HddOutlined,
+  PlusOutlined,
+  RestOutlined,
+  RightOutlined,
+  UndoOutlined,
+} from "@ant-design/icons";
+import { Button, Checkbox, Menu, Popover, Tooltip, Typography } from "antd";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import tw from "twin.macro";
+import TableCustom from "../../components/Button copy";
 import CardDetailInvoice from "../../components/CardDetailInvoice";
 import PopupNewInvoice from "./PopupNewInvoice";
-
-
+import tw from "twin.macro";
 
 export default function Detail() {
-    const { Title } = Typography;
-    const [checked, setChecked] = useState(false);
-    const history= useHistory()
-  
-    const columns = [
-        {
-          title: (
-            <Checkbox
-              className="font-normal"
-              onChange={() => setChecked(!checked)}
-            />
-          ),
-          dataIndex: "checkbox",
-          key: "checkbox",
-        },
-        {
-          title: "Client/Invoice Number",
-          dataIndex: "client_invoice_number",
-          key: "client_invoice_number",
-        },
-        {
-          title: "Description",
-          dataIndex: "description",
-          key: "description",
-        },
-    
-        {
-          title: "Isseud Date/Due Date",
-          key: "date",
-          dataIndex: "date",
-        },
-    
-        {
-          title: "Amount / Status",
-          key: "amount",
-          dataIndex: "amount",
-        },
-      ];
-    
-      const data = [
-        {
-          key: "1",
-          checkbox: (
-            <Checkbox
-              className="font-normal"
-              checked={checked}
-              onChange={(e) => console.log(e.target.value)}
-            />
-          ),
-          client_invoice_number: (
-            <div>
-              <h3>Company Name</h3>
-              <p>00148</p>
-            </div>
-          ),
-          description: <span tw='flex items-start'>PSD to HTML</span>,
-    
-          date: <div>
+  const { Title } = Typography;
+  const [checked, setChecked] = useState([]);
+  const history = useHistory();
+  const handleCheck = (v) => {
+    const newChecked = [...checked];
+    const findById = newChecked.find((x) => x === v);
+    if (findById) {
+      const findIndex = checked.indexOf(v);
+      newChecked.splice(findIndex, 1);
+    } else {
+      newChecked.push(v);
+    }
+    setChecked(newChecked);
+  };
+
+
+  const data = [
+    {
+      key: "1",
+      checkbox: (
+        <Checkbox
+          className="font-normal"
+          value={1}
+          checked={checked.includes("1")}
+          onChange={(e) => handleCheck(e.target.value)}
+        />
+      ),
+      client_invoice_number: (
+        <div>
+          <h3>Company Name</h3>
+          <p>00148</p>
+        </div>
+      ),
+      description: <span tw="flex items-start">PSD to HTML</span>,
+
+      date: (
+        <div>
           <h3>25/10/2022</h3>
           <p>Due in 4 days</p>
-        </div>,
-          amount: <div>
-          <h3>$6,000.000 USD</h3>
-          <p>Sent</p>
-        </div>,
-        },
-    
-      
-      ];
+        </div>
+      ),
+      amount: (
+        <div tw="text-right relative">
+          <div
+            className="isVisible"
+            tw="absolute bottom-16 right-6 flex invisible rounded-lg bg-white shadow-sm border border-gray-200  "
+          >
+            <div tw="hover:bg-gray-100   ">
+              <Tooltip placement="top" title="More">
+                <EllipsisOutlined tw="text-xs px-2 py-1" />
+              </Tooltip>
+            </div>
+          </div>
+          <h3 tw="text-base">Rp 0.00 IDR</h3>
+          <span tw="bg-gray-300 text-xs rounded p-1">Draft</span>
+        </div>
+      ),
+    },
+  ];
+
+  const handleCheckAll = () => {
+    const all = data?.map((item) => item.key);
+    if (data?.length === checked.length) {
+      setChecked([]);
+    } else {
+      setChecked(all);
+    }
+  };
+
+  const bulkList = (
+    <div >
+      <Menu>
+        <Menu.Item>
+          <div>
+            <EditOutlined />
+            <span>Edit</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item>
+          <div>
+            <UndoOutlined />
+            <span>Refund</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item>
+          <div>
+            <RestOutlined />
+            <span>Delete</span>
+          </div>
+        </Menu.Item>
+      </Menu>
+    </div>
+  );
+
+  const columns = [
+    {
+      title: (
+        <Checkbox
+        checked={data?.length === checked.length}
+        className="font-normal"
+        onChange={handleCheckAll}
+        />
+      ),
+      dataIndex: "checkbox",
+      key: "checkbox",
+    },
+    {
+      title: "Client/Invoice Number",
+      dataIndex: "client_invoice_number",
+      key: "client_invoice_number",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+
+    {
+      title: "Isseud Date/Due Date",
+      key: "date",
+      dataIndex: "date",
+    },
+
+    {
+      title: "Amount / Status",
+      key: "amount",
+      dataIndex: "amount",
+    },
+  ];
+
+ 
   return (
     <>
       <div className="layout-content">
-    
         <div tw="grid grid-cols-12 justify-items-center">
           <div tw="col-span-11 mb-10">
             <p>
               {" "}
               <ExclamationCircleOutlined tw="mr-2" />
               Company Name has{" "}
-              <span onClick={()=>history.push("/invoices/outstanding-balance")} tw="cursor-pointer text-primary underline">
+              <span
+                onClick={() => history.push("/invoices/outstanding-balance")}
+                tw="cursor-pointer text-primary underline"
+              >
                 1 outstanding invoices
               </span>{" "}
               totalling $6,000.00 USD
@@ -223,21 +296,37 @@ export default function Detail() {
                 style={{
                   display: "flex",
                   justifyContent: "start",
-                  
                 }}
               >
-                 <div tw="flex items-center ">
-            <Title level={4}>All Payment for Invoices 00148 </Title>
-            <Popover placement="top" content={PopupNewInvoice} trigger="click">
-
-            <PlusOutlined tw='ml-2 text-white bg-success text-base  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer -mt-3  '/>
-         </Popover>
-          </div>
-               
+                <div tw="flex items-center ">
+                  <span tw="text-xl font-bold text-black">All Payment for Invoices 00148 </span>
+                  <Popover
+                    placement="top"
+                    content={PopupNewInvoice}
+                    trigger="click"
+                  >
+                    <PlusOutlined tw="mx-2 text-white bg-success text-base  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer " />
+                  </Popover>
+                  {checked.length > 0 ? (
+              <>
+              
+                <Popover placement="bottom" content={bulkList} trigger="click">
+                  <div className="flex items-center justify-center">
+                    <Button>
+                      <span tw="mr-2">More Actions</span>
+                      <DownOutlined />
+                    </Button>
+                  </div>
+                </Popover>
+              </>
+            ):
+            <></>
+            }
+                </div>
               </div>
               <div className="table-responsive">
-                <Table
-                tw='mb-10'
+                <TableCustom
+                  tw="mb-10"
                   columns={columns}
                   dataSource={data}
                   pagination={false}

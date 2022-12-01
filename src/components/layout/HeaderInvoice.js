@@ -2,9 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Row,
   Col,
-  Breadcrumb,
-  Badge,
-  Dropdown,
   List,
   Avatar,
   Input,
@@ -41,7 +38,7 @@ import TabsSettting from "./TabsSettting";
 import AccordionInvoice from "../AccordionInvoice";
 import NewItem from "../NewItem";
 import MoreAction from "../Reports/MoreAction";
-import InvoiceSetting from '../../pages/invoices/InvoiceSetting';
+import InvoiceSetting from "../../pages/invoices/InvoiceSetting";
 
 const bell = [
   <svg
@@ -233,7 +230,7 @@ const setting = [
   </svg>,
 ];
 
-function Header({
+function HeaderInvoice({
   placement,
   name,
   subName,
@@ -242,7 +239,7 @@ function Header({
   handleSidenavType,
   handleFixedNavbar,
 }) {
-  const { Title, Text } = Typography;
+  const { Title } = Typography;
   const history = useHistory();
 
   const [open, setOpen] = useState(false);
@@ -317,242 +314,45 @@ function Header({
   };
 
   return (
-    <>
-      {name.includes("global-settings") ? (
-        <Row gutter={[24, 0]}>
-          <Col xs={24} md={6}>
-            <div className="ant-page-header-heading">
-              <Title
-                level={2}
-                style={{ textTransform: "capitalize", marginLeft: "-15px" }}
-              >
-                Settings
-              </Title>
-            </div>
-          </Col>
-
-          <TabsSettting />
-        </Row>
-      ) : name.includes(`invoices`) && name.includes(`detail`) ? (
-        <>
-          <Row gutter={[24, 0]} >
-            <Col span={24} style={{ paddingLeft: "none" }}>
-              <button
-                onClick={() => history.goBack()}
-                tw="bg-transparent flex items-center mt-5 text-primary cursor-pointer"
-              >
-                <LeftOutlined />
-                <span tw="ml-1">Invoices</span>
-              </button>
-              <div tw="flex justify-between items-center my-2">
-                <div tw="flex items-end">
-                  <span tw="text-3xl font-bold text-black">Invoice 00146</span>
-                  <Popover
-                    placement="bottom"
-                    content={InvoiceSetting}
-                    trigger="click"
-                  >
-                    <UnorderedListOutlined tw="ml-3 text-2xl" />
-                  </Popover>
-                </div>
-
-                <div tw="flex ">
-                  <Popover
-                    placement="bottom"
-                    content={MoreAction}
-                    trigger="click"
-                  >
-                    <ButtonMore>
-                      <span>More Actions</span>
-                      <DownOutlined />
-                    </ButtonMore>
-                  </Popover>
-
-                  <Button tw=" ml-2 bg-success text-white  h-auto flex items-center ">
-                    <span tw="text-lg">Edit</span>
-                  </Button>
-                </div>
-              </div>
-            </Col>
-          </Row>
-          <AccordionInvoice />
-        </>
-      ) : name.includes(`invoices`) ? (
-        <>
-          <Row gutter={[24, 0]}>
-            <Col span={24} style={{ paddingLeft: "none" }}>
-              <div tw="flex justify-between items-center my-2">
-                <Title level={2}>Invoice</Title>
-
-                <div tw="flex ">
-                  <Button
-                    onClick={() => history.push(`/invoices/new`)}
-                    tw=" ml-2 bg-success text-white p-2  h-auto flex items-center "
-                  >
-                    <span tw="text-lg">New Invoice</span>
-                  </Button>
-                </div>
-              </div>
-            </Col>
-            <Divider />
-          </Row>
-        </>
-      ) : name.includes(`items`) ? (
-        <Row gutter={[24, 0]}>
-          <Col span={24} md={6} style={{ paddingLeft: "none" }}>
-            <div className="ant-page-header-heading">
-              <Title
-                level={2}
-                style={{ textTransform: "capitalize", marginLeft: "-15px" }}
-              >
-                Items
-              </Title>
-            </div>
-          </Col>
-          <Col
-            span={24}
-            md={18}
-            className="header-control"
-            tw="flex items-center"
+    <div tw="ml-24">
+      <Row  gutter={[24, 0]}>
+        <Col span={24} style={{ paddingLeft: "none" }}>
+          <button
+            onClick={() => history.goBack()}
+            tw="bg-transparent flex items-center mt-5 text-primary cursor-pointer"
           >
-            <Button
-              type="link"
-              className="sidebar-toggler"
-              onClick={() => onPress()}
-            >
-              {toggler}
-            </Button>
-
-            <Popover placement="rightBottom" content={NewItem} trigger="click">
-              <div className="flex items-center justify-center">
-                <ButtonCustom tw="bg-success text-white">
-                  <span>Create New</span>
-                  {/* <DownOutlined /> */}
-
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    tw="text-gray-500"
-                  >
-                    <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
-                  </svg>
-                </ButtonCustom>
-              </div>
-            </Popover>
-          </Col>
-
-          <Divider />
-        </Row>
-      ) : name.includes(`clients`) ? (
-        <Row gutter={[24, 0]}>
-          <Col span={24} md={6} style={{ paddingLeft: "none" }}>
-            <div className="ant-page-header-heading">
-              <Title
-                level={2}
-                style={{ textTransform: "capitalize", marginLeft: "-15px" }}
+            <LeftOutlined />
+            <span tw="ml-1">Invoices</span>
+          </button>
+          <div tw="flex justify-between items-center my-2">
+            <div tw="flex items-end">
+              <span tw="text-3xl font-bold text-black">Invoice 00146</span>
+              <Popover
+                placement="bottom"
+                content={InvoiceSetting}
+                trigger="click"
               >
-                Clients
-              </Title>
+                <UnorderedListOutlined tw="ml-3 text-2xl" />
+              </Popover>
             </div>
-          </Col>
-          <Col
-            span={24}
-            md={18}
-            className="header-control"
-            tw="flex items-center"
-          >
-            <ButtonCustom
-              type="link"
-              className="sidebar-toggler"
-              onClick={() => onPress()}
-            >
-              {toggler}
-            </ButtonCustom>
+
             <div tw="flex ">
               <Popover placement="bottom" content={MoreAction} trigger="click">
                 <ButtonMore>
                   <span>More Actions</span>
-                  <DownOutlined tw="-mt-2" />
+                  <DownOutlined />
                 </ButtonMore>
               </Popover>
 
-              <div tw="flex items-center justify-center ml-5">
-                <Button
-                  onClick={() => history.push(`/clients/new`)}
-                  tw="bg-success text-white text-xl"
-                >
-                  <span>New Client</span>
-                  {/* <DownOutlined /> */}
-                </Button>
-              </div>
+              <Button tw=" ml-2 bg-success text-white  h-auto flex items-center ">
+                <span tw="text-lg">Edit</span>
+              </Button>
             </div>
-          </Col>
-
-          <Divider />
-        </Row>
-      ) : (
-        <Row gutter={[24, 0]}>
-          <Col span={24} md={6} style={{ paddingLeft: "none" }}>
-            <div className="ant-page-header-heading">
-              <Title
-                level={2}
-                style={{ textTransform: "capitalize", marginLeft: "-15px" }}
-              >
-                {subName.replace("/", "")}
-              </Title>
-            </div>
-          </Col>
-          <Col
-            span={24}
-            md={18}
-            className="header-control"
-            tw="flex items-center"
-          >
-            <ButtonCustom
-              type="link"
-              className="sidebar-toggler"
-              onClick={() => onPress()}
-            >
-              {toggler}
-            </ButtonCustom>
-
-            <Popover placement="bottom" content={createList} trigger="click">
-              <div className="flex-justify-center">
-                <ButtonCustom tw="bg-success text-white">
-                  <span>Create New</span>
-                  {/* <DownOutlined /> */}
-
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    tw="text-gray-500"
-                  >
-                    <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
-                  </svg>
-                </ButtonCustom>
-              </div>
-            </Popover>
-
-            <Popover placement="bottom" content={content} trigger="click">
-              <ButtonInvite tw="hover:border-2 hover:border-[#cdd4d9] mr-5">
-                <span>Invite</span>
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 512 512"
-                  tw="text-gray-500"
-                >
-                  <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
-                </svg>
-              </ButtonInvite>
-            </Popover>
-          </Col>
-
-          <Divider />
-        </Row>
-      )}
-    </>
+          </div>
+        </Col>
+      </Row>
+    </div>
   );
 }
 
-export default Header;
+export default HeaderInvoice;

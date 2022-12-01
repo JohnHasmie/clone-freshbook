@@ -150,6 +150,7 @@ function App() {
             />
             <Route exact path="/invoices/new" component={NewInvoice} />
             <Route exact path="/clients/new" component={NewClient} />
+        
 
             <Main>
               <Route exact path="/dashboard" component={Home} />
@@ -180,6 +181,12 @@ function App() {
                 path="/clients/:clientId/invoices"
                 component={DetailInvoiceClient}
               />
+                <Route
+                exact
+                path="/invoices/:invoiceId/invoice-detail"
+                component={DetailInvoice}
+              />
+
               <Route
                 exact
                 path="/clients/:clientId/recurring-templates"
@@ -199,12 +206,7 @@ function App() {
                 path="/invoices/outstanding-balance"
                 component={OutstandingBalance}
               />
-              <Route
-                exact
-                path="/invoices/:invoiceId/invoice-detail"
-                component={DetailInvoice}
-              />
-
+          
               <Route exact path="/global-settings" component={GlobalSetting} />
               <Route
                 exact

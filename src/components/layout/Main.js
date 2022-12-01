@@ -8,6 +8,9 @@ import Header from "./Header";
 import TabsSettting from "./TabsSettting";
 import {useQuery} from "react-query"
 import tw from "twin.macro";
+import AccordionInvoice from "../AccordionInvoice";
+import { LayoutInvoice } from '../../pages/invoices/LayoutInvoice.style';
+import HeaderInvoice from "./HeaderInvoice";
 
 
 const { Header: AntHeader, Content, Sider } = Layout;
@@ -53,6 +56,7 @@ function Main({ children }) {
   useEffect(() => {
     settingData && setSetting(settingData?.data?.setting)
   }, [settingData])
+  console.log(pathname,"Pathname");
   return (
     <Layout
       className={`layout-dashboard ${
@@ -103,6 +107,7 @@ function Main({ children }) {
       >
         <Sidenav color={sidenavColor} user={user} setting={setting} />
       </Sider>
+{!pathname.includes('invoice-detail') ?
       <Layout>
         {fixed ? (
           <Affix>
@@ -134,6 +139,41 @@ function Main({ children }) {
         <Content className="content-ant" >{children}</Content>
         {/* <Footer /> */}
       </Layout>
+    :<LayoutInvoice>
+         {fixed ? (
+          <Affix>
+            <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+              <HeaderInvoice
+                onPress={openDrawer}
+                name={pathname}
+                subName={pathname}
+                handleSidenavColor={handleSidenavColor}
+                handleSidenavType={handleSidenavType}
+                handleFixedNavbar={handleFixedNavbar}
+              />
+            </AntHeader>
+          </Affix>
+        ) :  (
+          <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+            <HeaderInvoice
+              onPress={openDrawer}
+              name={pathname}
+              subName={pathname}
+              handleSidenavColor={handleSidenavColor}
+              handleSidenavType={handleSidenavType}
+              handleFixedNavbar={handleFixedNavbar}
+            />
+          </AntHeader>
+        ) 
+        }
+
+<AccordionInvoice/>
+
+<Content className="content-ant" >{children}</Content>
+
+    </LayoutInvoice>  
+    
+    }
     </Layout>
   );
 }

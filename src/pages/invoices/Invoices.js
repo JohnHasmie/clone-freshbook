@@ -2,21 +2,31 @@ import {
   CaretDownOutlined,
   CopyOutlined,
   DollarOutlined,
+  DownOutlined,
   EditOutlined,
   EllipsisOutlined,
   HddOutlined,
   MailOutlined,
   PhoneOutlined,
   PlusOutlined,
+  PrinterOutlined,
+  RestOutlined,
+  RightOutlined,
   SearchOutlined,
+  SendOutlined,
+  UndoOutlined,
   UnorderedListOutlined,
+  VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
 import {
+  Button,
   Card,
   Checkbox,
   Col,
   Divider,
   Form,
+  Menu,
+  Popover,
   Row,
   Table,
   Tabs,
@@ -32,59 +42,38 @@ import Photo from "../../assets/images/mask-group.svg";
 import CardInvoice from "../../components/CardInvoice/index";
 import TableCustom from "../../components/Button copy";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
-import FormAdvanceSearch, { FormAdvanceSearchClient, FormAdvanceSearchInvoice } from "../clients/FormAdvanceSearch";
+import FormAdvanceSearch, {
+  FormAdvanceSearchClient,
+  FormAdvanceSearchInvoice,
+} from "../clients/FormAdvanceSearch";
 import InvoiceTabs from "./InvoicesTabs";
 
 export default function Invoices() {
   const { Title, Text } = Typography;
-  const [checked, setChecked] = useState(false);
   const [status, setStatus] = useState("sent");
   const [isAdvance, setIsAdvance] = useState(false);
   const [form] = Form.useForm();
-
-  const columns = [
-    {
-      title: (
-        <Checkbox
-          className="font-normal"
-          onChange={() => setChecked(!checked)}
-        />
-      ),
-      dataIndex: "checkbox",
-      key: "checkbox",
-    },
-    {
-      title: "Client/Invoice Number",
-      dataIndex: "client_invoice_number",
-      key: "client_invoice_number",
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-    },
-
-    {
-      title: "Issued Date/Due Date",
-      key: "date",
-      dataIndex: "date",
-    },
-
-    {
-      title: "Amount / Status",
-      key: "amount",
-      dataIndex: "amount",
-    },
-  ];
-
+  const [checked, setChecked] = useState([]);
+  const handleCheck = (v) => {
+    const newChecked = [...checked];
+    const findById = newChecked.find((x) => x === v);
+    if (findById) {
+      const findIndex = checked.indexOf(v);
+      newChecked.splice(findIndex, 1);
+    } else {
+      newChecked.push(v);
+    }
+    setChecked(newChecked);
+  };
   const data = [
     {
       key: "1",
       checkbox: (
         <Checkbox
           className="font-normal"
-          checked={checked}
-          onChange={(e) => console.log(e.target.value)}
+          value={1}
+          checked={checked.includes("1")}
+          onChange={(e) => handleCheck(e.target.value)}
         />
       ),
       client_invoice_number: (
@@ -143,6 +132,116 @@ export default function Invoices() {
       ),
     },
   ];
+
+  const handleCheckAll = () => {
+    const all = data?.map((item) => item.key);
+    if (data?.length === checked.length) {
+      setChecked([]);
+    } else {
+      setChecked(all);
+    }
+  };
+
+  const columns = [
+    {
+      title: (
+        <Checkbox
+          checked={data?.length === checked.length}
+          className="font-normal"
+          onChange={handleCheckAll}
+        />
+      ),
+      dataIndex: "checkbox",
+      key: "checkbox",
+    },
+    {
+      title: "Client/Invoice Number",
+      dataIndex: "client_invoice_number",
+      key: "client_invoice_number",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+
+    {
+      title: "Issued Date/Due Date",
+      key: "date",
+      dataIndex: "date",
+    },
+
+    {
+      title: "Amount / Status",
+      key: "amount",
+      dataIndex: "amount",
+    },
+  ];
+
+  const bulkList = (
+    <div tw="w-36">
+      <Menu>
+        <Menu.Item>
+          <div>
+            <EditOutlined />
+            <span>Edit</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item>
+          <div>
+            <CopyOutlined />
+            <span>Duplicate</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item>
+          <div>
+            <PrinterOutlined />
+            <span>Print</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item>
+          <div>
+            <MailOutlined />
+            <span>Send By Email</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item>
+          <div>
+            <SendOutlined />
+            <span>Mark as Sent</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item>
+          <div>
+            <DollarOutlined />
+            <span>Add a Payment</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item>
+          <div>
+            <VerticalAlignBottomOutlined />
+            <span>Download PDF</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item>
+          <div>
+            <HddOutlined />
+            <span>Archive</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item>
+          <div>
+            <RestOutlined />
+            <span>Delete</span>
+          </div>
+        </Menu.Item>
+      </Menu>
+    </div>
+  );
+
   return (
     <>
       <div className="layout-content">
@@ -199,7 +298,7 @@ export default function Invoices() {
             </div>
           </div>
           <div tw="mt-20">
-            <InvoiceTabs/>
+            <InvoiceTabs />
             <div
               style={{
                 display: "flex",
@@ -208,24 +307,53 @@ export default function Invoices() {
               }}
             >
               <div tw="flex items-center ">
-                <Title level={3}>All Invoices </Title>
-                <PlusOutlined tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer -mt-5 " />
+                <span tw="text-xl font-bold text-black">All Invoices </span>
+                {checked.length > 0 ? (
+                  <>
+                    <RightOutlined tw=" ml-2" />
+                    <span tw="text-xl font-bold text-black ml-2">Selected</span>
+                    <span tw="align-middle bg-gray-300 text-black rounded-full px-2  mx-2">
+                      {checked.length}
+                    </span>
+                    <Popover
+                      placement="bottom"
+                      content={bulkList}
+                      trigger="click"
+                    >
+                      <div className="flex items-center justify-center">
+                        <Button>
+                          <span tw="mr-2">Bulk Actions</span>
+                          <DownOutlined />
+                        </Button>
+                      </div>
+                    </Popover>
+                  </>
+                ) : (
+                  <PlusOutlined tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer" />
+                )}
               </div>
               <div tw="flex relative cursor-pointer">
-                <InputAdvanceSearch  prefix={<SearchOutlined />} />
-                <div onClick={()=>setIsAdvance(!isAdvance)}  tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center px-1">
+                <InputAdvanceSearch prefix={<SearchOutlined />} />
+                <div
+                  onClick={() => setIsAdvance(!isAdvance)}
+                  tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center px-1"
+                >
                   <UnorderedListOutlined />
                   <span tw="text-xs ml-2">Advanced Search </span>
-                  <CaretDownOutlined tw='ml-1' />
+                  <CaretDownOutlined tw="ml-1" />
                 </div>
               </div>
             </div>
-            {isAdvance ?  <div tw='bg-gray-100 border-y-2 border-gray-400 p-3 mb-4'>
-           <FormAdvanceSearchInvoice form={form} setIsAdvance={setIsAdvance}/>
-
-            </div>
-          : <></>  
-          }
+            {isAdvance ? (
+              <div tw="bg-gray-100 border-y-2 border-gray-400 p-3 mb-4">
+                <FormAdvanceSearchInvoice
+                  form={form}
+                  setIsAdvance={setIsAdvance}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
             <div className="table-responsive">
               <TableCustom
                 columns={columns}
