@@ -438,8 +438,8 @@ body {
 .layout-dashboard .ant-layout-header {
   background: transparent;
   height: auto;
-  padding: 16px;
-  margin: 10px;
+  padding: 16px 16px 16px 0;
+  /* margin: 10px; */
   line-height: inherit;
   border-radius: 12px;
   transition: 0.2s;
@@ -539,13 +539,13 @@ body {
   height: 22px;
 }
 
-.h3,
+/* .h3,
 .h4,
 h3,
 h4 {
   font-weight: 700;
   color: #141414;
-}
+} */
 
 .ant-list-item-meta-title>a {
   color: rgba(0, 0, 0, 0.65);
@@ -1422,7 +1422,14 @@ span.ismobile {
     padding: 0;
     margin: 0 20px 0;
   }
-
+  .layout-dashboard .ant-layout-header {
+    background: transparent;
+    height: auto;
+    padding: 16px;
+    line-height: inherit;
+    border-radius: 12px;
+    transition: 0.2s;
+  }
   footer.ant-layout-footer {
     padding: 0px 15px;
     text-align: center;

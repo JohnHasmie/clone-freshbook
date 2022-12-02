@@ -2,41 +2,34 @@ import { Button } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledButton = styled(Button)(({ hidden }) => [
-    tw`p-button px-4 h-auto flex items-center justify-center`,
-    css`
-        /* Add specifity so that we don't need to add ! rule to override */
-        && {
-            width: 180px;
-            justify-content: space-between;
-            align-items: self-start;
-            padding-bottom: 5px;
+  tw`p-button px-4 flex items-center justify-center`,
+  css`
+    && {
 
-            span {
-                ${tw`text-lg`},
-                // font-family: "Familjen Grotesk", Helvetica, Arial, sans-serif;
-            }
-    
-            .anticon {
-                ${tw`inline-block pl-2 ml-2 -mr-3 border-l border-l-gray-100 text-white`}
+      span {
+        ${tw`text-xl`},
+      }
 
-                path {
-                    ${tw`fill-current`}
-                }
-            }
+      .anticon {
+        ${tw`inline-block opacity-50 flex items-center pl-2 ml-2 -mr-3 border-l border-l-gray-100 text-white`}
 
-            &:hover {
-                ${tw`bg-[#348e09] text-white`}
-            }
-
-            svg {
-                margin-top: 2px;
-
-                path {
-                    fill: #fff;
-                }
-            }
+        path {
+          ${tw`fill-current`}
         }
-    `,
-    /** Example of passing property to the styles */
-    hidden && tw`hidden`,
-])
+      }
+
+      &:hover {
+        ${tw`bg-[#348e09] text-white`}
+      }
+
+    //   svg {
+    //     ${tw`inline-block pl-2 ml-2 opacity-50  border-l border-l-gray-100 text-white`}
+    //     path {
+    //       fill: #fff;
+    //     }
+    //   }
+    }
+  `,
+  /** Example of passing property to the styles */
+  hidden && tw`hidden`,
+]);

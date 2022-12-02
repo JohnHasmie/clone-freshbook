@@ -1,10 +1,9 @@
-import { Col, Row, Tabs, Typography } from "antd";
+import { Col, Row, Tabs } from "antd";
 import React from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
 
 export default function TabsSettting() {
-  const { Title } = Typography;
   const { pathname } = useLocation();
 
   const history = useHistory();
