@@ -119,12 +119,12 @@ export default function NewClient() {
             layout="vertical"
           >
             <div tw="grid grid-cols-1 md:grid-cols-2 gap-3 mt-10">
-              <div>
+              <div tw="col-span-2 md:col-span-1">
                 <Form.Item label="First Name" name="first_name">
                   <Input type="text" />
                 </Form.Item>
               </div>
-              <div>
+              <div tw="col-span-2 md:col-span-1">
                 <Form.Item label="Last Name" name="last_name">
                   <Input type="text" />
                 </Form.Item>
