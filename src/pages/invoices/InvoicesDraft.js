@@ -1,19 +1,21 @@
 import {
+  CopyOutlined,
   EditOutlined,
+  EllipsisOutlined,
   HddOutlined,
   RestOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { Checkbox, Tooltip } from "antd";
+import { Checkbox, Form, Tooltip, Typography } from "antd";
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 
 import TableCustom from "../../components/Button copy/index";
+import TabHome from "../clients/TabHome";
 
-import TabHome from "./TabHome";
 
-export default function ClientsOverdue() {
+export default function InvoicesDraft() {
   const history = useHistory();
   const [checked, setChecked] = useState([]);
   const handleCheck = (v) => {
@@ -33,25 +35,30 @@ export default function ClientsOverdue() {
       checkbox: (
         <Checkbox
           className="font-normal"
-          value={"1"}
+          value={1}
           checked={checked.includes("1")}
           onChange={(e) => handleCheck(e.target.value)}
         />
       ),
-      organization: (
+      client_invoice_number: (
         <div>
           <h3>Company Name</h3>
-          <p>First Client</p>
+          <p>00148</p>
         </div>
       ),
-      internal: <span></span>,
+      description: <span tw="flex items-start">PSD to HTML</span>,
 
-      credit: <span></span>,
-      outstanding: (
-        <div tw="grid justify-start relative">
+      date: (
+        <div>
+          <h3>25/10/2022</h3>
+          <p>Due in 4 days</p>
+        </div>
+      ),
+      amount: (
+        <div tw="text-right relative">
           <div
             className="isVisible"
-            tw="absolute bottom-10 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
+            tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
@@ -59,17 +66,26 @@ export default function ClientsOverdue() {
               </Tooltip>
             </div>
             <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
-              <Tooltip placement="top" title="archive">
-                <HddOutlined tw="px-2 py-1 " />
+              <Tooltip placement="top" title="duplicate">
+                <CopyOutlined tw="px-2 py-1" />
               </Tooltip>
             </div>
-            <div tw="hover:bg-gray-100 ">
-              <Tooltip placement="top" title="delete">
-                <RestOutlined tw="px-2 py-1 " />
+
+          
+              <div tw="hover:bg-gray-100   border-r border-gray-200 ">
+                <Tooltip placement="top" title="archive">
+                  <HddOutlined tw="px-2 py-1 " />
+                </Tooltip>
+              </div>
+         
+            <div tw="hover:bg-gray-100   ">
+              <Tooltip placement="top" title="More">
+                <EllipsisOutlined tw="text-xs px-2 py-1" />
               </Tooltip>
             </div>
           </div>
-          <span tw="font-bold text-black text-right">$20,000,000.00</span>
+          <h3>$6,000.000 USD</h3>
+          <span tw="bg-green-400 rounded p-1">paid</span>
         </div>
       ),
     },
@@ -83,6 +99,7 @@ export default function ClientsOverdue() {
       setChecked(all);
     }
   };
+
   const columns = [
     {
       title: (
@@ -96,29 +113,26 @@ export default function ClientsOverdue() {
       key: "checkbox",
     },
     {
-      title: "Organization",
-      dataIndex: "organization",
-      key: "organization",
-      width: "30%",
+      title: "Client/Invoice Number",
+      dataIndex: "client_invoice_number",
+      key: "client_invoice_number",
     },
     {
-      title: "Internal Note",
-      dataIndex: "internal",
-      key: "internal",
-      width: "30%",
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
     },
 
     {
-      title: "Credit",
-      key: "credit",
-      dataIndex: "credit",
+      title: "Issued Date/Due Date",
+      key: "date",
+      dataIndex: "date",
     },
 
     {
-      title: "Total Outstanding",
-      key: "outstanding",
-      dataIndex: "outstanding",
-      width: "20%",
+      title: "Amount / Status",
+      key: "amount",
+      dataIndex: "amount",
     },
   ];
 
@@ -138,7 +152,7 @@ export default function ClientsOverdue() {
               </span>
               <RightOutlined tw=" ml-2" />
               <span tw="text-xl font-bold text-black ml-2">
-                Clients with Overdue Invoices
+                Clients with Invoices in Draft
               </span>
             </div>
 

@@ -55,6 +55,9 @@ import OutstandingBalance from "./pages/invoices/OutstandingBalance";
 import ClientsArchived from "./pages/clients/ClientsArchived";
 import ClientsDeleted from "./pages/clients/ClientsDeleted";
 import EmailDeleted from "./pages/clients/EmailDeleted";
+import InvoicesOverdue from './pages/invoices/InvoicesOverdue';
+import InvoicesDraft from './pages/invoices/InvoicesDraft';
+import InvoicesOutstanding from "./pages/invoices/InvoicesOutstanding";
 
 function App() {
   let { pathname } = useLocation();
@@ -201,7 +204,13 @@ function App() {
               />
 
               <Route exact path="/invoices" component={Invoices} />
-
+              <Route exact path="/invoices/draft" component={InvoicesDraft} />
+              <Route exact path="/invoices/overdue" component={InvoicesOverdue} />
+              <Route
+                exact
+                path="/invoices/outstanding"
+                component={InvoicesOutstanding}
+              />
               <Route
                 exact
                 path="/invoices/recurring-templates"

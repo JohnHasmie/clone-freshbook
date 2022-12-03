@@ -1,14 +1,22 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
 
 export default function TabHome() {
   const history = useHistory();
+  let { pathname } = useLocation();
+const handleClick=(type)=>{
+  if(pathname.includes('clients')){
+    history.push(`/clients/${type}`)
+  }else{
+    history.push(`/invoices/${type}`)
+  }
+}
   return (
     <div tw="hidden md:grid grid-cols-3 gap-4 justify-items-center content-center">
       <div
         tw="cursor-pointer w-full text-center hover:border-t hover:border-primary"
-        onClick={() => history.push("/clients/overdue")}
+        onClick={() => handleClick("overdue")}
       >
         <div>
           <span tw="text-4xl font-bold text-blue-700">$0 </span>
@@ -19,7 +27,7 @@ export default function TabHome() {
       </div>
       <div
         tw="cursor-pointer w-full text-center hover:border-t hover:border-primary"
-        onClick={() => history.push("/clients/outstanding")}
+        onClick={() => handleClick("outstanding")}
       >
         <div>
           <span tw="text-4xl font-bold text-blue-700">$0 </span>
@@ -29,7 +37,7 @@ export default function TabHome() {
       </div>
       <div
         tw="cursor-pointer w-full text-center hover:border-t hover:border-primary"
-        onClick={() => history.push("/clients/draft")}
+        onClick={() => handleClick("draft")}
       >
         <div>
           <span tw="text-4xl font-bold text-blue-700">$0 </span>

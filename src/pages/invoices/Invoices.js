@@ -42,8 +42,8 @@ export default function Invoices() {
   const [status, setStatus] = useState("sent");
   const [isAdvance, setIsAdvance] = useState(false);
   const [form] = Form.useForm();
-  const [checked, setChecked] = useState([]);
   const history = useHistory();
+  const [checked, setChecked] = useState([]);
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);

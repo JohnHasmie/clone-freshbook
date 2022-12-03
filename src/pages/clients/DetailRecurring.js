@@ -74,7 +74,7 @@ export default function DetailRecurring() {
       checkbox: (
         <Checkbox
           className="font-normal"
-          value={1}
+          value={"1"}
           checked={checked.includes("1")}
           onChange={(e) => handleCheck(e.target.value)}
         />
@@ -162,7 +162,6 @@ export default function DetailRecurring() {
     } else {
       setChecked(all);
     }
-    console.log(checked, "All");
   };
   const columns = [
     {

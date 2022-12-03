@@ -316,7 +316,7 @@ function Header({
           </div>
           <div tw="flex items-center">
             <span tw="capitalize text-4xl font-bold">
-              {subName.replace("/", "")}
+              Invoices
             </span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
