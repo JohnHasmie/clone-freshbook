@@ -4,34 +4,28 @@ import {
   Menu,
   Modal,
   Popover,
-  Table,
+  
   Tooltip,
   Typography,
 } from "antd";
 import React, { useState } from "react";
 
-import { Link, useHistory, useParams } from "react-router-dom";
+
 import ClientInfo from "../../components/ClientsComponent/ClientInfo";
 import ClientTabs from "../../components/ClientsComponent/ClientTabs";
 import {
-  AppstoreAddOutlined,
-  CopyOutlined,
-  DollarCircleOutlined,
-  DollarOutlined,
+ 
   DownOutlined,
   EditOutlined,
-  EllipsisOutlined,
-  FieldTimeOutlined,
-  FileDoneOutlined,
+ 
   HddOutlined,
-  PieChartOutlined,
+
   PlusOutlined,
   RestOutlined,
   RightOutlined,
-  SnippetsOutlined,
-  SyncOutlined,
+
 } from "@ant-design/icons";
-import CardReport from "../../components/CardReport";
+
 import tw from "twin.macro";
 import TableCustom from "../../components/Button copy";
 import FormAddContact from "./FormAddContact";

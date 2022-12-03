@@ -13,6 +13,7 @@ import CardClient from "../CardClient";
 import CardDetail from "../CardDetail";
 import Photo from "../../assets/images/mask-group.svg";
 import tw from "twin.macro";
+import DashboardChart from "../chart/DashboardChart";
 
 export default function ClientInfo() {
   const [filterInvoice, setFilterInvoice] = useState("usd");
@@ -104,7 +105,11 @@ export default function ClientInfo() {
                     </div>
                     <div tw="text-primary text-2xl font-bold">Rp0</div>
                   </div>
-                  <div
+                  <div >
+                  <DashboardChart/>
+
+                  </div>
+                  {/* <div
                     style={{
                       alignItems: "flex-start",
                       display: "flex",
@@ -234,7 +239,7 @@ export default function ClientInfo() {
                         total outstanding
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div style={{ paddingTop: "24px", display: "inline-block" }}>
                     <div style={{ verticalAlign: "middle", width: "100%" }}>
                       <div

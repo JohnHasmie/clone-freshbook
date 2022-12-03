@@ -9,7 +9,6 @@ function DashboardChart() {
     <>
       <div id="chart">
         <ReactApexChart
-          className="bar-chart"
           options={dashboardChart.options}
           series={dashboardChart.series}
           type="bar"

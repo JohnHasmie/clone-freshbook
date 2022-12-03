@@ -5,24 +5,15 @@ import {
   Col,
   Row,
   Typography,
-  Tooltip,
-  Progress,
-  Upload,
-  message,
-  Button,
-  Timeline,
-  Radio,
+ 
   Popover,
   Menu,
 } from "antd";
 import {
-  ToTopOutlined,
-  MenuUnfoldOutlined,
-  RightOutlined,
+
   DownOutlined,
 } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
-
 import Echart from "../components/chart/EChart";
 import DashboardChart from "../components/chart/DashboardChart";
 
@@ -136,7 +127,7 @@ function Home() {
                         }}
                       >
                         <div style={{ flexGrow: "1" }}>
-                          <div style={{ position: "relative", height: "30px" }}>
+                          {/* <div style={{ position: "relative", height: "30px" }}>
                             <div
                             tw="left-0 absolute pt-2"
                               
@@ -159,8 +150,8 @@ function Home() {
                             >
                               6k
                             </div>
-                          </div>
-                          <div
+                          </div> */}
+                          {/* <div
                             style={{
                               borderLeft: "2px solid #cdd4d9",
                               padding: "3px 0",
@@ -170,7 +161,7 @@ function Home() {
                           >
                             <div
                               style={{
-                                // backgroundColor: "#f3f4f6",
+                             
                                 borderTopRightRadius: "5px",
                                 borderBottomRightRadius: "5px",
                                 height: "40px",
@@ -187,15 +178,16 @@ function Home() {
                                 }}
                               ></div>
                             </div>
-                          </div>
+                          </div> */}
+                        <DashboardChart/>
+
                         </div>
                         <div
                           style={{ textAlign: "right", marginLeft: "20px" }}
-                          // class="number js-outstanding-revenue-summary u-textAlign--right u-marginLeft--1"
-                          // data-ebd-id="ember372-trigger"
+                          
                         >
                           <div
-                            /* class="number-value" */ style={{
+                           style={{
                               color: "#0063c1",
                               fontWeight: "500",
                               whiteSpace: "nowrap",
@@ -208,15 +200,13 @@ function Home() {
                                 fontSize: "30px",
                                 fontWeight: "bold",
                               }}
-                              /*  id="ember362"
-                             class="ember-view link js-outstanding-revenue-link"
-                             data-link-to="link" */
+                             
                               href="#/invoices/outstanding"
                             >
                               $6,000
                             </a>
                           </div>
-                          <div /* class="number-description" */
+                          <div 
                             style={{
                               color: "#576981",
                               fontSize: "16px",
@@ -398,9 +388,8 @@ function Home() {
             </Card>
           </Col>
         </Row>
-
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
-          <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
+        <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="grid gap-y-2 md:flex justify-between">
               <div tw="flex items-baseline">
                 <Title level={3}>Monthly Recurring Revenue</Title>
@@ -461,6 +450,40 @@ function Home() {
                   <div>this month</div>
                 </div>
               </div>
+            </Card>
+          </Col>
+</Row>
+        <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
+        
+            <Col span={24} className="mb-24">
+            <div tw="grid gap-y-2 md:flex justify-between">
+              <div tw="flex items-baseline">
+                <Title level={3}>Monthly Recurring Revenue</Title>
+                <Popover
+                  tw="ml-5  flex items-center justify-center "
+                  placement="bottom"
+                  content={FilterRecurring}
+                  trigger="click"
+                >
+                  <span tw="cursor-pointer mr-2 text-base ">
+                    for Dec 1, 2021 to Nov 30, 2022 (IDR)
+                  </span>
+                  <DownOutlined />
+                </Popover>
+              </div>
+              <a
+                onClick={() =>
+                  history.push("dashboard/reports/recurring-revenue")
+                }
+                tw="text-base hover:opacity-60"
+                role="button"
+                style={{ color: "#0063c1" }}
+              >
+                View Recurring Revenue Annual Report
+              </a>
+            </div>
+            <Card bordered={false} className="criclebox h-full">
+              <LineChart />
             </Card>
           </Col>
         </Row>
