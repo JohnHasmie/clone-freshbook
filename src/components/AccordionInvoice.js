@@ -12,7 +12,7 @@ export default function AccordionInvoice() {
   const [message, setMessage] = useState('')
   
   return (
-     <Collapse tw="ml-5 mb-10 " defaultActiveKey={[]} onChange={onChange}>
+     <Collapse tw="md:ml-5 mb-10 " defaultActiveKey={[]} onChange={onChange}>
        <AccordionCustomPanel  header="Overdue" key="1">       
          <Form>
           <ul style={{paddingInlineStart:'30px'}}>

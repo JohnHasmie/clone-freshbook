@@ -19,6 +19,8 @@ import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import MoreAction from "../../components/Reports/MoreAction";
 import SendEmail from "../../components/Reports/SendEmail";
+import ButtonCustom from "../../components/Button/index";
+import { bell, toggler } from "../../components/Icons";
 
 export default function AccountTrialBalance() {
   const [open, setOpen] = useState(false);
@@ -36,7 +38,7 @@ export default function AccountTrialBalance() {
     <div>
       <div tw="flex justify-between mb-5">
         <span tw="text-2xl font-bold">Filters</span>
-    
+
         <span tw="text-xs text-primary">Reset All</span>
       </div>
       <Form
@@ -84,31 +86,47 @@ export default function AccountTrialBalance() {
   );
   return (
     <div tw="max-w-screen-lg mx-auto">
-      <div
-        onClick={() => history.goBack()}
-        tw="flex w-10 items-center mt-5 text-primary cursor-pointer"
-      >
-        <LeftOutlined />
-        <span tw="ml-1">Reports</span>
-      </div>
-      <div tw="flex justify-between items-center my-2">
-        <Title level={2}>Trial Balance</Title>
-        <div tw="flex ">
+      <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
+        <div tw="flex justify-between md:hidden">
+          <div>{bell}</div>
+          <ButtonCustom
+            tw="!bg-transparent !border-0 hover:opacity-50"
+            type="link"
+            className="sidebar-toggler"
+            // onClick={() => onPress()}
+          >
+            {toggler}
+          </ButtonCustom>
+        </div>
+        <div tw="md:col-span-2">
+          <button
+            onClick={() => history.goBack()}
+            tw="bg-transparent flex items-center mt-5 text-primary cursor-pointer"
+          >
+            <LeftOutlined />
+            <span tw="ml-1">Reports</span>
+          </button>
+        </div>
+        <div tw="flex items-center">
+          <span tw="capitalize text-4xl font-bold">Trial Balance</span>
+        </div>
+        <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <Popover placement="bottom" content={MoreAction} trigger="click">
-            <ButtonMore>
+            <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />
             </ButtonMore>
           </Popover>
           <Popover placement="bottom" content={SendEmail} trigger="click">
-            <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center ">
+            <Button tw=" md:ml-2 bg-success text-white px-4  flex justify-center items-center ">
               <span tw="text-lg">Send...</span>
             </Button>
           </Popover>
         </div>
       </div>
-      <div tw="grid grid-cols-12 gap-5">
-        <CardReporting tw="col-span-9 mb-10">
+
+      <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
+        <CardReporting tw="md:col-span-9 mb-10 mt-10 md:mt-2">
           <h1 tw="text-blueDefault">Account Statement</h1>
           <div tw="grid">
             <span tw="text-xs">SJ Marketing</span>

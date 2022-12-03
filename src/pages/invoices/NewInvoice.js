@@ -21,7 +21,8 @@ import SendEmail from "../../components/Reports/SendEmail";
 import InvoiceHead from "./InvoiceHead";
 import InvoiceLines from "./InvoiceLines";
 import { SettingButton } from "./NewInvoice.style";
-
+import { bell, toggler } from '../../components/Icons';
+import ButtonCustom from '../../components/Button/index';
 
 export default function NewInvoice() {
   const [open, setOpen] = useState(false);
@@ -73,29 +74,45 @@ export default function NewInvoice() {
   console.log(isForm, "is Form");
   return (
     <div tw="max-w-screen-lg mx-auto">
-      <div tw="flex justify-between items-center my-2">
-        <Title level={2}>New Invoice</Title>
-
-        <div tw="flex ">
-          <ButtonMore onClick={() => history.goBack()}>
+        <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
+          <div tw="flex justify-between md:hidden">
+            <div>{bell}</div>
+            <ButtonCustom
+              tw="!bg-transparent !border-0 hover:opacity-50"
+              type="link"
+              className="sidebar-toggler"
+              // onClick={() => onPress()}
+            >
+              {toggler}
+            </ButtonCustom>
+          </div>
+          
+          <div tw="flex items-center">
+            <span tw="capitalize text-4xl font-bold">New Invoice</span>
+          </div>
+          <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
+          <ButtonMore tw="!py-2" onClick={() => history.goBack()}>
             <span>Cancel</span>
           </ButtonMore>
-          <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center ">
+          <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center ">
             <span tw="text-lg">Save...</span>
           </Button>
           <Popover placement="bottom" content={SendEmail} trigger="click">
-            <Button tw=" ml-2 bg-success text-white px-4 h-auto flex items-center ">
+            <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center ">
               <span tw="text-lg">Send To...</span>
             </Button>
           </Popover>
+          </div>
+
         </div>
-      </div>
-      <div tw="grid grid-cols-12 gap-5">
-        <CardDetailInvoice tw='col-span-9 mb-10'>
-          <div tw="flex justify-between mb-10">
+  
+      <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2">
+        <CardDetailInvoice tw="md:col-span-9 mb-10 mt-10 md:mt-2">
+          <div tw="grid gap-y-2 md:flex justify-between mb-10">
             <img
               src="https://source.unsplash.com/200x200?company"
               alt="profile company"
+              tw="w-screen md:w-auto"
             />
             <div tw="flex justify-between">
               <div tw="mr-3"><input type="text" name="name" value={isForm.name} onChange={handleInput} tw=" w-20 text-sm" /></div>

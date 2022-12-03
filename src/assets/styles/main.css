@@ -1434,6 +1434,19 @@ span.ismobile {
     padding: 0px 15px;
     text-align: center;
   }
+  .accordion-message-active {
+    width:14rem;
+    margin-right:8px;
+    margin-left:8px;
+  
+  }
+  
+  .accordion-message {
+    width:20rem;
+    margin-right:8px;
+    margin-left:8px;
+  
+  }
 
   .project-ant {
     display: block;

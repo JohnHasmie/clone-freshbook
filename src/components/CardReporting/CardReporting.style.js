@@ -2,7 +2,7 @@ import { Card } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledCardReporting = styled(Card)(({ hidden,bordered  }) => [
-    tw`  border-gray-200 rounded-lg min-h-[50rem]`,
+    tw`  border-gray-200 rounded-lg md:min-h-[50rem]`,
     css`
    
         && {

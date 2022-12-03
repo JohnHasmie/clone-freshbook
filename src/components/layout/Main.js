@@ -12,9 +12,10 @@ import AccordionInvoice from "../AccordionInvoice";
 import { LayoutInvoice } from '../../pages/invoices/LayoutInvoice.style';
 import HeaderInvoice from "./HeaderInvoice";
 
+import React from "react";
 
 const { Header: AntHeader, Content, Sider } = Layout;
-
+export const MainContext = React.createContext();
 function Main({ children }) {
   const [visible, setVisible] = useState(false);
   const [placement, setPlacement] = useState("right");
@@ -29,7 +30,7 @@ function Main({ children }) {
   const handleSidenavType = (type) => setSidenavType(type);
   const handleSidenavColor = (color) => setSidenavColor(color);
   const handleFixedNavbar = (type) => setFixed(type);
-
+console.log(openDrawer);
   let { pathname } = useLocation();
   pathname = pathname.replace("/", "");
 
@@ -56,8 +57,8 @@ function Main({ children }) {
   useEffect(() => {
     settingData && setSetting(settingData?.data?.setting)
   }, [settingData])
-  console.log(pathname,"Pathname");
   return (
+    
     <Layout
       className={`layout-dashboard ${
         pathname === "profile" ? "layout-profile" : ""
@@ -169,12 +170,13 @@ function Main({ children }) {
 
 <AccordionInvoice/>
 
-<Content className="content-ant" >{children}</Content>
+<Content tw="mx-auto " >{children}</Content>
 
     </LayoutInvoice>  
     
     }
     </Layout>
+    
   );
 }
 

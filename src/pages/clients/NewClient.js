@@ -1,20 +1,13 @@
 import {
-  DownOutlined,
   InfoOutlined,
-  LeftOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import {
   Button,
-  Col,
   Divider,
   Form,
   Input,
-  Popover,
-  Radio,
-  Row,
   Select,
-  Space,
   Typography,
 } from "antd";
 import React, { useState } from "react";
@@ -23,9 +16,8 @@ import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import { countryList } from "../../components/Countries";
 import ButtonMore from "../../components/Reports/ButtonMore";
-import Filter from "../../components/Reports/Filter";
-import MoreAction from "../../components/Reports/MoreAction";
-import SendEmail from "../../components/Reports/SendEmail";
+import { bell, toggler } from '../../components/Icons';
+import ButtonCustom from '../../components/Button/index';
 import ClientSetting from "./ClientSetting";
 
 export default function NewClient() {
@@ -84,22 +76,38 @@ export default function NewClient() {
  
   return (
     <div tw="max-w-screen-lg mx-auto">
-      <div tw="flex justify-between items-center my-2">
-        <Title level={2}>New Client</Title>
-        <div tw="flex ">
+       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
+          <div tw="flex justify-between md:hidden">
+            <div>{bell}</div>
+            <ButtonCustom
+              tw="!bg-transparent !border-0 hover:opacity-50"
+              type="link"
+              className="sidebar-toggler"
+              // onClick={() => onPress()}
+            >
+              {toggler}
+            </ButtonCustom>
+          </div>
+          
+          <div tw="flex items-center">
+            <span tw="capitalize text-4xl font-bold">New Client</span>
+          </div>
+          <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <ButtonMore onClick={() => history.goBack()}>
             <span>Cancel</span>
           </ButtonMore>
           <Button
             onClick={() => form.submit()}
-            tw=" ml-2 bg-success text-white px-4 h-auto flex items-center "
+            tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex items-center "
           >
             <span tw="text-lg">Save</span>
           </Button>
+          </div>
+
         </div>
-      </div>
-      <div tw="grid grid-cols-12 gap-5">
-        <CardReporting tw="col-span-9 mb-10">
+      
+      <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
+        <CardReporting tw="md:col-span-9 mb-10 mt-10 md:mt-2">
           <span tw="text-xs text-gray-500">
             <InfoOutlined tw="mr-1 rounded-full border p-0.5" /> Either First
             and Last Name or Company Name is required to save this Client.

@@ -6,7 +6,7 @@ import tw from "twin.macro";
 export default function Filter({Filtering,open,setOpen}) {
   const { Title } = Typography;
   return (
-    <div tw="col-span-3">
+    <div tw="md:col-span-3 mb-10">
     {!open ? <>
          <Title level={3}>Settings</Title>
          <div tw="border-y border-black px-1 py-2 cursor-pointer hover:text-primary" onClick={()=>setOpen(!open)}>

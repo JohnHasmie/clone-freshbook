@@ -153,8 +153,8 @@ export default function Detail() {
   return (
     <>
       <div className="layout-content">
-        <div tw="grid grid-cols-12 justify-items-center">
-          <div tw="col-span-11 mb-10">
+        <div tw="grid grid-cols-1 md:grid-cols-12 justify-items-center max-w-screen-lg">
+          <div tw="md:col-span-12 mb-10 ">
             <p>
               {" "}
               <ExclamationCircleOutlined tw="mr-2" />
@@ -168,10 +168,11 @@ export default function Detail() {
               totalling $6,000.00 USD
             </p>
             <CardDetailInvoice>
-              <div tw="flex justify-between mb-10">
+              <div tw="grid gap-2 md:flex justify-between mb-10">
                 <img
                   src="https://via.placeholder.com/200x200?company"
                   alt="profile company"
+                  tw="w-screen md:w-auto"
                 />
                 <div tw="flex justify-between">
                   <div tw="mr-3">Oasis Land</div>
@@ -184,7 +185,7 @@ export default function Detail() {
                   </div>
                 </div>
               </div>
-              <div tw="grid grid-cols-4 mb-16">
+              <div tw="grid grid-cols-2 md:grid-cols-4 mb-16">
                 <div tw="grid gap-0">
                   <span tw="text-gray-400">Billed To</span>
                   <span tw="text-xs">First Client</span>
@@ -216,7 +217,7 @@ export default function Detail() {
                   <span tw="invisible text-xs">hide</span>
                   <span tw="invisible text-xs">hide</span>
                 </div>
-                <div tw="grid gap-0 text-right">
+                <div tw="grid gap-0 md:text-right">
                   <span tw="text-gray-400">Amount Due (USD)</span>
                   <span tw="font-bold text-xl ">$6,000.00</span>
                   <span tw="invisible text-xs">hide</span>
@@ -292,12 +293,7 @@ export default function Detail() {
               </div>
             </CardDetailInvoice>
             <div tw="mt-20">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "start",
-                }}
-              >
+           
                 <div tw="flex items-center ">
                   <span tw="text-xl font-bold text-black">All Payment for Invoices 00148 </span>
                   <Popover
@@ -326,14 +322,13 @@ export default function Detail() {
               </div>
               <div className="table-responsive">
                 <TableCustom
-                  tw="mb-10"
+                  tw="mb-10 w-20"
                   columns={columns}
                   dataSource={data}
                   pagination={false}
                   className="ant-border-space"
                 />
               </div>
-            </div>
           </div>
         </div>
       </div>

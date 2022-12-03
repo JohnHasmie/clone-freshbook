@@ -320,7 +320,7 @@ export default function ClientSetting({ open, setOpen }) {
   );
 
   return (
-    <div tw="col-span-3 ">
+    <div tw="md:col-span-3 mb-10 ">
       {!open.sendReminders && !open.opened && (
         <div tw="mt-6">
           <Title level={3}>Client Settings</Title>

@@ -2,7 +2,7 @@ import { Layout } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const LayoutInvoice = styled(Layout)(() => [
-    tw`md:!ml-44`,
+    tw` md:!ml-44`,
     // css`
     //     && {
     //         width: 180px;

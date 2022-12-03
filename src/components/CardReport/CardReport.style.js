@@ -4,7 +4,6 @@ import tw, { styled, css } from "twin.macro";
 export const StyledCardReport = styled(Card)(({ hidden }) => [
     tw`  border-gray-200 `,
     css`
-        /* Add specifity so that we don't need to add ! rule to override */
         && {
     
 
