@@ -1,11 +1,11 @@
-import { Button, Card } from "antd";
+import {  Card } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledCard = styled(Card)(({ hidden }) => [
-    tw`rounded-md `,
     css`
-        /* Add specifity so that we don't need to add ! rule to override */
         && {
+
+        
             .ant-card-head {
                 ${tw`bg-green-400 p-0 h-2 rounded-t-lg min-h-0`}
                 
@@ -26,6 +26,5 @@ export const StyledCard = styled(Card)(({ hidden }) => [
 
         }
     `,
-    /** Example of passing property to the styles */
     hidden && tw`hidden`,
 ])

@@ -33,7 +33,7 @@ import FormAdvanceSearch from "./FormAdvanceSearch";
 import TabHome from "./TabHome";
 
 export default function Clients() {
-  const { Title, Text } = Typography;
+  const { Title } = Typography;
   const history = useHistory();
   const [isAdvance, setIsAdvance] = useState(false);
   const [form] = Form.useForm();
@@ -49,15 +49,14 @@ export default function Clients() {
     }
     setChecked(newChecked);
   };
-console.log(checked,"Check");
   const data = [
     {
       key: "1",
       checkbox: (
         <Checkbox
           className="font-normal"
-          value={1}
-          checked={checked.includes(1)}
+          value={"1"}
+          checked={checked.includes("1")}
           onChange={(e) => handleCheck(e.target.value)}
         />
       ),
@@ -177,7 +176,8 @@ console.log(checked,"Check");
           <div tw="hidden md:block mt-20">
             <Title level={4}>Recently Active</Title>
             <div tw="flex">
-              <div tw="border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center">
+            <div onClick={()=>history.push('/clients/new')} tw="cursor-pointer border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center">
+
                 <div tw="flex flex-col">
                   <PlusOutlined tw="text-3xl text-green-400" />
                   <span tw="text-lg text-2xl font-bold">New Client</span>
@@ -217,7 +217,7 @@ console.log(checked,"Check");
                 {checked.length > 0 ? (
                   <>
                     <span
-                      onClick={() => history.push("clients")}
+                      onClick={() => history.push("/clients")}
                       tw="text-xl font-bold text-primary"
                     >
                       Clients

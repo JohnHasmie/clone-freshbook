@@ -54,6 +54,7 @@ import ClientsOutstanding from "./pages/clients/ClientsOutstanding";
 import OutstandingBalance from "./pages/invoices/OutstandingBalance";
 import ClientsArchived from "./pages/clients/ClientsArchived";
 import ClientsDeleted from "./pages/clients/ClientsDeleted";
+import EmailDeleted from "./pages/clients/EmailDeleted";
 
 function App() {
   let { pathname } = useLocation();
@@ -169,6 +170,8 @@ function App() {
               />
 
               <Route exact path="/clients/sent-email" component={Email} />
+              <Route exact path="/clients/sent-email/deleted" component={EmailDeleted} />
+
 
               <Route
                 exact

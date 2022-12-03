@@ -7,46 +7,35 @@ import {
   EllipsisOutlined,
   HddOutlined,
   MailOutlined,
-  PhoneOutlined,
   PlusOutlined,
   PrinterOutlined,
   RestOutlined,
   RightOutlined,
   SearchOutlined,
   SendOutlined,
-  UndoOutlined,
   UnorderedListOutlined,
   VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
 import {
   Button,
-  Card,
   Checkbox,
-  Col,
   Divider,
   Form,
   Menu,
   Popover,
-  Row,
-  Table,
-  Tabs,
   Tooltip,
   Typography,
 } from "antd";
 import React, { useState } from "react";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
-import CardClient from "../../components/CardClient";
-import InputSearch from "../../components/InputSearch";
-import Photo from "../../assets/images/mask-group.svg";
+
 import CardInvoice from "../../components/CardInvoice/index";
 import TableCustom from "../../components/Button copy";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
-import FormAdvanceSearch, {
-  FormAdvanceSearchClient,
-  FormAdvanceSearchInvoice,
-} from "../clients/FormAdvanceSearch";
+import { FormAdvanceSearchInvoice } from "../clients/FormAdvanceSearch";
 import InvoiceTabs from "./InvoicesTabs";
+import TabHome from "../clients/TabHome";
 
 export default function Invoices() {
   const { Title, Text } = Typography;
@@ -54,6 +43,7 @@ export default function Invoices() {
   const [isAdvance, setIsAdvance] = useState(false);
   const [form] = Form.useForm();
   const [checked, setChecked] = useState([]);
+  const history = useHistory();
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);
@@ -246,34 +236,14 @@ export default function Invoices() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg">
-          <div tw="grid grid-cols-3 gap-4 justify-items-center content-center">
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-
-              <p tw="text-secondary">overdue</p>
-            </div>
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-              <p>total outstanding</p>
-            </div>
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-              <p>in draft</p>
-            </div>
-          </div>
-          <div tw="mt-20">
+          <TabHome />
+          <div tw="hidden md:block mt-20">
             <Title level={4}>Recently Active</Title>
             <div tw="flex">
-              <div tw="border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center">
+              <div
+                onClick={() => history.push("invoices/new")}
+                tw="cursor-pointer border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
+              >
                 <div tw="flex flex-col">
                   <PlusOutlined tw="text-xl text-green-400" />
                   <span tw="text-base  font-bold">New Invoice</span>
@@ -297,15 +267,9 @@ export default function Invoices() {
               </Link>
             </div>
           </div>
-          <div tw="mt-20">
+          <div tw="md:mt-20">
             <InvoiceTabs />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "24px",
-              }}
-            >
+            <div tw="grid md:flex justify-between mb-6">
               <div tw="flex items-center ">
                 <span tw="text-xl font-bold text-black">All Invoices </span>
                 {checked.length > 0 ? (
