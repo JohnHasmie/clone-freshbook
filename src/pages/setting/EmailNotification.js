@@ -40,7 +40,6 @@ export default function EmailNotification() {
         break;
     }
   };
-console.log(isCheck,"isCheck")
   return (
     <>
       <div className="layout-content">
@@ -49,7 +48,7 @@ console.log(isCheck,"isCheck")
             <Title level={3}>Email Notifications</Title>
            
           </Col>
-          <div style={{ width: "90%" }}>
+          <div tw="w-full md:w-[90%]" >
             <Col xs={24} md={24} sm={24} lg={20} xl={24} className="mb-24">
               <Card
                 bordered={true}
@@ -87,17 +86,15 @@ console.log(isCheck,"isCheck")
                       </div>
                     </div>
                   </Col>
-                  <Col span={12}>
+                  <Col span={24}>
                     <div
-                      className=" "
-                      style={{ padding: "20px", display: "grid" }}
+                      tw="grid justify-start p-5" 
                     >
                       <p className="font-small">Invoices</p>
                       <Checkbox
                         className="font-normal"
                         checked={isCheck.recurringInvoice}
                         onChange={() => changeisCheck('recurring')}
-                        style={{ marginLeft: "7px" }}
                       >
                         A recurring Invoice is sent
                       </Checkbox>
@@ -105,6 +102,7 @@ console.log(isCheck,"isCheck")
                         className="font-normal"
                         checked={isCheck.commentIsAdded}
                         onChange={() => changeisCheck('comment')}
+                      tw="!ml-0"
                       >
                         A comment is Added on an Invoice
                       </Checkbox>

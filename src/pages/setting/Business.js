@@ -1,174 +1,153 @@
-import {
- 
-  Col,
-
-  Form,
-  Input,
-  Row,
-  Select,
-  Typography,
-} from "antd";
+import { Col, Form, Input, Row, Select, Typography } from "antd";
 import React, { useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 import ButtonSubmit from "../../components/ButtonSubmit";
-import tw  from 'twin.macro';
+import tw from "twin.macro";
 import { countryList } from "../../components/Countries";
 
 export default function Business() {
   const { Title } = Typography;
   const [selectedItems, setSelectedItems] = useState({
-    country:'Indonesia',
-    base_currency:'usd',
-    business_time_zone:'(utc+0:00)',
-    fiscal_year_end_month:'Dec',
-    fiscal_year_end_day:'1',
-    date_format:'dd/mm/yy'
-  })
+    country: "Indonesia",
+    base_currency: "usd",
+    business_time_zone: "(utc+0:00)",
+    fiscal_year_end_month: "Dec",
+    fiscal_year_end_day: "1",
+    date_format: "dd/mm/yy",
+  });
 
-  const handleChange = (value,type) => {
-    switch(type) {
-      case 'country':
+  const handleChange = (value, type) => {
+    switch (type) {
+      case "country":
         setSelectedItems({
           ...selectedItems,
-          type:value
+          country: value,
         });
-      break;
+        break;
 
-      case 'base_currency':
+      case "base_currency":
         setSelectedItems({
           ...selectedItems,
-          type:value
+          base_currency: value,
         });
-      break;
+        break;
 
-      case 'business_time_zone':
+      case "business_time_zone":
         setSelectedItems({
           ...selectedItems,
-          type:value
+          business_time_zone: value,
         });
-      break;
+        break;
 
-      case 'fiscal_year_end_month':
+      case "fiscal_year_end_month":
         setSelectedItems({
           ...selectedItems,
-          type:value
+          fiscal_year_end_month: value,
         });
-      break;
+        break;
 
-      case 'fiscal_year_end_day':
+      case "fiscal_year_end_day":
         setSelectedItems({
           ...selectedItems,
-          type:value
+          fiscal_year_end_day: value,
         });
-      break;
-      case 'date_format':
+        break;
+      case "date_format":
         setSelectedItems({
           ...selectedItems,
-          type:value
+          date_format: value,
         });
-      break;
+        break;
 
       default:
-        return 'You are a User';
+        return setSelectedItems({
+          country: "Indonesia",
+          base_currency: "usd",
+          business_time_zone: "(utc+0:00)",
+          fiscal_year_end_month: "Dec",
+          fiscal_year_end_day: "1",
+          date_format: "dd/mm/yy",
+        });
     }
-
   };
-  const { data:settingData } = useQuery(
-    "settings",
-    () => axios.get("settings").then((res) => res.data)
-  )
+  const { data: settingData } = useQuery("settings", () =>
+    axios.get("settings").then((res) => res.data)
+  );
   const onFinish = (values) => {
     console.log("Success:", values);
-    
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
-  
   return (
     <>
-       <Form
-       tw='w-full'
-         onFinish={onFinish}
-         onFinishFailed={onFinishFailed}
-          layout="vertical"
-          size={"large"}
-          fields={[
-            {
-              name: ["business_name"],
-              value: settingData?.data?.setting?.company_name,
-            },
-            {
-              name: ["business_phone"],
-              value: settingData?.data?.setting?.phone,
-            },
-            {
-              name: ["addres_line_1"],
-              value: settingData?.data?.setting?.address,
-            },
-            {
-              name: ["country"],
-              value: selectedItems.country,
-            },
-            {
-              name: ["base_currency"],
-              value: selectedItems.base_currency,
-            },
-            {
-              name: ["business_time_zone"],
-              value: selectedItems.business_time_zone,
-            },
-            {
-              name: ["fiscal_year_end_month"],
-              value: selectedItems.fiscal_year_end_month,
-            },
-            {
-              name: ["fiscal_year_end_day"],
-              value: selectedItems.fiscal_year_end_day,
-            },
-            {
-              name: ["date_format"],
-              value: selectedItems.date_format,
-            },
-            {
-              name: ["city"],
-              value: settingData?.data?.setting?.city,
-            },
-            {
-              name: ["zip_code"],
-              value: settingData?.data?.setting?.zip,
-            },
-          ]}
-
-      
-        >
-      <div tw='w-full md:w-9/12	'  >
-     
-          <Row gutter={24} tw='mb-20'>
-            <Col lg={24} style={{ marginBottom: "20px" }}>
+      <Form
+        tw="w-full"
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        layout="vertical"
+        size={"large"}
+        fields={[
+          {
+            name: ["business_name"],
+            value: settingData?.data?.setting?.company_name,
+          },
+          {
+            name: ["business_phone"],
+            value: settingData?.data?.setting?.phone,
+          },
+          {
+            name: ["addres_line_1"],
+            value: settingData?.data?.setting?.address,
+          },
+          {
+            name: ["country"],
+            value: selectedItems.country,
+          },
+          {
+            name: ["base_currency"],
+            value: selectedItems.base_currency,
+          },
+          {
+            name: ["business_time_zone"],
+            value: selectedItems.business_time_zone,
+          },
+          {
+            name: ["fiscal_year_end_month"],
+            value: selectedItems.fiscal_year_end_month,
+          },
+          {
+            name: ["fiscal_year_end_day"],
+            value: selectedItems.fiscal_year_end_day,
+          },
+          {
+            name: ["date_format"],
+            value: selectedItems.date_format,
+          },
+          {
+            name: ["city"],
+            value: settingData?.data?.setting?.city,
+          },
+          {
+            name: ["zip_code"],
+            value: settingData?.data?.setting?.zip,
+          },
+        ]}
+      >
+        <div tw="w-full md:w-9/12	">
+          <Row gutter={24} tw="mb-20">
+            <Col xs={24} lg={24} style={{ marginBottom: "20px" }}>
               <Title level={3}>Business Details</Title>
             </Col>
-            <Col lg={24}>
-              <Form.Item
-                label="Business Name"
-        
-                name="business_name"
-              >
-                <Input
-                  name="business_name"
-                  type="text"
-            
-                />
+            <Col xs={24} lg={24}>
+              <Form.Item label="Business Name" name="business_name">
+                <Input name="business_name" type="text" />
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item
-                label="Business Phone"
-             
-                name="business_phone"
-              >
+              <Form.Item label="Business Phone" name="business_phone">
                 <Input
                   name="business_phone"
                   type="text"
@@ -178,42 +157,18 @@ export default function Business() {
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item
-                label="Mobile Phone"
-             
-                name="mobile_phone"
-              >
-                <Input
-                  name="mobile_phone"
-                  type="text"
-            
-                />
+              <Form.Item label="Mobile Phone" name="mobile_phone">
+                <Input name="mobile_phone" type="text" />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item
-                label="Address Line 1"
-              
-                name="addres_line_1"
-              >
-                <Input
-                  name="addres_line_1"
-                  type="text"
-               
-                />
+              <Form.Item label="Address Line 1" name="addres_line_1">
+                <Input name="addres_line_1" type="text" />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item
-                label="Address Line 2"
-           
-                name="addres_line_2"
-              >
-                <Input
-                  name="addres_line_2"
-                  type="text"
-           
-                />
+              <Form.Item label="Address Line 2" name="addres_line_2">
+                <Input name="addres_line_2" type="text" />
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
@@ -238,15 +193,11 @@ export default function Business() {
                   style={{
                     width: "100%",
                   }}
-                  
-                  onChange={(e)=>handleChange(e,'country')}
-                  options={
-                      countryList.map((item)=> ({
-                        label:item,
-                        value:item
-                      }))
-
-                  }
+                  onChange={(e) => handleChange(e, "country")}
+                  options={countryList.map((item) => ({
+                    label: item,
+                    value: item,
+                  }))}
                 />
               </Form.Item>
             </Col>
@@ -263,47 +214,38 @@ export default function Business() {
               >
                 <Select
                   defaultValue="usd"
-                  
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e, "base_currency")}
                   options={[
                     {
                       value: "usd",
                       label: "USD - US dollar",
                     },
-                    
+
                     {
                       value: "euro",
                       label: "EUR- Euro",
                     },
-                    
                   ]}
                 />
               </Form.Item>
             </Col>
+            <Col xs={24} lg={12}></Col>
             <Col xs={24} lg={12}>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label="Business Time Zone"
-                name="business_time_zone"
-              >
+              <Form.Item label="Business Time Zone" name="business_time_zone">
                 <Select
-                tw='rounded-lg'
+                  tw="rounded-lg"
                   defaultValue="(utc+0:00)"
-                  
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e, "business_time_zone")}
                   options={[
                     {
                       value: "(utc+0:00)",
                       label: "(UTC+0:00) Etc - GMT",
                     },
-             
                   ]}
                 />
               </Form.Item>
             </Col>
-            <Col xs={24} lg={12}>
-            </Col>
+            <Col xs={24} lg={12}></Col>
             <Col xs={24} lg={12}>
               <Form.Item
                 label="Fiscal Year End Month"
@@ -314,7 +256,7 @@ export default function Business() {
                   style={{
                     width: "100%",
                   }}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e, "fiscal_year_end_month")}
                   options={[
                     {
                       value: "Jan",
@@ -375,7 +317,7 @@ export default function Business() {
                   style={{
                     width: "100%",
                   }}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e, "fiscal_year_end_day")}
                   options={[
                     {
                       value: 1,
@@ -442,8 +384,7 @@ export default function Business() {
               <Form.Item label="Date Format" name="date_format">
                 <Select
                   defaultValue="dd/mm/yy"
-                
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(e, "date_format")}
                   options={[
                     {
                       value: "dd/mm/yy",
@@ -469,12 +410,10 @@ export default function Business() {
                 />
               </Form.Item>
             </Col>
-       
           </Row>
-          
-      </div>
-      <ButtonSubmit type='submit'/>
-        </Form>
+        </div>
+        <ButtonSubmit type="submit" />
+      </Form>
     </>
   );
 }

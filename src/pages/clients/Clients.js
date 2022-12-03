@@ -1,30 +1,30 @@
 import {
   CaretDownOutlined,
+
+  DownOutlined,
   EditOutlined,
   HddOutlined,
   MailOutlined,
   PhoneOutlined,
   PlusOutlined,
   RestOutlined,
+  RightOutlined,
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
 import {
-  Card,
+  Button,
   Checkbox,
-  Col,
   Form,
-  Row,
-  Table,
-  Tabs,
+  Menu,
+  Popover,
   Tooltip,
   Typography,
 } from "antd";
 import React, { useState } from "react";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardClient from "../../components/CardClient";
-import InputSearch from "../../components/InputSearch";
 import Photo from "../../assets/images/mask-group.svg";
 import AllClientTabs from "../../components/ClientsComponent/AllClientTabs";
 import TableCustom from "../../components/Button copy/index";
@@ -35,56 +35,30 @@ import TabHome from "./TabHome";
 export default function Clients() {
   const { Title, Text } = Typography;
   const history = useHistory();
-  const [checked, setChecked] = useState(false);
   const [isAdvance, setIsAdvance] = useState(false);
   const [form] = Form.useForm();
-
-  const columns = [
-    {
-      title: (
-        <Checkbox
-          className="font-normal"
-          onChange={() => setChecked(!checked)}
-        />
-      ),
-      dataIndex: "checkbox",
-      key: "checkbox",
-    },
-    {
-      title: "Organization",
-      dataIndex: "organization",
-      key: "organization",
-      width: "30%",
-    },
-    {
-      title: "Internal Note",
-      dataIndex: "internal",
-      key: "internal",
-      width: "30%",
-    },
-
-    {
-      title: "Credit",
-      key: "credit",
-      dataIndex: "credit",
-    },
-
-    {
-      title: "Total Outstanding",
-      key: "outstanding",
-      dataIndex: "outstanding",
-      width: "20%",
-    },
-  ];
-
+  const [checked, setChecked] = useState([]);
+  const handleCheck = (v) => {
+    const newChecked = [...checked];
+    const findById = newChecked.find((x) => x === v);
+    if (findById) {
+      const findIndex = checked.indexOf(v);
+      newChecked.splice(findIndex, 1);
+    } else {
+      newChecked.push(v);
+    }
+    setChecked(newChecked);
+  };
+console.log(checked,"Check");
   const data = [
     {
       key: "1",
       checkbox: (
         <Checkbox
           className="font-normal"
-          checked={checked}
-          onChange={(e) => console.log(e.target.value)}
+          value={1}
+          checked={checked.includes(1)}
+          onChange={(e) => handleCheck(e.target.value)}
         />
       ),
       organization: (
@@ -123,36 +97,84 @@ export default function Clients() {
       ),
     },
   ];
+  const handleCheckAll = () => {
+    const all = data?.map((item) => item.key);
+    if (data?.length === checked.length) {
+      setChecked([]);
+    } else {
+      setChecked(all);
+    }
+  };
+  const columns = [
+    {
+      title: (
+        <Checkbox
+          checked={data?.length === checked.length}
+          className="font-normal"
+          onChange={handleCheckAll}
+        />
+      ),
+      dataIndex: "checkbox",
+      key: "checkbox",
+    },
+    {
+      title: "Organization/Primary Contact",
+      dataIndex: "organization",
+      key: "organization",
+      width: "30%",
+    },
+    {
+      title: "Internal Note",
+      dataIndex: "internal",
+      key: "internal",
+      width: "30%",
+    },
+
+    {
+      title: "Credit",
+      key: "credit",
+      dataIndex: "credit",
+    },
+
+    {
+      title: "Total Outstanding",
+      key: "outstanding",
+      dataIndex: "outstanding",
+      width: "20%",
+    },
+  ];
+  const bulkList = (
+    <div tw="w-36">
+      <Menu>
+        <Menu.Item>
+          <div>
+            <EditOutlined />
+            <span>Edit</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item>
+          <div>
+            <HddOutlined />
+            <span>Archive</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item>
+          <div>
+            <RestOutlined />
+            <span>Delete</span>
+          </div>
+        </Menu.Item>
+      </Menu>
+    </div>
+  );
+
   return (
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg mb-20">
-          <TabHome/>
-          {/* <div tw="grid grid-cols-3 gap-4 justify-items-center content-center">
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-
-              <p tw="text-secondary">overdue</p>
-            </div>
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-              <p>total outstanding</p>
-            </div>
-            <div>
-              <div>
-                <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                <span tw="text-sm font-bold text-blue-700 ">USD</span>
-              </div>
-              <p>in draft</p>
-            </div>
-          </div> */}
-          <div tw="mt-20">
+          <TabHome />
+          <div tw="hidden md:block mt-20">
             <Title level={4}>Recently Active</Title>
             <div tw="flex">
               <div tw="border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center">
@@ -190,26 +212,58 @@ export default function Clients() {
           </div>
           <div tw="mt-20">
             <AllClientTabs />
-            <div
-            tw='flex justify-between mb-4'
-             
-            >
-              <Title level={5}>All Clients</Title>
+            <div tw="grid md:flex justify-between mb-4">
+              <div tw="flex items-center">
+                {checked.length > 0 ? (
+                  <>
+                    <span
+                      onClick={() => history.push("clients")}
+                      tw="text-xl font-bold text-primary"
+                    >
+                      Clients
+                    </span>
+
+                    <RightOutlined tw=" ml-2" />
+                    <span tw="text-xl font-bold text-black ml-2">Selected</span>
+                    <span tw="align-middle bg-gray-300 text-black rounded-full px-2  mx-2">
+                      {checked.length}
+                    </span>
+                    <Popover
+                      placement="bottom"
+                      content={bulkList}
+                      trigger="click"
+                    >
+                      <div className="flex items-center justify-center">
+                        <Button>
+                          <span tw="mr-2">Bulk Actions</span>
+                          <DownOutlined />
+                        </Button>
+                      </div>
+                    </Popover>
+                  </>
+                ) : (
+                  <span tw="text-xl font-bold text-black">All Clients</span>
+                )}
+              </div>
               <div tw="flex relative cursor-pointer">
-                <InputAdvanceSearch  prefix={<SearchOutlined />} />
-                <div onClick={()=>setIsAdvance(!isAdvance)}  tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36">
+                <InputAdvanceSearch placeholder="Search" prefix={<SearchOutlined />} />
+                <div
+                  onClick={() => setIsAdvance(!isAdvance)}
+                  tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36"
+                >
                   <UnorderedListOutlined />
                   <span tw="text-xs ml-2">Advanced Search </span>
-                  <CaretDownOutlined tw='ml-1' />
+                  <CaretDownOutlined tw="ml-1" />
                 </div>
               </div>
             </div>
-           {isAdvance ?  <div tw='bg-gray-100 border-y-2 border-gray-400 p-3 mb-4'>
-           <FormAdvanceSearch form={form} setIsAdvance={setIsAdvance}/>
-
-            </div>
-          : <></>  
-          }
+            {isAdvance ? (
+              <div tw="bg-gray-100 border-y-2 border-gray-400 p-3 mb-4">
+                <FormAdvanceSearch form={form} setIsAdvance={setIsAdvance} />
+              </div>
+            ) : (
+              <></>
+            )}
             <div className="table-responsive">
               <TableCustom
                 columns={columns}
@@ -220,12 +274,12 @@ export default function Clients() {
             </div>
             <div tw="flex justify-between mt-5">
               <div>
-                <span tw="text-sm text-black font-bold">1-4 of 4 </span>
+                <span tw="text-sm text-black font-bold">1-{data.length} of {data.length} </span>
               </div>
               <div tw="flex flex-col items-center">
                 <button
                   onClick={() => history.push("clients/archived")}
-                  tw="cursor-pointer border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-200 "
+                  tw="cursor-pointer border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-400 "
                 >
                   View Archived Service
                 </button>

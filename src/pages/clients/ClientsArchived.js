@@ -1,50 +1,19 @@
-import {Checkbox, Table } from "antd";
+import {Checkbox, Table, Tooltip } from "antd";
 import React, { useState } from "react";
-import { Typography } from "antd";
-import { Button } from "antd";
-import Search from "antd/lib/transfer/search";
-import InputSearch from "../../components/InputSearch";
 import {
+  
   RightOutlined,
-  SearchOutlined,
 } from "@ant-design/icons";
 import tw from "twin.macro";
-import { useQuery } from "react-query";
-import axios from "axios";
-import { numberWithDot } from "../../components/Utils";
-import { Link, useHistory } from "react-router-dom";
+
+import {  useHistory } from "react-router-dom";
 import PaginationFooter from "../../components/layout/PaginationFooter";
 
-const { Title } = Typography;
 
-export default function ItemsArchived() {
+export default function ClientsArchived() {
   const history = useHistory();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+
   const [checked, setChecked] = useState([]);
-  const [filter, setFilter] = useState({
-    limit: 10,
-    page: 1,
-  });
-
-  const { data: dataItems, status } = useQuery(
-    ["item-by-client", filter],
-    async (key) =>
-      axios
-        .get("items/1", {
-          params: key.queryKey[1],
-        })
-        .then((res) => res.data)
-  );
-
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);
@@ -57,62 +26,63 @@ export default function ItemsArchived() {
     setChecked(newChecked);
   };
 
+  const data = [
+    {
+      key: "1",
+      checkbox: "",
+      organization: "",
+      internal: "",
+
+      credit: "",
+      outstanding:"",
+    },
+  ];
   const handleCheckAll = () => {
-    const all = dataItems?.data?.data?.map((item, i) => item.id);
-    if (dataItems?.data?.data?.length === checked.length) {
+    const all = data?.map((item) => item.key);
+    if (data?.length === checked.length) {
       setChecked([]);
     } else {
       setChecked(all);
     }
   };
-
   const columns = [
     {
       title: (
         <Checkbox
-          checked={dataItems?.data?.data?.length === checked.length}
+          checked={data?.length === checked.length}
           className="font-normal"
           onChange={handleCheckAll}
         />
       ),
       dataIndex: "checkbox",
       key: "checkbox",
-      width: "5%",
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      width:'80%'
+      title: "Organization/Primary Contact",
+      dataIndex: "organization",
+      key: "organization",
+      width: "30%",
     },
     {
-      title: "Current Stock",
-      dataIndex: "current",
-      key: "current",
+      title: "Internal Note",
+      dataIndex: "internal",
+      key: "internal",
+      width: "30%",
     },
 
     {
-      title: "Rate/Taxes",
-      key: "rate",
-      dataIndex: "rate",
+      title: "Credit",
+      key: "credit",
+      dataIndex: "credit",
+    },
+
+    {
+      title: "Total Outstanding",
+      key: "outstanding",
+      dataIndex: "outstanding",
+      width: "20%",
     },
   ];
-
-  const data = [
-    {
-      key: 1,
-      checkbox: (
-        <Checkbox
-          className="font-normal"
-          onChange={(e) => handleCheck(e.target.value)}
-        />
-      ),
-      name: <div>Cooming Soon</div>,
-      current: "",
-      rate: "",
-    },
-  ];
-
 
 
   return (
@@ -128,9 +98,9 @@ export default function ItemsArchived() {
           <div tw="flex items-center">
             <span
               tw="text-xl cursor-pointer font-bold text-primary"
-              onClick={() => history.push("/items")}
+              onClick={() => history.push("/clients")}
             >
-              Items
+              All Clients
             </span>
             <RightOutlined tw=" ml-2" />
             <span tw="text-xl font-bold text-black ml-2">Archived</span>

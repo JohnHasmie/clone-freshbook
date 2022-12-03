@@ -5,7 +5,7 @@ import tw from "twin.macro";
 export default function TabHome() {
   const history = useHistory();
   return (
-    <div tw="grid grid-cols-3 gap-4 justify-items-center content-center">
+    <div tw="hidden md:grid grid-cols-3 gap-4 justify-items-center content-center">
       <div
         tw="cursor-pointer w-full text-center hover:border-t hover:border-primary"
         onClick={() => history.push("/clients/overdue")}

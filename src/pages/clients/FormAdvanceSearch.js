@@ -7,11 +7,12 @@ import { styled } from "twin.macro";
 import { InputKeyword, SelectKeyword } from "./AdvanceSearch.style";
 import { Option } from "antd/lib/mentions";
 
-export default function FormAdvanceSearch({ form, setIsAdvance }) {
+export default function FormAdvanceSearch({form,setIsAdvance }) {
+
   const onFinish = (values) => {
     console.log("Success:", values);
   };
-  const handleReset = () => {
+  const onReset = () => {
     form.resetFields();
   };
 
@@ -24,6 +25,7 @@ export default function FormAdvanceSearch({ form, setIsAdvance }) {
       onFinishFailed={onFinishFailed}
       layout="vertical"
       size={"large"}
+      form={form}
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
@@ -106,9 +108,9 @@ export default function FormAdvanceSearch({ form, setIsAdvance }) {
         </div>
       </div>
       <div tw="flex justify-between items-start">
-        <span tw="text-primary cursor-pointer " onClick={handleReset}>
+        <button tw="bg-transparent text-primary cursor-pointer "  onClick={onReset}>
           Reset all
-        </span>
+        </button>
         <div tw="flex">
           <div>
             <ButtonMore
@@ -146,6 +148,8 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
       onFinishFailed={onFinishFailed}
       layout="vertical"
       size={"large"}
+      form={form}
+
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
@@ -266,8 +270,8 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
     console.log("Success:", values);
   };
   const handleReset = () => {
-    form.resetFields();
     console.log(form,"Form");
+    form.resetFields();
   };
 
   const onFinishFailed = (errorInfo) => {

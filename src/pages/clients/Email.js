@@ -16,6 +16,7 @@ import {
   import AllClientTabs from "../../components/ClientsComponent/AllClientTabs";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import { FormAdvanceSearchEmail } from "./FormAdvanceSearch";
+import TabHome from "./TabHome";
   
   
   export default function Email() {
@@ -111,31 +112,8 @@ import { FormAdvanceSearchEmail } from "./FormAdvanceSearch";
       <>
         <div className="layout-content">
           <div tw="max-w-screen-lg mb-20">
-            <div tw="grid grid-cols-3 gap-4 justify-items-center content-center">
-              <div>
-                <div>
-                  <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                  <span tw="text-sm font-bold text-blue-700 ">USD</span>
-                </div>
-  
-                <p tw="text-secondary">overdue</p>
-              </div>
-              <div>
-                <div>
-                  <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                  <span tw="text-sm font-bold text-blue-700 ">USD</span>
-                </div>
-                <p>total outstanding</p>
-              </div>
-              <div>
-                <div>
-                  <span tw="text-4xl font-bold text-blue-700">$0 </span>
-                  <span tw="text-sm font-bold text-blue-700 ">USD</span>
-                </div>
-                <p>in draft</p>
-              </div>
-            </div>
-            <div tw="mt-20">
+           <TabHome/>
+            <div tw="hidden md:block mt-20">
               <Title level={4}>Recently Active</Title>
               <div tw="flex">
                 <div tw="border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center">
@@ -175,7 +153,7 @@ import { FormAdvanceSearchEmail } from "./FormAdvanceSearch";
             <div tw="mt-20">
               <AllClientTabs/>
               <div
-                tw='flex justify-between mb-4'
+                tw='grid md:flex justify-between mb-4'
               >
                 <Title level={5}>All Sent Emails</Title>
                 <div tw="flex relative cursor-pointer">

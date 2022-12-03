@@ -13,6 +13,7 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import { numberWithDot } from "../../components/Utils";
 import { Link, useHistory } from "react-router-dom";
+import PaginationFooter from "../../components/layout/PaginationFooter";
 
 const { Title } = Typography;
 
@@ -152,6 +153,13 @@ export default function ItemsDeleted() {
             className="ant-border-space"
           />
         </div>
+        <div tw="flex justify-between mt-5">
+              <div>
+                <span tw="text-sm text-black font-bold">1-{data.length-1} of {data.length-1} </span>
+              </div>
+           
+              <div ><PaginationFooter/></div>
+            </div>
       
       </div>
     </>

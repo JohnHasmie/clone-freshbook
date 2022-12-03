@@ -52,6 +52,8 @@ import ClientsDraft from "./pages/clients/ClientsDraft";
 import ClientsOverdue from "./pages/clients/ClientsOverdue";
 import ClientsOutstanding from "./pages/clients/ClientsOutstanding";
 import OutstandingBalance from "./pages/invoices/OutstandingBalance";
+import ClientsArchived from "./pages/clients/ClientsArchived";
+import ClientsDeleted from "./pages/clients/ClientsDeleted";
 
 function App() {
   let { pathname } = useLocation();
@@ -156,6 +158,8 @@ function App() {
               <Route exact path="/dashboard" component={Home} />
 
               <Route exact path="/clients" component={Clients} />
+              <Route exact path="/clients/archived" component={ClientsArchived} />
+              <Route exact path="/clients/deleted" component={ClientsDeleted} />
               <Route exact path="/clients/draft" component={ClientsDraft} />
               <Route exact path="/clients/overdue" component={ClientsOverdue} />
               <Route

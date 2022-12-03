@@ -14,6 +14,7 @@ import ButtonCustom from "../Button";
 import tw from "twin.macro";
 import ButtonInvite from "../ButtonInvite";
 import TabsSettting from "./TabsSettting";
+import { MoreActionClients, MoreActionClientsDetail } from "../Reports/MoreAction";
 
 const toggler = [
   <svg
@@ -273,7 +274,7 @@ function Header({
             </div>
             <div tw="flex items-center">
               <span tw="capitalize text-4xl font-bold">
-                {subName.replace("/", "")}
+              Clients
               </span>
             </div>
             <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
@@ -371,7 +372,7 @@ function Header({
             <span tw="capitalize text-4xl font-bold">Items</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-            <ButtonInvite tw="!py-6 mr-2">
+            <ButtonInvite tw="!py-6 md:mr-2">
               <span>Import Items</span>
             </ButtonInvite>
             <Popover
