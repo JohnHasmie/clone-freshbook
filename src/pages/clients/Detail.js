@@ -45,7 +45,6 @@ export default function Detail() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  console.log(isModalOpen, "isModal");
   const [checked, setChecked] = useState([]);
   const handleCheck = (v) => {
     const newChecked = [...checked];

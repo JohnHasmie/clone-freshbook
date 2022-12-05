@@ -30,7 +30,6 @@ function Main({ children }) {
   const handleSidenavType = (type) => setSidenavType(type);
   const handleSidenavColor = (color) => setSidenavColor(color);
   const handleFixedNavbar = (type) => setFixed(type);
-console.log(openDrawer);
   let { pathname } = useLocation();
   pathname = pathname.replace("/", "");
 

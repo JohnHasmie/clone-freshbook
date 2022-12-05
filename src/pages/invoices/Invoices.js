@@ -39,7 +39,6 @@ import TabHome from "../clients/TabHome";
 
 export default function Invoices() {
   const { Title, Text } = Typography;
-  const [status, setStatus] = useState("sent");
   const [isAdvance, setIsAdvance] = useState(false);
   const [form] = Form.useForm();
   const history = useHistory();
@@ -55,7 +54,30 @@ export default function Invoices() {
     }
     setChecked(newChecked);
   };
-  const data = [
+
+  const dummyData = [
+    {
+      key: "1",
+      client_invoice_number_title: "Company Name",
+      client_invoice_number: "00148",
+      description: "PSD to HTML",
+      date: "25/10/2022",
+      date_difference: "Due in 4 days",
+      amount: "6,000.000",
+      status: "sent",
+    },
+    {
+      key: "2",
+      client_invoice_number_title: "Company Test",
+      client_invoice_number: "00148",
+      description: "PSD to HTML",
+      date: "25/10/2022",
+      date_difference: "Due in 4 days",
+      amount: "6,000.000",
+      status: "paid",
+    },
+  ];
+  const data = dummyData.map(item=>(
     {
       key: "1",
       checkbox: (
@@ -68,16 +90,16 @@ export default function Invoices() {
       ),
       client_invoice_number: (
         <div>
-          <h3>Company Name</h3>
-          <p>00148</p>
+          <h3>{item.client_invoice_number_title}</h3>
+          <p>{item.client_invoice_number}</p>
         </div>
       ),
-      description: <span tw="flex items-start">PSD to HTML</span>,
+      description: <span tw="flex items-start">{item.description}</span>,
 
       date: (
         <div>
-          <h3>25/10/2022</h3>
-          <p>Due in 4 days</p>
+          <h3>{item.date}</h3>
+          <p>{item.date_difference}</p>
         </div>
       ),
       amount: (
@@ -97,7 +119,7 @@ export default function Invoices() {
               </Tooltip>
             </div>
 
-            {status === "paid" ? (
+            {item.status === "paid" ? (
               <div tw="hover:bg-gray-100   border-r border-gray-200 ">
                 <Tooltip placement="top" title="archive">
                   <HddOutlined tw="px-2 py-1 " />
@@ -116,12 +138,79 @@ export default function Invoices() {
               </Tooltip>
             </div>
           </div>
-          <h3>$6,000.000 USD</h3>
-          <span tw="bg-green-400 rounded p-1">{status}</span>
+          <h3>${item.amount} USD</h3>
+          <span tw="bg-green-400 rounded p-1">{item.status}</span>
         </div>
       ),
-    },
-  ];
+    }
+  ))
+  // [
+  //   {
+  //     key: "1",
+  //     checkbox: (
+  //       <Checkbox
+  //         className="font-normal"
+  //         value={1}
+  //         checked={checked.includes("1")}
+  //         onChange={(e) => handleCheck(e.target.value)}
+  //       />
+  //     ),
+  //     client_invoice_number: (
+  //       <div>
+  //         <h3>Company Name</h3>
+  //         <p>00148</p>
+  //       </div>
+  //     ),
+  //     description: <span tw="flex items-start">PSD to HTML</span>,
+
+  //     date: (
+  //       <div>
+  //         <h3>25/10/2022</h3>
+  //         <p>Due in 4 days</p>
+  //       </div>
+  //     ),
+  //     amount: (
+  //       <div tw="text-right relative">
+  //         <div
+  //           className="isVisible"
+  //           tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
+  //         >
+  //           <div tw="hover:bg-gray-100 ">
+  //             <Tooltip placement="top" title="edit">
+  //               <EditOutlined tw="px-2 py-1  " />
+  //             </Tooltip>
+  //           </div>
+  //           <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
+  //             <Tooltip placement="top" title="duplicate">
+  //               <CopyOutlined tw="px-2 py-1" />
+  //             </Tooltip>
+  //           </div>
+
+  //           {status === "paid" ? (
+  //             <div tw="hover:bg-gray-100   border-r border-gray-200 ">
+  //               <Tooltip placement="top" title="archive">
+  //                 <HddOutlined tw="px-2 py-1 " />
+  //               </Tooltip>
+  //             </div>
+  //           ) : (
+  //             <div tw="hover:bg-gray-100   border-r border-gray-200 ">
+  //               <Tooltip placement="top" title="add payment">
+  //                 <DollarOutlined tw="px-2 py-1 " />
+  //               </Tooltip>
+  //             </div>
+  //           )}
+  //           <div tw="hover:bg-gray-100   ">
+  //             <Tooltip placement="top" title="More">
+  //               <EllipsisOutlined tw="text-xs px-2 py-1" />
+  //             </Tooltip>
+  //           </div>
+  //         </div>
+  //         <h3>$6,000.000 USD</h3>
+  //         <span tw="bg-green-400 rounded p-1">{status}</span>
+  //       </div>
+  //     ),
+  //   },
+  // ];
 
   const handleCheckAll = () => {
     const all = data?.map((item) => item.key);
@@ -241,7 +330,7 @@ export default function Invoices() {
             <Title level={4}>Recently Active</Title>
             <div tw="flex">
               <div
-                onClick={() => history.push("invoices/new")}
+                onClick={() => history.push("/invoices/new")}
                 tw="cursor-pointer border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
               >
                 <div tw="flex flex-col">
@@ -293,7 +382,10 @@ export default function Invoices() {
                     </Popover>
                   </>
                 ) : (
-                  <PlusOutlined tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer" />
+                  <PlusOutlined
+                    onClick={() => history.push("/invoices/new")}
+                    tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer"
+                  />
                 )}
               </div>
               <div tw="flex relative cursor-pointer">

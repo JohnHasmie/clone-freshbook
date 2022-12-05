@@ -281,7 +281,7 @@ export default function Clients() {
                   onClick={() => history.push("clients/archived")}
                   tw="cursor-pointer border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-400 "
                 >
-                  View Archived Service
+                  View Archived Clients
                 </button>
                 <p tw="text-xs text-gray-500">
                   or{" "}

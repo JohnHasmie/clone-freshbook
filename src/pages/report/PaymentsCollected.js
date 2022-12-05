@@ -20,12 +20,13 @@ import { bell, toggler } from "../../components/Icons";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import MoreAction from "../../components/Reports/MoreAction";
-import SendEmail from '../../components/Reports/SendEmail';
-import ButtonCustom from '../../components/Button/index';
+import SendEmail from "../../components/Reports/SendEmail";
+import ButtonCustom from "../../components/Button/index";
 
 export default function PaymentsCollected() {
   const { Title } = Typography;
   const [open, setOpen] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   let history = useHistory();
   const onFinish = (values) => {
@@ -83,7 +84,7 @@ export default function PaymentsCollected() {
             <Form.Item label="Clients" name="clients">
               <Select
                 placeholder="All Clients"
-                 mode="multiple"
+                mode="multiple"
                 options={[
                   {
                     value: "andre",
@@ -159,7 +160,9 @@ export default function PaymentsCollected() {
           </Col>
           <Divider />
           <Col span={12}>
-            <Button tw="text-lg px-8" onClick={() => setOpen(false)}>Close</Button>
+            <Button tw="text-lg px-8" onClick={() => setOpen(false)}>
+              Close
+            </Button>
           </Col>
           <Col span={12}>
             <Button tw="text-lg text-white bg-success px-8">Apply</Button>
@@ -170,31 +173,31 @@ export default function PaymentsCollected() {
   );
   return (
     <div tw="max-w-screen-lg mx-auto">
-           <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
-          <div tw="flex justify-between md:hidden">
-            <div>{bell}</div>
-            <ButtonCustom
-              tw="!bg-transparent !border-0 hover:opacity-50"
-              type="link"
-              className="sidebar-toggler"
-              // onClick={() => onPress()}
-            >
-              {toggler}
-            </ButtonCustom>
-          </div>
-          <div tw="md:col-span-2">
-            <button
-              onClick={() => history.goBack()}
-              tw="bg-transparent flex items-center mt-5 text-primary cursor-pointer"
-            >
-              <LeftOutlined />
-              <span tw="ml-1">Reports</span>
-            </button>
-          </div>
-          <div tw="flex items-center">
-            <span tw="capitalize text-4xl font-bold">Payments Collected</span>
-          </div>
-          <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
+      <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
+        <div tw="flex justify-between md:hidden">
+          <div>{bell}</div>
+          <ButtonCustom
+            tw="!bg-transparent !border-0 hover:opacity-50"
+            type="link"
+            className="sidebar-toggler"
+            // onClick={() => onPress()}
+          >
+            {toggler}
+          </ButtonCustom>
+        </div>
+        <div tw="md:col-span-2">
+          <button
+            onClick={() => history.goBack()}
+            tw="bg-transparent flex items-center mt-5 text-primary cursor-pointer"
+          >
+            <LeftOutlined />
+            <span tw="ml-1">Reports</span>
+          </button>
+        </div>
+        <div tw="flex items-center">
+          <span tw="capitalize text-4xl font-bold">Payments Collected</span>
+        </div>
+        <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <Popover placement="bottom" content={MoreAction} trigger="click">
             <ButtonMore tw="w-full">
               <span>More Actions</span>
@@ -206,10 +209,9 @@ export default function PaymentsCollected() {
               <span tw="text-lg">Send...</span>
             </Button>
           </Popover>
-          </div>
-
         </div>
-      
+      </div>
+
       <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
         <CardReporting tw="md:col-span-9 mb-10 mt-10 md:mt-2">
           <h1 tw="text-blueDefault">Payments Collected</h1>
@@ -218,9 +220,86 @@ export default function PaymentsCollected() {
             <span tw="text-sm text-gray-600">Total Billed (USD)</span>
             <span tw="text-sm text-gray-600">As of November 17,2022</span>
           </div>
-          <div tw='flex justify-center text-gray-600'>
-          No payments found. Please adjust the range.
-          </div>
+          {isEmpty ? (
+            <div tw="flex justify-center text-gray-600">
+              No payments found. Please adjust the range.
+            </div>
+          ) : (
+            <>
+              <div tw="overflow-x-auto ">
+                <table>
+                  <thead>
+                    <tr>
+                      <th tw="text-left py-4 ">
+                        <span tw="rounded-full border border-orange-500 p-1 py-1.5  mr-0.5 ">
+                          MR
+                        </span>{" "}
+                        Sutton Rowland Inc
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr tw="text-left text-sm font-bold  border-b-2 border-gray-200">
+                      <th tw="pb-1  pt-5">Summary</th>
+                    </tr>
+                    <tr tw="text-left text-sm ">
+                      <th tw="py-2">
+                        <div tw="grid">
+                          <span>Total Payments Collected (IDR)</span>
+                          <span tw="font-thin text-gray-400">
+                            (*Payments applied from credit do not count towards
+                            total)
+                          </span>
+                        </div>
+                      </th>
+
+                      <td tw="text-right ">
+                        Rp60,000.00{" "}
+                        <span tw="font-thin text-gray-400">IDR</span>{" "}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div tw="overflow-x-auto ">
+                <table>
+                  <tbody>
+                    <tr tw="text-left text-sm  border-b-2 border-gray-200">
+                      <th tw="pb-1 pt-5 font-bold">Payments</th>
+                    </tr>
+                    <tr tw="text-left text-sm border-b   border-gray-200">
+                      <th tw="pb-1 pt-5">Date</th>
+                      <th tw="pb-1 pt-5">Client</th>
+                      <th tw="pb-1 pt-5">Method</th>
+                      <th tw="pb-1 pt-5">Description</th>
+                      <th tw="pb-1 pt-5">Payment for</th>
+                      <th tw="pb-1 pt-5 text-right">Amount</th>
+                    </tr>
+                    <tr tw="text-left text-sm border-b border-dotted  border-gray-200">
+                      <td tw="pb-1 pt-2">03/12/2022</td>
+                      <td tw="pb-1 pt-2 text-primary font-bold">
+                        Sutton Rowland Inc
+                      </td>
+                      <td tw="pb-1 pt-2">Transfer</td>
+                      <td tw="pb-1 pt-2"></td>
+                      <td tw="pb-1 pt-2">
+                        <div tw="grid text-primary">
+                          <span>Invoice</span>
+                          <span>000007</span>
+                        </div>
+                      </td>
+                      <td tw="pb-1 pt-2 text-right">
+                        <div tw="grid ">
+                          <span>Rp.30,000.00</span>
+                          <span tw="text-gray-400">IDR</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
           {/* <div tw="overflow-x-auto ">
             <table 
             >
@@ -255,7 +334,11 @@ export default function PaymentsCollected() {
             </table>
           </div> */}
         </CardReporting>
-        <Filter Filtering={FilterRevenueByClient} setOpen={setOpen} open={open} />
+        <Filter
+          Filtering={FilterRevenueByClient}
+          setOpen={setOpen}
+          open={open}
+        />
       </div>
     </div>
   );

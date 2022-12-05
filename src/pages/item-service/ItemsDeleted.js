@@ -120,6 +120,7 @@ export default function ItemsDeleted() {
 
 
 
+  console.log(dataItems?.data,);
 
   return (
     <>
@@ -155,7 +156,8 @@ export default function ItemsDeleted() {
         </div>
         <div tw="flex justify-between mt-5">
               <div>
-                <span tw="text-sm text-black font-bold">1-{data.length-1} of {data.length-1} </span>
+                <span tw="text-sm text-black font-bold">1-{dataItems?.data?.data?.length} of{" "}
+              {dataItems?.data?.data?.length}{" "} </span>
               </div>
            
               <div ><PaginationFooter/></div>

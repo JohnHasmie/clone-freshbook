@@ -150,7 +150,6 @@ export default function Items() {
       </Menu>
     </div>
   );
-
   return (
     <>
       <div tw="w-full md:w-[98%] md:mb-5">
@@ -205,14 +204,14 @@ export default function Items() {
           </div>
           <div tw="flex flex-col items-center">
             <button
-              onClick={() => history.push("items/archived")}
+              onClick={() => history.push("/items/archived")}
               tw="cursor-pointer border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-400 "
             >
               View Archived Service
             </button>
             <p tw="text-xs text-gray-500">
               or{" "}
-              <Link tw="underline text-gray-500" to="items/deleted">
+              <Link tw="underline text-gray-500" to="/items/deleted">
                 deleted
               </Link>
             </p>

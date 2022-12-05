@@ -26,7 +26,6 @@ import ButtonCustom from '../../components/Button/index';
 export default function AccountBalance() {
   const [open, setOpen] = useState(false);
 
-  const { Title } = Typography;
   let history = useHistory();
   const onFinish = (values) => {
     console.log("Success:", values);
@@ -141,7 +140,7 @@ export default function AccountBalance() {
  
       <div tw="grid grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
         <CardReporting tw="md:col-span-9 mb-10  mt-10 md:mt-2">
-          <h1 tw="text-blueDefault">Account Statement</h1>
+          <h1 tw="text-blueDefault">Balance Sheet</h1>
           <div tw="grid">
             <span tw="text-xs">SJ Marketing</span>
             <span tw="text-xs">As of Nov 29, 2022</span>

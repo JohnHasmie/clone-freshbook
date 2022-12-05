@@ -15,6 +15,7 @@ import tw from "twin.macro";
 import ButtonInvite from "../ButtonInvite";
 import TabsSettting from "./TabsSettting";
 import { MoreActionClients, MoreActionClientsDetail } from "../Reports/MoreAction";
+import NewItem from "../NewItem";
 
 const toggler = [
   <svg
@@ -377,7 +378,7 @@ function Header({
             </ButtonInvite>
             <Popover
               placement="bottom"
-              content={createListItems}
+              content={NewItem}
               trigger="click"
             >
               <ButtonCustom tw="!py-6 bg-success text-white">

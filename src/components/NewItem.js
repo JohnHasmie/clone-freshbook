@@ -40,7 +40,7 @@ export default function NewItem() {
             <Input type="text" placeholder="Enter a description" />
           </Form.Item>
 
-          <div tw="flex justify-end border-t border-gray-200 p-5">
+          <div tw="flex justify-end border-t border-gray-200 px-5 pt-5 pb-0">
             <Form.Item>
               <Button tw="mr-2">Cancel</Button>
             </Form.Item>

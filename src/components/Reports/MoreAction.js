@@ -11,9 +11,9 @@ export default function MoreAction() {
           <VerticalAlignBottomOutlined />
           <span
             tw="cursor-pointer"
-            onClick={() => console.log("export for excel")}
+            onClick={() => console.log("export for PDF")}
           >
-            Export for Excel
+            Export for PDF
           </span>
         </div>
       </Menu.Item>
@@ -41,7 +41,7 @@ export function MoreActionClients() {
         <ImportOutlined />
           <span
             tw="cursor-pointer"
-            onClick={() => console.log("export for excel")}
+            onClick={() => console.log("export for PDF")}
           >
             Import Clients
           </span>
