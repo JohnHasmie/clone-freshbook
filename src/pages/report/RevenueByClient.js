@@ -33,6 +33,13 @@ export default function RevenueByClient() {
   const { Title } = Typography;
   const [open, setOpen] = useState(false);
   const [sortState, setSortState] = useState("none");
+  const [clicked, setClicked] = useState(false);
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
 
   const sortMethods = {
     none: { method: (a, b) => null },
@@ -193,7 +200,7 @@ export default function RevenueByClient() {
               <DownOutlined />
             </ButtonMore>
           </Popover>
-          <Popover placement="bottom" content={SendEmail} trigger="click">
+          <Popover placement="bottom" content={<SendEmail hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
             <Button tw=" md:ml-2 bg-success text-white px-4  flex justify-center items-center ">
               <span tw="text-lg">Send...</span>
             </Button>

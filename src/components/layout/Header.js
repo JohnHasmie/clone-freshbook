@@ -41,6 +41,13 @@ function Header({
   const history = useHistory();
 
   const [visible, setVisible] = useState(false);
+  const [clicked, setClicked] = useState(false);
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
 
   useEffect(() => window.scrollTo(0, 0));
 
@@ -130,10 +137,7 @@ function Header({
       </Menu>
     </div>
   );
-  const handleClick = (key) => {
-    history.push(`${key}`);
-    // console.log(key,"key");
-  };
+
 
   const bell = [
     <svg
@@ -378,8 +382,7 @@ function Header({
             </ButtonInvite>
             <Popover
               placement="bottom"
-              content={NewItem}
-              trigger="click"
+              content={<NewItem hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}
             >
               <ButtonCustom tw="!py-6 bg-success text-white">
                 <span>Create New...</span>

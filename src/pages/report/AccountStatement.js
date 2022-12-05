@@ -16,6 +16,13 @@ export default function AccountStatement() {
 
   const { Title } = Typography;
   let history = useHistory();
+  const [clicked, setClicked] = useState(false);
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
   const onFinish = (values) => {
     console.log("Success:", values);
   };
@@ -126,7 +133,7 @@ export default function AccountStatement() {
               <DownOutlined />
             </ButtonMore>
           </Popover>
-          <Popover placement="bottom" content={SendEmail} trigger="click">
+          <Popover placement="bottom" content={<SendEmail hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
             <Button tw=" md:ml-2 bg-success text-white px-4  flex justify-center items-center ">
               <span tw="text-lg">Send...</span>
             </Button>

@@ -50,7 +50,7 @@ export default function FilterRecurring() {
                   ]}
                 />
               </Form.Item>
-              <Form.Item label="Currency"       name="time">
+              <Form.Item label="Currency"       name="currency">
                 <Select
             
                   defaultValue="usd"

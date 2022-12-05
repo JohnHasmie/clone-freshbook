@@ -12,7 +12,7 @@ import React, { useState } from "react";
 import tw from "twin.macro";
 import CardPopup from "../../components/CardPopup";
 
-export default function PopupNewInvoice() {
+export default function PopupNewInvoice({hide}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -78,7 +78,7 @@ export default function PopupNewInvoice() {
 
           <div tw="flex justify-end border-t border-gray-200 pt-2 pr-2">
             <Form.Item>
-              <Button tw="mr-2">Cancel</Button>
+              <Button tw="mr-2" onClick={hide}>Cancel</Button>
             </Form.Item>
             <Form.Item>
               <Button htmlType="submit" tw="bg-success text-white ">Add Payment</Button>

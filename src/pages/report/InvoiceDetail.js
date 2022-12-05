@@ -25,6 +25,13 @@ import { bell, toggler } from "../../components/Icons";
 
 export default function InvoiceDetail() {
   const { Title } = Typography;
+  const [clicked, setClicked] = useState(false);
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
   let history = useHistory();
   const [open, setOpen] = useState(false)
 
@@ -207,7 +214,7 @@ export default function InvoiceDetail() {
               <DownOutlined />
             </ButtonMore>
           </Popover>
-          <Popover placement="bottom" content={SendEmail} trigger="click">
+          <Popover placement="bottom" content={<SendEmail hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
             <Button tw=" md:ml-2 bg-success text-white px-4  flex justify-center items-center ">
               <span tw="text-lg">Send...</span>
             </Button>

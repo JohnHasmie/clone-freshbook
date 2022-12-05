@@ -21,26 +21,34 @@ import SendEmail from "../../components/Reports/SendEmail";
 import InvoiceHead from "./InvoiceHead";
 import InvoiceLines from "./InvoiceLines";
 import { SettingButton } from "./NewInvoice.style";
-import { bell, toggler } from '../../components/Icons';
-import ButtonCustom from '../../components/Button/index';
+import { bell, toggler } from "../../components/Icons";
+import ButtonCustom from "../../components/Button/index";
 
 export default function NewInvoice() {
   const [open, setOpen] = useState(false);
+  const [clicked, setClicked] = useState(false);
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
   const { Title } = Typography;
   let history = useHistory();
   const [isForm, setIsForm] = useState({
-    name: 'Oasis Land',
-    phone: 'Phone Number',
-    address: 'Wates Wetan 03/05',
-    district: 'Bangsri, Purwantoro',
-    city: 'Wonogiri',
-    zip: '57695',
-    country: 'Indonesia'
-  })
+    name: "Oasis Land",
+    phone: "Phone Number",
+    address: "Wates Wetan 03/05",
+    district: "Bangsri, Purwantoro",
+    city: "Wonogiri",
+    zip: "57695",
+    country: "Indonesia",
+  });
+
 
   const handleInput = (e) => {
-    setIsForm({ ...isForm, [e.target.name]: e.target.value })
-  }
+    setIsForm({ ...isForm, [e.target.name]: e.target.value });
+  };
   const onFinish = (values) => {
     console.log("Success:", values);
   };
@@ -55,10 +63,12 @@ export default function NewInvoice() {
       </div>
       <List
         itemLayout="horizontal"
-        dataSource={[{
-          title: 'Make Recurring',
-          desc: 'Bill your clients automatically',
-        }]}
+        dataSource={[
+          {
+            title: "Make Recurring",
+            desc: "Bill your clients automatically",
+          },
+        ]}
         renderItem={(item) => (
           <List.Item>
             <SettingButton>
@@ -70,42 +80,39 @@ export default function NewInvoice() {
       />
     </div>
   );
-
-  console.log(isForm, "is Form");
   return (
     <div tw="max-w-screen-lg mx-auto">
-        <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
-          <div tw="flex justify-between md:hidden">
-            <div>{bell}</div>
-            <ButtonCustom
-              tw="!bg-transparent !border-0 hover:opacity-50"
-              type="link"
-              className="sidebar-toggler"
-              // onClick={() => onPress()}
-            >
-              {toggler}
-            </ButtonCustom>
-          </div>
-          
-          <div tw="flex items-center">
-            <span tw="capitalize text-4xl font-bold">New Invoice</span>
-          </div>
-          <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
+      <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
+        <div tw="flex justify-between md:hidden">
+          <div>{bell}</div>
+          <ButtonCustom
+            tw="!bg-transparent !border-0 hover:opacity-50"
+            type="link"
+            className="sidebar-toggler"
+            // onClick={() => onPress()}
+          >
+            {toggler}
+          </ButtonCustom>
+        </div>
+
+        <div tw="flex items-center">
+          <span tw="capitalize text-4xl font-bold">New Invoice</span>
+        </div>
+        <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <ButtonMore tw="!py-2" onClick={() => history.goBack()}>
             <span>Cancel</span>
           </ButtonMore>
           <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center ">
             <span tw="text-lg">Save...</span>
           </Button>
-          <Popover placement="bottom" content={SendEmail} trigger="click">
+          <Popover placement="bottom" content={<SendEmail hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
             <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center ">
               <span tw="text-lg">Send To...</span>
             </Button>
           </Popover>
-          </div>
-
         </div>
-  
+      </div>
+
       <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2">
         <CardDetailInvoice tw="md:col-span-9 mb-10 mt-10 md:mt-2">
           <div tw="grid gap-y-2 md:flex justify-between mb-10">
@@ -115,13 +122,61 @@ export default function NewInvoice() {
               tw="w-screen md:w-auto"
             />
             <div tw="flex justify-between">
-              <div tw="mr-3"><input type="text" name="name" value={isForm.name} onChange={handleInput} tw=" w-20 text-sm" /></div>
+              <div tw="mr-3">
+                <input
+                  type="text"
+                  name="name"
+                  value={isForm.name}
+                  onChange={handleInput}
+                  tw=" w-20 text-sm"
+                />
+              </div>
               <div tw="flex flex-col items-end">
-                <span><input type="text" name="address" value={isForm.address} onChange={handleInput} tw=" w-32 text-sm" /></span>
-                <span><input type="text" name="district" value={isForm.district} onChange={handleInput} tw=" w-[130px] text-sm" /></span>
-                <span><input type="text" name="city" value={isForm.city} onChange={handleInput} tw=" w-20 text-sm" /></span>
-                <span><input type="text" name="zip" value={isForm.zip} onChange={handleInput} tw=" w-20 text-sm" /></span>
-                <span><input type="text" name="country" value={isForm.country} onChange={handleInput} tw=" w-20 text-sm" /></span>
+                <span>
+                  <input
+                    type="text"
+                    name="address"
+                    value={isForm.address}
+                    onChange={handleInput}
+                    tw=" w-32 text-sm"
+                  />
+                </span>
+                <span>
+                  <input
+                    type="text"
+                    name="district"
+                    value={isForm.district}
+                    onChange={handleInput}
+                    tw=" w-[130px] text-sm"
+                  />
+                </span>
+                <span>
+                  <input
+                    type="text"
+                    name="city"
+                    value={isForm.city}
+                    onChange={handleInput}
+                    tw=" w-20 text-sm"
+                  />
+                </span>
+                <span>
+                  <input
+                    type="text"
+                    name="zip"
+                    value={isForm.zip}
+                    onChange={handleInput}
+                    tw=" w-20 text-sm"
+                  />
+                </span>
+                <span>
+                  <input
+                    type="text"
+                    name="country"
+                    value={isForm.country}
+                    onChange={handleInput}
+                    tw=" w-20 text-sm"
+                  />
+                </span>
               </div>
             </div>
           </div>
@@ -186,9 +241,7 @@ export default function NewInvoice() {
               </tbody>
               <tfoot>
                 <tr className="double">
-                  <td tw=" text-right align-top text-gray-400">
-                    Amount Due
-                  </td>
+                  <td tw=" text-right align-top text-gray-400">Amount Due</td>
 
                   <td tw=" grid gap-0 items-end ">
                     <span tw="font-semibold ">$6,000.00</span>

@@ -4,7 +4,7 @@ import CardPopup from "../CardPopup";
 import tw from "twin.macro";
 import { useLocation } from "react-router-dom";
 
-export default function SendEmail() {
+export default function SendEmail({hide}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTitle, setIsTitle] = useState("");
 
@@ -87,7 +87,7 @@ export default function SendEmail() {
           </div>
           <div tw="flex justify-end border-t border-gray-200 pb-0 pt-2 px-2">
             <Form.Item>
-              <Button tw="mr-2">Cancel</Button>
+              <Button tw="mr-2" onClick={hide}>Cancel</Button>
             </Form.Item>
             <Form.Item>
               <Button tw="bg-success text-white">Send Report</Button>

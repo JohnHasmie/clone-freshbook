@@ -33,7 +33,6 @@ import card from "../assets/images/info-card-1.jpg";
 import ReactApexChart from "react-apexcharts";
 import tw from "twin.macro";
 import { useHistory } from "react-router-dom";
-import NewItem from "../components/NewItem";
 import AppContext from "../components/context/AppContext";
 import FilterRecurring from "../components/FilterRecurring";
 

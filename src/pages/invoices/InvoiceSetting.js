@@ -4,7 +4,6 @@ import {
   GlobalOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Divider, Form, Input, Modal } from "antd";
 import React, { useState } from "react";
 import tw from "twin.macro";
 import CardPopup from "../../components/CardPopup";

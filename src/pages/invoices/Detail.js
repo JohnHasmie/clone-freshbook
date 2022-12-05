@@ -20,6 +20,13 @@ import tw from "twin.macro";
 export default function Detail() {
   const { Title } = Typography;
   const [checked, setChecked] = useState([]);
+  const [clicked, setClicked] = useState(false);
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
   const history = useHistory();
   const handleCheck = (v) => {
     const newChecked = [...checked];
@@ -298,8 +305,7 @@ export default function Detail() {
                   <span tw="text-xl font-bold text-black">All Payment for Invoices 00148 </span>
                   <Popover
                     placement="top"
-                    content={PopupNewInvoice}
-                    trigger="click"
+                    content={<PopupNewInvoice hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}
                   >
                     <PlusOutlined tw="mx-2 text-white bg-success text-base  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer " />
                   </Popover>
