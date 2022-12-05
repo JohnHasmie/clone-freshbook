@@ -293,18 +293,18 @@ export default function ClientInfo() {
             </Col>
           </Row>
           <hr />
-          <div tw="grid grid-cols-12 justify-items-center mt-10">
-            <div tw="col-span-4 grid justify-items-center">
+          <div tw="flex justify-center mt-10">
+            <div tw="grid justify-items-center">
               <FileDoneOutlined />
               <span>$0</span>
               <p>in draft</p>
             </div>
 
-            <div tw="col-span-4 grid justify-items-center">
+            {/* <div tw="col-span-4 grid justify-items-center">
               <CoffeeOutlined />
               <span>$0</span>
               <p>unbilled expenses</p>
-            </div>
+            </div> */}
           </div>
         </CardDetail>
       </Col>

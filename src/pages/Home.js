@@ -11,7 +11,7 @@ import {
 } from "antd";
 import {
 
-  DownOutlined,
+  DownOutlined, UnorderedListOutlined,
 } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 import Echart from "../components/chart/EChart";
@@ -35,6 +35,8 @@ import tw from "twin.macro";
 import { useHistory } from "react-router-dom";
 import AppContext from "../components/context/AppContext";
 import FilterRecurring from "../components/FilterRecurring";
+import DonutsRevenue from "../components/chart/DonutsRevenue";
+import FilterRevenue from "../components/FilterRevenue";
 
 function Home() {
   const { Title } = Typography;
@@ -387,7 +389,7 @@ function Home() {
             </Card>
           </Col>
         </Row>
-        <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
+        {/* <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
         <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="grid gap-y-2 md:flex justify-between">
               <div tw="flex items-baseline">
@@ -451,7 +453,7 @@ function Home() {
               </div>
             </Card>
           </Col>
-</Row>
+</Row> */}
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
         
             <Col span={24} className="mb-24">
@@ -481,7 +483,12 @@ function Home() {
                 View Recurring Revenue Annual Report
               </a>
             </div>
-            <Card bordered={false} className="criclebox h-full">
+            <Card bordered={true} className="criclebox h-full"
+            style={{
+              width: "300",
+              borderColor: "#cdd4d9",
+            }}
+            >
               <LineChart />
             </Card>
           </Col>
@@ -489,8 +496,11 @@ function Home() {
 
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <div tw="flex justify-between">
+            <div tw="flex justify-start items-center">
               <Title level={3}>Revenue Streams</Title>
+              <Popover placement="bottom" content={FilterRevenue} trigger="click">
+            <UnorderedListOutlined tw="ml-3 text-xl" />
+          </Popover>
             </div>
 
             <Card
@@ -502,7 +512,8 @@ function Home() {
               }}
               className="criclebox "
             >
-              <div
+              <DonutsRevenue/>
+              {/* <div
                 className="h-full col-content p-20"
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
@@ -537,7 +548,7 @@ function Home() {
                   </div>
                   <div>total revenue</div>
                 </div>
-              </div>
+              </div> */}
             </Card>
           </Col>
         </Row>

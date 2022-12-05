@@ -160,7 +160,7 @@ function Header({
       ></path>
     </svg>,
   ];
-
+console.log(name,"name");
   return (
     <>
       {name.includes("dashboard") && (
@@ -266,7 +266,7 @@ function Header({
           <Divider tw="md:col-span-2" />
         </div>
       ) : (
-        name.includes("clients") && (
+        name.includes("clients") &&  (
           <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
             <div tw="flex justify-between md:hidden">
               <div>{bell}</div>
@@ -306,7 +306,7 @@ function Header({
         )
       )}
 
-      {name.includes("invoices") && (
+      {name.includes("invoices") &&!name.includes('clients') && (
         <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
           <div tw="flex justify-between md:hidden">
             <div>{bell}</div>

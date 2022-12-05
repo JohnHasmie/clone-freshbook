@@ -60,7 +60,7 @@ export default function Accounting() {
           <div tw="grid grid-cols-2 gap-3">
             {data.map((item, i) => (
              <Link key={i} to={item.path}>
-               <CardReport >
+               <CardReport tw="min-h-[8rem]  ">
                  <div tw="flex items-center">
                    {item.icon}
                    <div tw="grid gap-y-0 ml-5">

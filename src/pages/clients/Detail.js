@@ -196,8 +196,8 @@ export default function Detail() {
     <>
       <div className="layout-content">
         <ClientInfo />
-        <div tw="max-w-screen-xl mr-5 mb-10 mt-20">
-          <ClientTabs />
+        <div tw="max-w-screen-xl mr-5 mb-10 mt-20" >
+            <ClientTabs />
           <div tw="flex items-center ">
             <span tw="text-xl font-bold text-black">
               Contacts for Sutton Rowland Inc
