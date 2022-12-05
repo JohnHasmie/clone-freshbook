@@ -198,14 +198,22 @@ function Sidenav({ color, user, setting }) {
   const content = (
     <Menu theme="light" mode="inline" style={{ width: "300px" }}>
       <Menu.Item className="menu-border">
-        <NavLink tw="text-base" onClick={() => setVisible(!visible)} to="/global-settings">
+        <NavLink
+          tw="text-base"
+          onClick={() => setVisible(!visible)}
+          to="/global-settings"
+        >
           <SettingOutlined />
           <span>Settings</span>
         </NavLink>
       </Menu.Item>
 
       <Menu.Item className="menu-border">
-        <NavLink tw="text-base" onClick={() => setVisible(!visible)} to="/items">
+        <NavLink
+          tw="text-base"
+          onClick={() => setVisible(!visible)}
+          to="/items"
+        >
           <TagOutlined />
           <span>Items</span>
         </NavLink>
@@ -250,7 +258,15 @@ function Sidenav({ color, user, setting }) {
           trigger="click"
           visible={visible}
         >
-          <div style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }} onClick={()=>setVisible(!visible)}>
+          <div
+            style={{
+              position: "absolute",
+              right: "-8px",
+              top: "40px",
+              cursor: "pointer",
+            }}
+            onClick={() => setVisible(!visible)}
+          >
             {logsetting}
           </div>
         </Popover>
@@ -259,11 +275,7 @@ function Sidenav({ color, user, setting }) {
       <Menu theme="light" mode="inline">
         <Menu.Item key="1">
           <NavLink to="/dashboard">
-            <span
-              className=""
-              style={{ marginRight: "10px" }}
-           
-            >
+            <span className="" style={{ marginRight: "10px" }}>
               {dashboard}
             </span>
             <span className="text-light">Dashboard</span>
@@ -271,11 +283,7 @@ function Sidenav({ color, user, setting }) {
         </Menu.Item>
         <Menu.Item key="2">
           <NavLink to="/clients">
-            <span
-              className=""
-              style={{ marginRight: "10px" }}
-              
-            >
+            <span className="" style={{ marginRight: "10px" }}>
               {billing}
             </span>
             <span className="text-light">Clients</span>
@@ -284,51 +292,21 @@ function Sidenav({ color, user, setting }) {
 
         <Menu.Item key="3">
           <NavLink to="/invoices">
-            <span
-              className=""
-              style={{ marginRight: "10px" }}
-              
-            >
+            <span className="" style={{ marginRight: "10px" }}>
               {tables}
             </span>
             <span className="text-light">Invoices</span>
           </NavLink>
         </Menu.Item>
-
-        {/* <Menu.Item key="3">
-          <NavLink to="/sign-in">
-            <span className="" style={{ marginRight: "10px" }}>
-              {signin}
-            </span>
-            <span className="text-light">Sign In</span>
+      </Menu>
+      <hr />
+      <Menu theme="light" mode="inline">
+        <Menu.Item key="4">
+          <NavLink to="/accounting">
+            <span className="text-light">Accounting</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="4">
-          <NavLink to="/sign-up">
-            <span className="" style={{ marginRight: "10px" }}>
-              {signup}
-            </span>
-            <span className="text-light">Sign Up</span>
-          </NavLink>
-        </Menu.Item> */}
       </Menu>
-      {/* <div className="aside-footer">
-        <div
-          className="footer-box"
-          style={{
-            background: color,
-          }}
-        >
-          <span className="icon" style={{ color }}>
-            {dashboard}
-          </span>
-          <h6>Need Help?</h6>
-          <p>Please check our docs</p>
-          <Button type="primary" className="ant-btn-sm ant-btn-block">
-            DOCUMENTATION
-          </Button>
-        </div>
-      </div> */}
     </>
   );
 }

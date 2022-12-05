@@ -58,6 +58,7 @@ import EmailDeleted from "./pages/clients/EmailDeleted";
 import InvoicesOverdue from './pages/invoices/InvoicesOverdue';
 import InvoicesDraft from './pages/invoices/InvoicesDraft';
 import InvoicesOutstanding from "./pages/invoices/InvoicesOutstanding";
+import Accounting from "./pages/accounting/Accounting";
 
 function App() {
   let { pathname } = useLocation();
@@ -176,6 +177,11 @@ function App() {
               <Route exact path="/clients/sent-email" component={Email} />
               <Route exact path="/clients/sent-email/deleted" component={EmailDeleted} />
 
+              <Route
+                exact
+                path="/clients/:clientId/recurring-templates"
+                component={DetailRecurring}
+              />
 
               <Route
                 exact
@@ -198,11 +204,6 @@ function App() {
                 component={DetailInvoice}
               />
 
-              <Route
-                exact
-                path="/clients/:clientId/recurring-templates"
-                component={DetailRecurring}
-              />
 
               <Route exact path="/invoices" component={Invoices} />
               <Route exact path="/invoices/draft" component={InvoicesDraft} />
@@ -238,6 +239,9 @@ function App() {
               <Route exact path="/items" component={Items} />
               <Route exact path="/items/archived" component={ItemsArchived} />
               <Route exact path="/items/deleted" component={ItemsDeleted} />
+
+              <Route exact path="/accounting" component={Accounting} />
+
 
               <Route exact path="/tables" component={Tables} />
               <Route exact path="/billing" component={Billing} />

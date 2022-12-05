@@ -14,7 +14,10 @@ import ButtonCustom from "../Button";
 import tw from "twin.macro";
 import ButtonInvite from "../ButtonInvite";
 import TabsSettting from "./TabsSettting";
-import { MoreActionClients, MoreActionClientsDetail } from "../Reports/MoreAction";
+import {
+  MoreActionClients,
+  MoreActionClientsDetail,
+} from "../Reports/MoreAction";
 import NewItem from "../NewItem";
 
 const toggler = [
@@ -137,7 +140,6 @@ function Header({
       </Menu>
     </div>
   );
-
 
   const bell = [
     <svg
@@ -278,9 +280,7 @@ function Header({
               </ButtonCustom>
             </div>
             <div tw="flex items-center">
-              <span tw="capitalize text-4xl font-bold">
-              Clients
-              </span>
+              <span tw="capitalize text-4xl font-bold">Clients</span>
             </div>
             <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
               <Popover
@@ -320,9 +320,7 @@ function Header({
             </ButtonCustom>
           </div>
           <div tw="flex items-center">
-            <span tw="capitalize text-4xl font-bold">
-              Invoices
-            </span>
+            <span tw="capitalize text-4xl font-bold">Invoices</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <Popover placement="bottom" content={createList} trigger="click">
@@ -382,12 +380,45 @@ function Header({
             </ButtonInvite>
             <Popover
               placement="bottom"
-              content={<NewItem hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}
+              content={<NewItem hide={hide} />}
+              trigger="click"
+              visible={clicked}
+              onVisibleChange={handleClickChange}
             >
               <ButtonCustom tw="!py-6 bg-success text-white">
                 <span>Create New...</span>
                 <DownOutlined />
               </ButtonCustom>
+            </Popover>
+          </div>
+
+          <Divider tw="md:col-span-2" />
+        </div>
+      )}
+      {name.includes("accounting") && (
+        <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
+          <div tw="flex justify-between md:hidden">
+            <div>{bell}</div>
+            <ButtonCustom
+              tw="!bg-transparent !border-0 hover:opacity-50"
+              type="link"
+              className="sidebar-toggler"
+              onClick={() => onPress()}
+            >
+              {toggler}
+            </ButtonCustom>
+          </div>
+          <div tw="flex items-center">
+            <span tw="capitalize text-4xl font-bold">
+              {subName.replace("/", "")}
+            </span>
+          </div>
+          <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
+            <Popover placement="bottom" content={content} trigger="click">
+              <ButtonInvite tw="!py-6 md:mr-5">
+                <span>Invite</span>
+                <DownOutlined />
+              </ButtonInvite>
             </Popover>
           </div>
 
