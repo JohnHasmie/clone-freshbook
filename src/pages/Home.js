@@ -37,6 +37,7 @@ import AppContext from "../components/context/AppContext";
 import FilterRecurring from "../components/FilterRecurring";
 import DonutsRevenue from "../components/chart/DonutsRevenue";
 import FilterRevenue from "../components/FilterRevenue";
+import BarChart from "../components/chart/BarChart";
 
 function Home() {
   const { Title } = Typography;
@@ -180,7 +181,8 @@ function Home() {
                               ></div>
                             </div>
                           </div> */}
-                        <DashboardChart/>
+                        {/* <DashboardChart/> */}
+                        <BarChart/>
 
                         </div>
                         <div
@@ -221,7 +223,7 @@ function Home() {
                       <div
                         style={{ paddingTop: "24px", display: "inline-block" }}
                       >
-                        <div style={{ verticalAlign: "middle", width: "100%" }}>
+                        {/* <div style={{ verticalAlign: "middle", width: "100%" }}>
                           <div
                             style={{
                               paddingRight: "10px",
@@ -267,7 +269,7 @@ function Home() {
                               outstanding
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>

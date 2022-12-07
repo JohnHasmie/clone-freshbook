@@ -56,7 +56,6 @@ function HeaderInvoice({
 }) {
   const history = useHistory();
 
-  useEffect(() => window.scrollTo(0, 0));
 
   return (
     <div tw="md:ml-24">

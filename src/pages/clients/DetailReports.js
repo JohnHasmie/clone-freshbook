@@ -69,7 +69,7 @@ export default function DetailReports() {
     <>
       <div className="layout-content">
         <ClientInfo />
-        <div tw="max-w-screen-xl mr-5 mb-10 mt-20">
+        <div tw="max-w-screen-xl mr-5 mb-10 mt-20" >
           <ClientTabs />
           <div tw="flex items-center mb-5 ">
             <span tw="text-xl font-bold text-black">Reports for Company Name </span>

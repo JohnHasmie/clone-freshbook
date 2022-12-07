@@ -14,9 +14,12 @@ import CardDetail from "../CardDetail";
 import Photo from "../../assets/images/mask-group.svg";
 import tw from "twin.macro";
 import DashboardChart from "../chart/DashboardChart";
+import BarChartClient from '../chart/BarChartClient';
+import { useHistory } from "react-router-dom";
 
 export default function ClientInfo() {
   const [filterInvoice, setFilterInvoice] = useState("usd");
+  const history=useHistory()
 
   const invoiceList = (
     <div>
@@ -103,10 +106,11 @@ export default function ClientInfo() {
                         <DownOutlined />
                       </Popover>
                     </div>
-                    <div tw="text-primary text-2xl font-bold">Rp0</div>
+                    <span onClick={()=>history.push('/invoices/outstanding-balance')} tw="text-primary text-2xl font-bold cursor-pointer">Rp0</span>
                   </div>
                   <div >
-                  <DashboardChart/>
+                  {/* <DashboardChart/> */}
+                  <BarChartClient/>
 
                   </div>
                   {/* <div
@@ -240,7 +244,7 @@ export default function ClientInfo() {
                       </div>
                     </div>
                   </div> */}
-                  <div style={{ paddingTop: "24px", display: "inline-block" }}>
+                  {/* <div style={{ paddingTop: "24px", display: "inline-block" }}>
                     <div style={{ verticalAlign: "middle", width: "100%" }}>
                       <div
                         style={{
@@ -287,7 +291,7 @@ export default function ClientInfo() {
                       </div>
                     </div>
                     <p>$0</p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </Col>
