@@ -136,9 +136,9 @@ export default function Recurring() {
           <div tw="md:mt-20">
             <InvoiceTabs />
             <div tw="grid md:flex justify-between mb-6">
-              <div tw="flex items-center ">
-                <Title level={3}>All Recurring Templates </Title>
-                <PlusOutlined tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer -mt-5 " />
+              <div tw="flex items-end ">
+                <span tw="text-xl font-bold text-black">All Recurring Templates</span>
+                <PlusOutlined tw="ml-2 text-white bg-success text-xl  p-1.5 rounded-md font-bold flex items-center cursor-pointer " />
               </div>
               <div tw="flex relative cursor-pointer">
                 <InputAdvanceSearch prefix={<SearchOutlined />} />
@@ -151,7 +151,7 @@ export default function Recurring() {
                     htmlFor="date"
                     name="date"
                     id="date"
-                    tw="absolute"
+                    tw="hidden"
                   />
                   <CalendarOutlined />
                   <CaretDownOutlined tw="ml-1" />

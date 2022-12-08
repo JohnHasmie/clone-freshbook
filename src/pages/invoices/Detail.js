@@ -301,13 +301,13 @@ export default function Detail() {
             </CardDetailInvoice>
             <div tw="mt-20">
            
-                <div tw="flex items-center ">
+                <div tw="flex items-end ">
                   <span tw="text-xl font-bold text-black">All Payment for Invoices 00148 </span>
                   <Popover
                     placement="top"
                     content={<PopupNewInvoice hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}
                   >
-                    <PlusOutlined tw="mx-2 text-white bg-success text-base  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer " />
+                    <PlusOutlined tw="mx-2 text-white bg-success text-xl flex items-center p-1.5 rounded-md font-bold cursor-pointer " />
                   </Popover>
                   {checked.length > 0 ? (
               <>

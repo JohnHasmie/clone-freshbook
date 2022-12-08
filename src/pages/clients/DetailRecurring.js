@@ -209,7 +209,7 @@ export default function DetailRecurring() {
         <ClientInfo />
         <div tw="max-w-screen-xl mr-5 mb-10 mt-20">
           <ClientTabs />
-          <div tw="flex items-center ">
+          <div tw="flex items-end ">
             <span tw="text-xl font-bold text-black">
               Recurring Templates for Sutton Rowland Inc{" "}
             </span>
@@ -230,7 +230,7 @@ export default function DetailRecurring() {
                 </Popover>
               </>
             ) : (
-              <PlusOutlined tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer " />
+              <PlusOutlined tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold p-1.5 cursor-pointer " />
             )}
           </div>
           <div className="table-responsive">

@@ -74,7 +74,7 @@ function Home() {
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="grid gap-y-2 md:flex justify-between">
               <div tw="flex items-baseline">
-                <Title level={3}>Outstanding Invoices</Title>
+                <span tw="text-xl font-bold text-black">Outstanding Invoices</span>
                 <Popover
                   tw="ml-5 px-2 py-1 hover:border hover:rounded-md hover:border-blue-500 flex items-center justify-center "
                   placement="bottom"
@@ -395,7 +395,7 @@ function Home() {
         <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="grid gap-y-2 md:flex justify-between">
               <div tw="flex items-baseline">
-                <Title level={3}>Monthly Recurring Revenue</Title>
+                <span tw="text-xl font-bold text-black">Monthly Recurring Revenue</span>
                 <Popover
                   tw="ml-5  flex items-center justify-center "
                   placement="bottom"
@@ -461,7 +461,7 @@ function Home() {
             <Col span={24} className="mb-24">
             <div tw="grid gap-y-2 md:flex justify-between">
               <div tw="flex items-baseline">
-                <Title level={3}>Monthly Recurring Revenue</Title>
+                <span tw="text-xl font-bold text-black">Monthly Recurring Revenue</span>
                 <Popover
                   tw="ml-5  flex items-center justify-center "
                   placement="bottom"
@@ -499,9 +499,9 @@ function Home() {
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="flex justify-start items-center">
-              <Title level={3}>Revenue Streams</Title>
+              <span tw="text-xl font-bold text-black">Revenue Streams</span>
               <Popover placement="bottom" content={FilterRevenue} trigger="click">
-            <UnorderedListOutlined tw="ml-3 text-xl" />
+            <UnorderedListOutlined tw="ml-3 text-xl flex items-center" />
           </Popover>
             </div>
 

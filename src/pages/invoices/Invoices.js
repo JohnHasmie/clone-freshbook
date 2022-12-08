@@ -359,7 +359,7 @@ export default function Invoices() {
           <div tw="md:mt-20">
             <InvoiceTabs />
             <div tw="grid md:flex justify-between mb-6">
-              <div tw="flex items-center ">
+              <div tw="flex items-end ">
                 <span tw="text-xl font-bold text-black">All Invoices </span>
                 {checked.length > 0 ? (
                   <>
@@ -384,7 +384,7 @@ export default function Invoices() {
                 ) : (
                   <PlusOutlined
                     onClick={() => history.push("/invoices/new")}
-                    tw="ml-2 text-white bg-success text-xl  px-2 rounded-md font-bold pt-0.5 pb-0 cursor-pointer"
+                    tw="ml-2 text-white bg-success text-xl p-1.5 flex items-center rounded-md font-bold cursor-pointer"
                   />
                 )}
               </div>

@@ -2,7 +2,7 @@ import { Button } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledButtonInvite = styled(Button)(({ hidden }) => [
-  tw`p-button bg-transparent  !border-2 !border-[#cdd4d9] md:!border-0   hover:!border-2 hover:!border-[#cdd4d9] shadow-none  px-4 flex items-center justify-center hover:ring hover:ring-offset-2`,
+  tw`p-button bg-transparent  !border !border-[#cdd4d9] md:!border-0   hover:!border hover:!border-[#cdd4d9] shadow-none  px-4 flex items-center justify-center `,
   css`
     && {
     
