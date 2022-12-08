@@ -1,11 +1,12 @@
 import { useState } from "react"
 import { StyledPopover } from "./PopoverClickable.style"
 
-const PopoverClickable = ({ renderChildren, renderContent, ...popoverProps }) => {
+const PopoverClickable = ({ renderChildren, renderContent, defaultValue, ...popoverProps }) => {
     const [visible, setVisible] = useState(false)
+    const [value, setValue] = useState(defaultValue)
     const show = () => setVisible(true)
     const hide = () => setVisible(false)
-    const state = { visible, show, hide }
+    const state = { visible, show, hide, value, setValue }
 
     return (
         <StyledPopover 
