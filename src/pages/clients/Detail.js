@@ -162,7 +162,7 @@ export default function Detail() {
     {
       title: (
         <Checkbox
-          checked={data?.length === checked.length}
+          checked={data.length !== 0 && data?.length === checked.length}  disabled={data.length === 0}
           className="font-normal"
           onChange={handleCheckAll}
         />
@@ -221,7 +221,7 @@ export default function Detail() {
             ) : (
               <PlusOutlined
                 onClick={showModal}
-                tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold p-1.5 cursor-pointer "
+                tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold py-1.5 px-2 cursor-pointer "
               />
             )}
           </div>

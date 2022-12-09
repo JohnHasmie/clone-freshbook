@@ -2,7 +2,7 @@ import { Button } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledButtonInvite = styled(Button)(({ hidden }) => [
-  tw`p-button bg-transparent  !border !border-[#cdd4d9] md:!border-0   hover:!border hover:!border-[#cdd4d9] shadow-none  px-4 flex items-center justify-center `,
+  tw`p-button bg-transparent  !border !border-[#cdd4d9] md:!border-transparent   hover:!border hover:!border-[#cdd4d9] shadow-none  px-4 flex items-center justify-center `,
   css`
     && {
     
@@ -13,7 +13,7 @@ export const StyledButtonInvite = styled(Button)(({ hidden }) => [
 
       &:hover {
         span {
-          ${tw`text-black`}
+          ${tw`text-xl text-black`}
         }
         svg path {
           fill: black;

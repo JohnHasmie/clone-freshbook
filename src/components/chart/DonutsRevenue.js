@@ -22,7 +22,7 @@ function DonutsRevenue() {
          width={"100%"}
        />
        <div tw="text-lg">
-       <FileDoneOutlined tw="text-xl mr-2 text-primary" />
+       <FileDoneOutlined tw="text-xl mr-2 text-[#9c4aa4]" />
        <span>Invoices</span>
        <span tw="text-gray-400 ml-2">-$6,000</span>
        </div>

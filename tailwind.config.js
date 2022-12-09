@@ -2,6 +2,7 @@
 module.exports = {
   important: true,
   content: ["./src/**/*.js"],
+  
   theme: {
     extend: {
       spacing: {

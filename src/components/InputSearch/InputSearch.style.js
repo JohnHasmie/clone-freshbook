@@ -10,16 +10,26 @@ export const StyledInputSearch = styled(Input)(({ hidden,isRounded }) => [
               }
     
             .anticon {
-                ${tw`inline-block pl-1`}
+                ${tw`inline-block pl-1 text-[#d9d9d9]`}
 
                
             }
 
+            .ant-input-affix-wrapper-focused{
+                ${tw`!border-[#d9d9d9] !shadow-transparent	`}
+            }
+            .ant-input-affix-wrapper:hover{
+                ${tw`text-[#d9d9d9] !border-[#d9d9d9]`}
+            }
+
+            &:focus{
+                ${tw`text-[#d9d9d9] !border-[#d9d9d9]`}
+            }
             &:hover {
-                ${tw`text-primary border-primary`}
+                ${tw`text-[#d9d9d9] !border-[#d9d9d9]`}
 
                 .anticon {
-                    ${tw`text-primary `}
+                    ${tw`text-[#d9d9d9] `}
                 }
             }
         }

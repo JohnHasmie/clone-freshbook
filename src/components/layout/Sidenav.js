@@ -4,18 +4,28 @@ import {
   SettingOutlined,
   TagOutlined,
 } from "@ant-design/icons";
-import { Menu, Button, Popover, Typography, Divider, Skeleton } from "antd";
-import { useState } from "react";
+import { Menu, Button, Popover, Typography, Skeleton } from "antd";
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import logo from "../../assets/images/logo.png";
-import maskGroup from "../../assets/images/mask-group.svg";
+
 import tw from "twin.macro";
 
 function Sidenav({ color, user, setting }) {
-  const { pathname } = useLocation();
   const { Title } = Typography;
-  const page = pathname.replace("/", "");
   const [visible, setVisible] = useState(false);
+  const [clicked, setClicked] = useState(false);
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", () => {
+      return window.scrollY > 0 && setClicked(false);
+    });
+  });
+  console.log(clicked, "Click");
   const dashboard = [
     <svg
       width="20"
@@ -200,7 +210,10 @@ function Sidenav({ color, user, setting }) {
       <Menu.Item className="menu-border">
         <NavLink
           tw="text-base"
-          onClick={() => setVisible(!visible)}
+          onClick={() => {
+           
+            hide();
+          }}
           to="/global-settings"
         >
           <SettingOutlined />
@@ -211,7 +224,10 @@ function Sidenav({ color, user, setting }) {
       <Menu.Item className="menu-border">
         <NavLink
           tw="text-base"
-          onClick={() => setVisible(!visible)}
+          onClick={() => {
+           
+            hide();
+          }}
           to="/items"
         >
           <TagOutlined />
@@ -219,7 +235,14 @@ function Sidenav({ color, user, setting }) {
         </NavLink>
       </Menu.Item>
       <Menu.Item>
-        <NavLink tw="text-base" onClick={() => setVisible(!visible)} to="/">
+        <NavLink
+          tw="text-base"
+          onClick={() => {
+           
+            hide();
+          }}
+          to="/"
+        >
           <LogoutOutlined />
           <span>Log Out</span>
         </NavLink>
@@ -251,12 +274,25 @@ function Sidenav({ color, user, setting }) {
           {bell}
         </div> */}
         {/* <NavLink to="/global-settings" style={{ position: "absolute", right: "-8px", top: "40px", cursor:"pointer" }}>{logsetting}</NavLink> */}
+        {/* <Popover
+              placement="rightTop"
+              content={<content />}
+              trigger="click"
+              visible={clicked}
+              onVisibleChange={handleClickChange}
+            >
+              <Button tw="!py-6 bg-success text-white">
+                <span>Create New...</span>
+              </Button>
+            </Popover> */}
+
         <Popover
           placement="rightTop"
           title={text}
           content={content}
           trigger="click"
-          visible={visible}
+          visible={clicked}
+          onVisibleChange={handleClickChange}
         >
           <div
             style={{
@@ -264,8 +300,8 @@ function Sidenav({ color, user, setting }) {
               right: "-8px",
               top: "40px",
               cursor: "pointer",
+              transform: clicked ? "rotate(12deg)" : "rotate(0deg)",
             }}
-            onClick={() => setVisible(!visible)}
           >
             {logsetting}
           </div>

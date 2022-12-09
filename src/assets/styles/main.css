@@ -2440,7 +2440,8 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 
 .layout-dashboard .ant-card {
   border-radius: 12px;
-  box-shadow: 0 5px 7px rgb(0 0 0 / 5%);
+  border: 1px solid #cdd4d9;
+  box-shadow: 0 0 0 3px rgba(6,41,66,.1);
 }
 
 .card-credit {
@@ -3217,6 +3218,9 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile .btn-sig
   width: 15px;
   height: 15px;
 }
+.ant-tooltip-inner{
+  text-align: center;
+}
 
 .layout-dashboard .ant-affix .ant-layout-header {
   background: #fff;
@@ -3269,8 +3273,8 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile .header-
 
 .user-pop {
   width: 18rem;
-  border-width: 1px;
-  border-color: #7f8c9f;
+  /* border-width: 1px;
+  border-color: #7f8c9f; */
 }
 
 .user-pop ul {
@@ -3345,7 +3349,11 @@ color:#0063c1;
 }
 /*  */
 
-
+/* tabs  start*/
+.ant-tabs-tab{
+  font-size: 16px;
+}
+/* tabs end */
 
 
 

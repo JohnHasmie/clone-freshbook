@@ -13,9 +13,9 @@ const handleClick=(type)=>{
   }
 }
   return (
-    <div tw="hidden md:grid grid-cols-3 gap-4 justify-items-center content-center">
+    <div tw="hidden md:grid grid-cols-3 gap-4 justify-items-center content-center pb-5">
       <div
-        tw="cursor-pointer w-full text-center hover:border-t hover:border-primary"
+        tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 border-transparent hover:border-primary"
         onClick={() => handleClick("overdue")}
       >
         <div>
@@ -26,7 +26,7 @@ const handleClick=(type)=>{
         <p tw="text-secondary">overdue</p>
       </div>
       <div
-        tw="cursor-pointer w-full text-center hover:border-t hover:border-primary"
+        tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 border-transparent hover:border-primary"
         onClick={() => handleClick("outstanding")}
       >
         <div>
@@ -36,7 +36,7 @@ const handleClick=(type)=>{
         <p>total outstanding</p>
       </div>
       <div
-        tw="cursor-pointer w-full text-center hover:border-t hover:border-primary"
+        tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 border-transparent hover:border-primary"
         onClick={() => handleClick("draft")}
       >
         <div>

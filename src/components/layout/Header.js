@@ -415,7 +415,7 @@ console.log(name,"name");
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <Popover placement="bottom" content={content} trigger="click">
-              <ButtonInvite tw="!py-6 md:mr-5">
+              <ButtonInvite tw=" md:mr-5">
                 <span>Invite</span>
                 <DownOutlined />
               </ButtonInvite>

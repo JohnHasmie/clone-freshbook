@@ -4,19 +4,7 @@ import CardPopup from "./CardPopup";
 import tw from "twin.macro";
 
 export default function FilterRecurring() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
@@ -35,7 +23,7 @@ export default function FilterRecurring() {
         >
            <Form.Item  name="time"     >
                 <Select
-             
+             style={{width:'100%'}}
                   defaultValue="last-12month"
              
                   options={[
@@ -52,6 +40,7 @@ export default function FilterRecurring() {
               </Form.Item>
               <Form.Item label="Currency"       name="currency">
                 <Select
+             style={{width:'100%'}}
             
                   defaultValue="usd"
               

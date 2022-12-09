@@ -63,12 +63,12 @@ export default function Items() {
     newChecked.splice(0, 1);
     setChecked(newChecked);
   };
-
   const columns = [
     {
       title: (
         <Checkbox
-          checked={dataItems?.data?.data?.length === checked.length}
+          checked={checked.length !== 0 && dataItems?.data?.data?.length === checked.length}
+          disabled={dataItems?.data?.data?.length === 0}
           className="font-normal"
           onChange={handleCheckAll}
         />
@@ -163,7 +163,7 @@ export default function Items() {
           <div tw="flex items-center">
             <span tw="text-xl font-bold text-black">
               Items
-              <Tooltip placement="top" title="Ryan Tompson">
+              <Tooltip placement="top" title="Items can be added to invoice to bill your clients">
                 <ExclamationCircleOutlined tw="mx-1 text-xs align-top" />
               </Tooltip>
             </span>

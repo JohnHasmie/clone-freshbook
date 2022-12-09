@@ -1,36 +1,13 @@
 import { useContext, useState } from "react";
 
-import {
-  Card,
-  Col,
-  Row,
-  Typography,
- 
-  Popover,
-  Menu,
-} from "antd";
-import {
-
-  DownOutlined, UnorderedListOutlined,
-} from "@ant-design/icons";
+import { Card, Col, Row, Typography, Popover, Menu } from "antd";
+import { DownOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
 import Echart from "../components/chart/EChart";
 import DashboardChart from "../components/chart/DashboardChart";
 
 import LineChart from "../components/chart/LineChart";
 
-import ava1 from "../assets/images/logo-shopify.svg";
-import ava2 from "../assets/images/logo-atlassian.svg";
-import ava3 from "../assets/images/logo-slack.svg";
-import ava4 from "../assets/images/logo-spotify.svg";
-import ava5 from "../assets/images/logo-jira.svg";
-import ava6 from "../assets/images/logo-invision.svg";
-import team1 from "../assets/images/team-1.jpg";
-import team2 from "../assets/images/team-2.jpg";
-import team3 from "../assets/images/team-3.jpg";
-import team4 from "../assets/images/team-4.jpg";
-import card from "../assets/images/info-card-1.jpg";
-import ReactApexChart from "react-apexcharts";
 import tw from "twin.macro";
 import { useHistory } from "react-router-dom";
 import AppContext from "../components/context/AppContext";
@@ -46,7 +23,7 @@ function Home() {
 
   const { user } = useContext(AppContext);
   const invoiceList = (
-    <div tw="border border-[#7f8c9f]">
+    <div /* tw="border border-[#7f8c9f]" */>
       <Menu>
         <Menu.Item>
           <div>
@@ -72,11 +49,13 @@ function Home() {
       <div className="layout-content" style={{ width: "98%" }}>
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <div tw="grid gap-y-2 md:flex justify-between">
+            <div tw="grid gap-y-2 md:flex justify-between mb-5">
               <div tw="flex items-baseline">
-                <span tw="text-xl font-bold text-black">Outstanding Invoices</span>
+                <span tw="text-xl font-bold text-black">
+                  Outstanding Invoices
+                </span>
                 <Popover
-                  tw="ml-5 px-2 py-1 hover:border hover:rounded-md hover:border-blue-500 flex items-center justify-center "
+                  tw="ml-5 px-2 py-1 border border-transparent hover:border hover:rounded-md hover:border-blue-500 flex items-center justify-center "
                   placement="bottom"
                   content={invoiceList}
                   trigger="click"
@@ -129,68 +108,12 @@ function Home() {
                         }}
                       >
                         <div style={{ flexGrow: "1" }}>
-                          {/* <div style={{ position: "relative", height: "30px" }}>
-                            <div
-                            tw="left-0 absolute pt-2"
-                              
-                            >
-                              0
-                            </div>
-                            <div
-                            tw="left-[2rem] md:left-[10rem] absolute pt-2"
-                              
-                            >
-                              2k
-                            </div>
-                            <div
-                              tw="left-[4rem] md:left-[20rem] absolute pt-2"
-                            >
-                              4k
-                            </div>
-                            <div
-                             tw="left-[6rem] md:left-[30rem] absolute pt-2"
-                            >
-                              6k
-                            </div>
-                          </div> */}
-                          {/* <div
-                            style={{
-                              borderLeft: "2px solid #cdd4d9",
-                              padding: "3px 0",
-                              marginLeft: "-2px",
-                              position: "relative",
-                            }}
-                          >
-                            <div
-                              style={{
-                             
-                                borderTopRightRadius: "5px",
-                                borderBottomRightRadius: "5px",
-                                height: "40px",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  borderTopRightRadius: "5px",
-                                  borderBottomRightRadius: "5px",
-                                  color: "#f4d980",
-                                  backgroundColor: "#f4d980",
-                                  borderColor: "#f4d980",
-                                  height: "100%",
-                                }}
-                              ></div>
-                            </div>
-                          </div> */}
-                        {/* <DashboardChart/> */}
-                        <BarChart/>
-
+              
+                          <BarChart />
                         </div>
-                        <div
-                          style={{ textAlign: "right", marginLeft: "20px" }}
-                          
-                        >
+                        <div style={{ textAlign: "right", marginLeft: "20px" }}>
                           <div
-                           style={{
+                            style={{
                               color: "#0063c1",
                               fontWeight: "500",
                               whiteSpace: "nowrap",
@@ -203,13 +126,12 @@ function Home() {
                                 fontSize: "30px",
                                 fontWeight: "bold",
                               }}
-                             
                               href="#/invoices/outstanding"
                             >
                               $6,000
                             </a>
                           </div>
-                          <div 
+                          <div
                             style={{
                               color: "#576981",
                               fontSize: "16px",
@@ -223,53 +145,7 @@ function Home() {
                       <div
                         style={{ paddingTop: "24px", display: "inline-block" }}
                       >
-                        {/* <div style={{ verticalAlign: "middle", width: "100%" }}>
-                          <div
-                            style={{
-                              paddingRight: "10px",
-                              textAlign: "left",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <div
-                              style={{
-                                color: "#ec8292",
-                                borderColor: "#ec8292",
-                                backgroundColor: "#ec8292",
-                                height: "16px",
-                                width: "16px",
-                                borderRadius: "5px",
-                                marginRight: "5px",
-                              }}
-                            ></div>
-                            <div
-                              style={{
-                                color: "#576981",
-                                textAlign: "left",
-                                marginRight: "5px",
-                              }}
-                            >
-                              overdue
-                            </div>
-                            <div
-                              style={{
-                                color: "#f4d980",
-                                borderColor: "#f4d980",
-                                backgroundColor: "#f4d980",
-                                height: "16px",
-                                width: "16px",
-                                borderRadius: "5px",
-                                marginRight: "5px",
-                              }}
-                            ></div>
-                            <div
-                              style={{ color: "#576981", textAlign: "left" }}
-                            >
-                              outstanding
-                            </div>
-                          </div>
-                        </div> */}
+                  
                       </div>
                     </div>
                   </div>
@@ -457,11 +333,12 @@ function Home() {
           </Col>
 </Row> */}
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
-        
-            <Col span={24} className="mb-24">
-            <div tw="grid gap-y-2 md:flex justify-between">
+          <Col span={24} className="mb-24">
+            <div tw="grid gap-y-2 md:flex justify-between mb-5">
               <div tw="flex items-baseline">
-                <span tw="text-xl font-bold text-black">Monthly Recurring Revenue</span>
+                <span tw="text-xl font-bold text-black">
+                  Monthly Recurring Revenue
+                </span>
                 <Popover
                   tw="ml-5  flex items-center justify-center "
                   placement="bottom"
@@ -485,11 +362,13 @@ function Home() {
                 View Recurring Revenue Annual Report
               </a>
             </div>
-            <Card bordered={true} className="criclebox h-full"
-            style={{
-              width: "300",
-              borderColor: "#cdd4d9",
-            }}
+            <Card
+              bordered={true}
+              className="criclebox h-full"
+              style={{
+                width: "300",
+                borderColor: "#cdd4d9",
+              }}
             >
               <LineChart />
             </Card>
@@ -498,11 +377,15 @@ function Home() {
 
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
-            <div tw="flex justify-start items-center">
+            <div tw="flex justify-start items-center mb-5">
               <span tw="text-xl font-bold text-black">Revenue Streams</span>
-              <Popover placement="bottom" content={FilterRevenue} trigger="click">
-            <UnorderedListOutlined tw="ml-3 text-xl flex items-center" />
-          </Popover>
+              <Popover
+                placement="bottom"
+                content={FilterRevenue}
+                trigger="click"
+              >
+                <UnorderedListOutlined tw="ml-3 text-base flex items-end" />
+              </Popover>
             </div>
 
             <Card
@@ -514,7 +397,7 @@ function Home() {
               }}
               className="criclebox "
             >
-              <DonutsRevenue/>
+              <DonutsRevenue />
               {/* <div
                 className="h-full col-content p-20"
                 style={{ display: "flex", justifyContent: "space-between" }}

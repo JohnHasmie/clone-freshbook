@@ -1,13 +1,10 @@
-import {Checkbox, Table } from "antd";
+import { Checkbox, Table } from "antd";
 import React, { useState } from "react";
 import { Typography } from "antd";
 import { Button } from "antd";
 import Search from "antd/lib/transfer/search";
 import InputSearch from "../../components/InputSearch";
-import {
-  RightOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { RightOutlined, SearchOutlined } from "@ant-design/icons";
 import tw from "twin.macro";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -44,7 +41,6 @@ export default function ItemsArchived() {
         })
         .then((res) => res.data)
   );
-
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);
@@ -70,7 +66,8 @@ export default function ItemsArchived() {
     {
       title: (
         <Checkbox
-          checked={dataItems?.data?.data?.length === checked.length}
+        checked={checked.length !== 0 && dataItems?.data?.data?.length === checked.length}
+        disabled={dataItems?.data?.data?.length === 0}
           className="font-normal"
           onChange={handleCheckAll}
         />
@@ -83,7 +80,7 @@ export default function ItemsArchived() {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      width:'80%'
+      width: "80%",
     },
     {
       title: "Current Stock",
@@ -98,22 +95,7 @@ export default function ItemsArchived() {
     },
   ];
 
-  const data = [
-    {
-      key: 1,
-      checkbox: (
-        <Checkbox
-          className="font-normal"
-          onChange={(e) => handleCheck(e.target.value)}
-        />
-      ),
-      name: <div>Cooming Soon</div>,
-      current: "",
-      rate: "",
-    },
-  ];
-
-
+  const data = [];
 
   return (
     <>
@@ -134,9 +116,7 @@ export default function ItemsArchived() {
             </span>
             <RightOutlined tw=" ml-2" />
             <span tw="text-xl font-bold text-black ml-2">Archived</span>
-           
           </div>
-         
         </div>
         <div className="table-responsive">
           <Table
@@ -147,13 +127,16 @@ export default function ItemsArchived() {
           />
         </div>
         <div tw="flex justify-between mt-5">
-              <div>
-                <span tw="text-sm text-black font-bold">1-{data.length-1} of {data.length-1} </span>
-              </div>
-           
-              <div ><PaginationFooter/></div>
-            </div>
-      
+          <div>
+            <span tw="text-sm text-black font-bold">
+              1-{data.length - 1} of {data.length - 1}{" "}
+            </span>
+          </div>
+
+          <div>
+            <PaginationFooter />
+          </div>
+        </div>
       </div>
     </>
   );

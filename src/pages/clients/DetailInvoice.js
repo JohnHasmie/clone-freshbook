@@ -37,6 +37,7 @@ import TableCustom from "../../components/Button copy";
 export default function DetailInvoice() {
   const { Title } = Typography;
   const [checked, setChecked] = useState([]);
+  const history=useHistory()
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);
@@ -197,7 +198,7 @@ export default function DetailInvoice() {
     {
       title: (
         <Checkbox
-          checked={data?.length === checked.length}
+          checked={data.length !== 0 && data?.length === checked.length}  disabled={data.length === 0}
           className="font-normal"
           onChange={handleCheckAll}
         />
@@ -261,7 +262,7 @@ export default function DetailInvoice() {
                 </Popover>
               </>
             ) : (
-              <PlusOutlined tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold p-1.5 cursor-pointer " />
+              <PlusOutlined  onClick={() => history.push("/invoices/new")} tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold py-1.5 px-2 cursor-pointer " />
             )}
           </div>
           <div className="table-responsive">

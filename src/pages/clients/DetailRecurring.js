@@ -36,6 +36,8 @@ import TableCustom from "../../components/Button copy";
 
 export default function DetailRecurring() {
   const { Title } = Typography;
+  const history=useHistory()
+
   const [checked, setChecked] = useState([]);
   const handleCheck = (v) => {
     const newChecked = [...checked];
@@ -167,7 +169,7 @@ export default function DetailRecurring() {
     {
       title: (
         <Checkbox
-          checked={data?.length === checked.length}
+          checked={data.length !== 0 && data?.length === checked.length}  disabled={data.length === 0}
           className="font-normal"
           onChange={handleCheckAll}
         />
@@ -230,7 +232,7 @@ export default function DetailRecurring() {
                 </Popover>
               </>
             ) : (
-              <PlusOutlined tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold p-1.5 cursor-pointer " />
+              <PlusOutlined onClick={() => history.push("/recurring-template/new")} tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold py-1.5 px-2 cursor-pointer " />
             )}
           </div>
           <div className="table-responsive">

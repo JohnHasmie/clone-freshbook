@@ -94,7 +94,7 @@ export default function Email() {
     {
       title: (
         <Checkbox
-          checked={data?.length === checked.length}
+          checked={data.length !== 0 && data?.length === checked.length}  disabled={data.length === 0}
           className="font-normal"
           onChange={handleCheckAll}
         />
@@ -219,7 +219,7 @@ export default function Email() {
                 )}
               </div>
               <div tw="flex relative cursor-pointer">
-                <InputAdvanceSearch prefix={<SearchOutlined />} />
+                <InputAdvanceSearch placeholder="Search" prefix={<SearchOutlined />} />
                 <div
                   onClick={() => setIsAdvance(!isAdvance)}
                   tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36"

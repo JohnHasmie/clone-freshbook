@@ -70,7 +70,8 @@ export default function ItemsDeleted() {
     {
       title: (
         <Checkbox
-          checked={dataItems?.data?.data?.length === checked.length}
+        checked={checked.length !== 0 && dataItems?.data?.data?.length === checked.length}
+        disabled={dataItems?.data?.data?.length === 0}
           className="font-normal"
           onChange={handleCheckAll}
         />

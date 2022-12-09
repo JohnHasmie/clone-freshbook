@@ -4,6 +4,10 @@ const donutsRevenue={
       chart: {
         type: 'donut',
       },
+      colors:['#9c4aa4', '#E91E63', '#9C27B0'],
+      dataLabels: {
+        enabled: false
+      },
       responsive: [{
         breakpoint: 480,
         options: {

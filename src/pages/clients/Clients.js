@@ -1,11 +1,12 @@
 import {
   CaretDownOutlined,
-
+  CloseOutlined,
   DownOutlined,
   EditOutlined,
   HddOutlined,
   MailOutlined,
   PhoneOutlined,
+  PlusCircleFilled,
   PlusOutlined,
   RestOutlined,
   RightOutlined,
@@ -31,6 +32,7 @@ import TableCustom from "../../components/Button copy/index";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import FormAdvanceSearch from "./FormAdvanceSearch";
 import TabHome from "./TabHome";
+import PaginationFooter from "../../components/layout/PaginationFooter";
 
 export default function Clients() {
   const { Title } = Typography;
@@ -38,6 +40,16 @@ export default function Clients() {
   const [isAdvance, setIsAdvance] = useState(false);
   const [form] = Form.useForm();
   const [checked, setChecked] = useState([]);
+  const [isToggle, setIsToggle] = useState(true);
+
+  const [isHover, setIsHover] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsHover(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHover(false);
+  };
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);
@@ -108,19 +120,21 @@ export default function Clients() {
     {
       title: (
         <Checkbox
-          checked={data?.length === checked.length}
+          checked={data.length !== 0 && data?.length === checked.length}  disabled={data.length === 0}
           className="font-normal"
           onChange={handleCheckAll}
         />
       ),
       dataIndex: "checkbox",
       key: "checkbox",
+      width: "5%",
+
     },
     {
       title: "Organization/Primary Contact",
       dataIndex: "organization",
       key: "organization",
-      width: "30%",
+      width: "20%",
     },
     {
       title: "Internal Note",
@@ -173,43 +187,75 @@ export default function Clients() {
       <div className="layout-content">
         <div tw="max-w-screen-lg mb-20">
           <TabHome />
-          <div tw="hidden md:block mt-20">
-            <Title level={4}>Recently Active</Title>
-            <div tw="flex">
-            <div onClick={()=>history.push('/clients/new')} tw="cursor-pointer border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center">
-
-                <div tw="flex flex-col">
-                  <PlusOutlined tw="text-3xl text-green-400" />
-                  <span tw="text-lg text-2xl font-bold">New Client</span>
-                </div>
-              </div>
-              <Link to={`clients/1/client-detail`}>
-                <CardClient
-                  title="Default size card"
-                  size="small"
-                  style={{
-                    width: 300,
-                  }}
+          {isToggle ? (
+            <div tw=" hidden md:block mt-20">
+              <div
+                tw=" flex justify-between"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <Title level={4}>Recently Active</Title>
+                <span
+                  tw=" font-bold text-lg cursor-pointer"
+                  onClick={() => setIsToggle(false)}
+                  style={{ visibility: isHover ? "visible" : "hidden" }}
                 >
-                  <div tw="flex justify-around">
-                    <img src={Photo} alt="profile" tw="w-14 h-14" />
-                    <div tw="grid">
-                      <h3 tw="font-bold text-lg">Card content</h3>
-                      <p tw="text-sm">Company Name</p>
+                  Remove <CloseOutlined tw="ml-1" />
+                </span>
+              </div>
+              <div tw="flex" style={{ opacity: isHover ? "0.5" : "1" }}>
+                <div
+                  style={{
+                    width: 250,
+                  }}
+                  onClick={() => history.push("/clients/new")}
+                  tw="cursor-pointer border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center"
+                >
+                  <div tw="flex flex-col">
+                    <PlusOutlined tw="text-3xl text-green-400" />
+                    <span tw="text-lg text-2xl font-bold">New Client</span>
+                  </div>
+                </div>
+                <Link to={`clients/1/client-detail`}>
+                  <CardClient
+                    title="Default size card"
+                    size="small"
+                    style={{
+                      width: 250,
+                    }}
+                  >
+                    <div tw="flex justify-between">
+                      <img src={Photo} alt="profile" tw="w-14 h-14" />
+                      <div tw="grid justify-items-end ">
+                        <h3 tw="font-bold text-lg">Sutton Rowland</h3>
+                        <p tw="text-sm">Sutton Rowland Inc</p>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <MailOutlined tw="mr-1" />
-                    <span>kywu@mailinator.com</span>
-                  </div>
-                  <div>
-                    <PhoneOutlined tw="mr-1" />
-                    <span>+6289669235897</span>
-                  </div>
-                </CardClient>
-              </Link>
+                    <div>
+                      <MailOutlined tw="mr-1" />
+                      <span>kywu@mailinator.com</span>
+                    </div>
+                    <div>
+                      <PhoneOutlined tw="mr-1" />
+                      <span>+6289669235897</span>
+                    </div>
+                  </CardClient>
+                </Link>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div tw="  hidden opacity-0 hover:opacity-100  md:block relative mt-20">
+              <div tw="inline-block">
+                <Tooltip placement="top" title="Show recent cards">
+                  <PlusCircleFilled
+                    tw="text-2xl z-30 text-gray-400"
+                    onClick={() => setIsToggle(true)}
+                  />
+                </Tooltip>
+                <hr tw="bg-gray-400 absolute top-1 z-0 left-5 w-full translate-y-2/4	 " />
+              </div>
+            </div>
+          )}
           <div tw="mt-20">
             <AllClientTabs />
             <div tw="grid md:flex justify-between mb-4">
@@ -246,7 +292,10 @@ export default function Clients() {
                 )}
               </div>
               <div tw="flex relative cursor-pointer">
-                <InputAdvanceSearch placeholder="Search" prefix={<SearchOutlined />} />
+                <InputAdvanceSearch
+                  placeholder="Search"
+                  prefix={<SearchOutlined />}
+                />
                 <div
                   onClick={() => setIsAdvance(!isAdvance)}
                   tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36"
@@ -274,7 +323,9 @@ export default function Clients() {
             </div>
             <div tw="flex justify-between mt-5">
               <div>
-                <span tw="text-sm text-black font-bold">1-{data.length} of {data.length} </span>
+                <span tw="text-sm text-black font-bold">
+                  1-{data.length} of {data.length}{" "}
+                </span>
               </div>
               <div tw="flex flex-col items-center">
                 <button
@@ -290,7 +341,10 @@ export default function Clients() {
                   </Link>
                 </p>
               </div>
-              <div tw="invisible">hide</div>
+              <div>
+                <span tw="text-gray-500">Items per page:</span>
+                <PaginationFooter />
+              </div>
             </div>
           </div>
         </div>

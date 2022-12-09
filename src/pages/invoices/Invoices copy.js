@@ -98,7 +98,7 @@ export default function Invoices() {
       checkbox: (
         <Checkbox
           className="font-normal"
-          value={"1"}
+          value={1}
           checked={checked.includes("1")}
           onChange={(e) => handleCheck(e.target.value)}
         />
@@ -389,7 +389,7 @@ export default function Invoices() {
           <div tw="md:mt-20">
             <InvoiceTabs />
             <div tw="grid md:flex justify-between mb-6">
-              <div tw="flex items-center ">
+              <div tw="flex items-end ">
                 <span tw="text-xl font-bold text-black">All Invoices </span>
                 {checked.length > 0 ? (
                   <>
@@ -456,14 +456,14 @@ export default function Invoices() {
               </div>
               <div tw="flex flex-col items-center">
                 <button
-                  onClick={() => history.push("/invoices/archived")}
+                  onClick={() => history.push("clients/archived")}
                   tw="cursor-pointer border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-400 "
                 >
                   View Archived Invoice
                 </button>
                 <p tw="text-xs text-gray-500">
                   or{" "}
-                  <Link tw="underline text-gray-500" to="/invoices/deleted">
+                  <Link tw="underline text-gray-500" to="clients/deleted">
                     deleted
                   </Link>
                 </p>

@@ -94,7 +94,8 @@ import {
       {
         title: (
           <Checkbox
-            checked={data?.length === checked.length}
+            checked={data?.length !==0 && data?.length === checked.length}
+            disabled={data?.length ===0}
             className="font-normal"
             onChange={handleCheckAll}
           />

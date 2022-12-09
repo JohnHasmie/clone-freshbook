@@ -68,7 +68,7 @@ export default function Detail() {
       ),
       amount: (
         <div tw="text-right relative">
-          <div
+          {/* <div
             className="isVisible"
             tw="absolute bottom-16 right-6 flex invisible rounded-lg bg-white shadow-sm border border-gray-200  "
           >
@@ -77,7 +77,7 @@ export default function Detail() {
                 <EllipsisOutlined tw="text-xs px-2 py-1" />
               </Tooltip>
             </div>
-          </div>
+          </div> */}
           <h3 tw="text-base">Rp 0.00 IDR</h3>
           <span tw="bg-gray-300 text-xs rounded p-1">Draft</span>
         </div>
@@ -124,7 +124,7 @@ export default function Detail() {
     {
       title: (
         <Checkbox
-        checked={data?.length === checked.length}
+        checked={data.length !== 0 && data?.length === checked.length}  disabled={data.length === 0}
         className="font-normal"
         onChange={handleCheckAll}
         />
@@ -301,13 +301,13 @@ export default function Detail() {
             </CardDetailInvoice>
             <div tw="mt-20">
            
-                <div tw="flex items-end ">
+                <div tw="flex items-center ">
                   <span tw="text-xl font-bold text-black">All Payment for Invoices 00148 </span>
                   <Popover
                     placement="top"
                     content={<PopupNewInvoice hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}
                   >
-                    <PlusOutlined tw="mx-2 text-white bg-success text-xl flex items-center p-1.5 rounded-md font-bold cursor-pointer " />
+                    <PlusOutlined tw="mx-2 text-white bg-success text-xl flex items-center py-1.5 px-2  rounded-md font-bold cursor-pointer " />
                   </Popover>
                   {checked.length > 0 ? (
               <>
@@ -322,7 +322,16 @@ export default function Detail() {
                 </Popover>
               </>
             ):
-            <></>
+            <>
+             <Popover tw="invisible" placement="bottom" content={bulkList} trigger="click">
+                  <div className="flex items-center justify-center">
+                    <Button>
+                      <span tw="mr-2">More Actions</span>
+                      <DownOutlined />
+                    </Button>
+                  </div>
+                </Popover>
+            </>
             }
                 </div>
               </div>

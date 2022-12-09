@@ -20,6 +20,5 @@ export const StyledCardPopup = styled(Card)(({ hidden }) => [
 
         }
     `,
-    /** Example of passing property to the styles */
     hidden && tw`hidden`,
 ])

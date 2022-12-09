@@ -59,6 +59,11 @@ import InvoicesOverdue from './pages/invoices/InvoicesOverdue';
 import InvoicesDraft from './pages/invoices/InvoicesDraft';
 import InvoicesOutstanding from "./pages/invoices/InvoicesOutstanding";
 import Accounting from "./pages/accounting/Accounting";
+import InvoicesArchived from "./pages/invoices/InvoicesArchived";
+import InvoicesDeleted from "./pages/invoices/InvoicesDeleted";
+import RecurringArchived from "./pages/invoices/RecurringArchived";
+import RecurringDeleted from "./pages/invoices/RecurringDeleted";
+import NewRecurringTemplate from "./pages/report/NewRecurringTemplate";
 
 function App() {
   let { pathname } = useLocation();
@@ -158,6 +163,7 @@ function App() {
             />
             <Route exact path="/invoices/new" component={NewInvoice} />
             <Route exact path="/clients/new" component={NewClient} />
+            <Route exact path="/recurring-template/new" component={NewRecurringTemplate} />
         
 
             <Main>
@@ -206,6 +212,8 @@ function App() {
 
 
               <Route exact path="/invoices" component={Invoices} />
+              <Route exact path="/invoices/archived" component={InvoicesArchived} />
+              <Route exact path="/invoices/deleted" component={InvoicesDeleted} />
               <Route exact path="/invoices/draft" component={InvoicesDraft} />
               <Route exact path="/invoices/overdue" component={InvoicesOverdue} />
               <Route
@@ -218,6 +226,8 @@ function App() {
                 path="/invoices/recurring-templates"
                 component={RecurringInvoice}
               />
+                <Route exact path="/invoices/recurring-templates/archived" component={RecurringArchived} />
+              <Route exact path="/invoices/recurring-templates/deleted" component={RecurringDeleted} />
 
               <Route
                 exact
