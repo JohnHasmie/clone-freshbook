@@ -15,7 +15,7 @@ import { Button, Checkbox, Divider, Menu, Popover, Tooltip, Typography } from "a
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import CardInvoice from "../../components/CardInvoice/index";
-import TableCustom from "../../components/Button copy";
+import TableCustom from "../../components/Table";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import InvoiceTabs from "./InvoicesTabs";
 import tw from "twin.macro";

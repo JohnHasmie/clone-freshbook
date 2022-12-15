@@ -33,12 +33,12 @@ import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 
 import CardInvoice from "../../components/CardInvoice/index";
-import TableCustom from "../../components/Button copy";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import { FormAdvanceSearchInvoice } from "../clients/FormAdvanceSearch";
 import InvoiceTabs from "./InvoicesTabs";
 import TabHome from "../clients/TabHome";
 import PaginationFooter from "../../components/layout/PaginationFooter";
+import TableCustom from "../../components/Table";
 
 export default function Invoices() {
   const { Title, Text } = Typography;

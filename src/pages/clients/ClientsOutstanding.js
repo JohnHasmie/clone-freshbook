@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 
-import TableCustom from "../../components/Button copy/index";
+import TableCustom from "../../components/Table/index";
 import TabHome from "./TabHome";
 
 export default function ClientsOutstanding() {

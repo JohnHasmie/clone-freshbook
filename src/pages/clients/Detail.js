@@ -27,7 +27,7 @@ import {
 } from "@ant-design/icons";
 
 import tw from "twin.macro";
-import TableCustom from "../../components/Button copy";
+import TableCustom from "../../components/Table";
 import FormAddContact from "./FormAddContact";
 
 export default function Detail() {

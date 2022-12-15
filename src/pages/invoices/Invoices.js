@@ -33,7 +33,7 @@ import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 
 import CardInvoice from "../../components/CardInvoice/index";
-import TableCustom from "../../components/Button copy";
+import TableCustom from "../../components/Table";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import { FormAdvanceSearchInvoice } from "../clients/FormAdvanceSearch";
 import InvoiceTabs from "./InvoicesTabs";

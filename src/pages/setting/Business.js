@@ -1,10 +1,11 @@
 import { Col, Form, Input, Row, Select, Typography } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import ButtonSubmit from "../../components/ButtonSubmit";
 import tw from "twin.macro";
 import { countryList } from "../../components/Countries";
+import AppContext from "../../components/context/AppContext";
 
 export default function Business() {
   const { Title } = Typography;
@@ -16,6 +17,9 @@ export default function Business() {
     fiscal_year_end_day: "1",
     date_format: "dd/mm/yy",
   });
+  const { setting} = useContext(AppContext);
+  const queryClient = useQueryClient();
+
 
   const handleChange = (value, type) => {
     switch (type) {
@@ -71,11 +75,27 @@ export default function Business() {
         });
     }
   };
-  const { data: settingData } = useQuery("settings", () =>
-    axios.get("settings").then((res) => res.data)
+  const onChange = (e) => {
+    setSelectedItems({ ...selectedItems, [e.target.name]: e.target.value });
+  };
+
+  const mutation = useMutation(
+    async (data) => {
+      return axios.put("settings", data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries("settings");
+        console.log(res);
+      },
+      onError: (err) => {
+        console.log(err.response.data.message);
+      },
+    }
   );
   const onFinish = (values) => {
-    console.log("Success:", values);
+    mutation.mutate(values)
+
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -92,15 +112,27 @@ export default function Business() {
         fields={[
           {
             name: ["business_name"],
-            value: settingData?.data?.setting?.company_name,
+            value: setting?.data?.company_name,
           },
           {
             name: ["business_phone"],
-            value: settingData?.data?.setting?.phone,
+            value: setting?.data?.phone,
+          },
+          {
+            name: ["mobile_phone"],
+            value: "",
+          },
+          {
+            name: ["state"],
+            value: "",
           },
           {
             name: ["addres_line_1"],
-            value: settingData?.data?.setting?.address,
+            value: setting?.data?.address,
+          },
+          {
+            name: ["addres_line_2"],
+            value: "",
           },
           {
             name: ["country"],
@@ -128,11 +160,11 @@ export default function Business() {
           },
           {
             name: ["city"],
-            value: settingData?.data?.setting?.city,
+            value: setting?.data?.city,
           },
           {
             name: ["zip_code"],
-            value: settingData?.data?.setting?.zip,
+            value: setting?.data?.zip,
           },
         ]}
       >
@@ -189,11 +221,12 @@ export default function Business() {
             <Col xs={24} lg={12}>
               <Form.Item label="Country" name="country">
                 <Select
-                  defaultValue="Indonesia"
                   style={{
                     width: "100%",
                   }}
-                  onChange={(e) => handleChange(e, "country")}
+                  onChange={(e) => onChange({
+                    target: { value: e, name: "country" },
+                  })}
                   options={countryList.map((item) => ({
                     label: item,
                     value: item,
@@ -213,8 +246,9 @@ export default function Business() {
                 name="base_currency"
               >
                 <Select
-                  defaultValue="usd"
-                  onChange={(e) => handleChange(e, "base_currency")}
+                  onChange={(e) => onChange({
+                    target: { value: e, name: "base_currency" },
+                  })}
                   options={[
                     {
                       value: "usd",
@@ -234,8 +268,9 @@ export default function Business() {
               <Form.Item label="Business Time Zone" name="business_time_zone">
                 <Select
                   tw="rounded-lg"
-                  defaultValue="(utc+0:00)"
-                  onChange={(e) => handleChange(e, "business_time_zone")}
+                  onChange={(e) => onChange({
+                    target: { value: e, name: "business_time_zone" },
+                  })}
                   options={[
                     {
                       value: "(utc+0:00)",
@@ -252,11 +287,12 @@ export default function Business() {
                 name="fiscal_year_end_month"
               >
                 <Select
-                  defaultValue="Dec"
                   style={{
                     width: "100%",
                   }}
-                  onChange={(e) => handleChange(e, "fiscal_year_end_month")}
+                  onChange={(e) => onChange({
+                    target: { value: e, name: "fiscal_year_end_month" },
+                  })}
                   options={[
                     {
                       value: "Jan",
@@ -313,11 +349,12 @@ export default function Business() {
             <Col xs={24} lg={12}>
               <Form.Item label="Fiscal Year End Day" name="fiscal_year_end_day">
                 <Select
-                  defaultValue={1}
                   style={{
                     width: "100%",
                   }}
-                  onChange={(e) => handleChange(e, "fiscal_year_end_day")}
+                  onChange={(e) => onChange({
+                    target: { value: e, name: "fiscal_year_end_day" },
+                  })}
                   options={[
                     {
                       value: 1,
@@ -383,8 +420,9 @@ export default function Business() {
             <Col xs={24} lg={12}>
               <Form.Item label="Date Format" name="date_format">
                 <Select
-                  defaultValue="dd/mm/yy"
-                  onChange={(e) => handleChange(e, "date_format")}
+                    onChange={(e) => onChange({
+                      target: { value: e, name: "date_format" },
+                    })}
                   options={[
                     {
                       value: "dd/mm/yy",

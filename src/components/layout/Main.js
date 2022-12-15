@@ -41,21 +41,22 @@ function Main({ children }) {
     }
   }, [pathname]);
 
-  const { data } = useQuery(
-    "profile",
-    () => axios.get("user/profile").then((res) => res.data)
-  )
-  const { data:settingData } = useQuery(
-    "settings",
-    () => axios.get("settings").then((res) => res.data)
-  )
-  useEffect(() => {
-    data && setUser(data?.data?.user)
-  }, [data])
+  // const { data } = useQuery(
+  //   "profile",
+  //   () => axios.get("user/profile").then((res) => res.data)
+  // )
+  // const { data:settingData } = useQuery(
+  //   "settings",
+  //   () => axios.get("settings").then((res) => res.data)
+  // )
+  // useEffect(() => {
+  //   data && setUser(data?.data?.user)
+  // }, [data])
 
-  useEffect(() => {
-    settingData && setSetting(settingData?.data?.setting)
-  }, [settingData])
+  // useEffect(() => {
+  //   settingData && setSetting(settingData?.data?.setting)
+  // }, [settingData])
+  
   return (
     
     <Layout

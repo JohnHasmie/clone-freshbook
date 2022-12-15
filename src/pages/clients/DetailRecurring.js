@@ -32,7 +32,7 @@ import {
 } from "@ant-design/icons";
 import CardReport from "../../components/CardReport";
 import tw from "twin.macro";
-import TableCustom from "../../components/Button copy";
+import TableCustom from "../../components/Table";
 
 export default function DetailRecurring() {
   const { Title } = Typography;

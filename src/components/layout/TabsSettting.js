@@ -16,6 +16,7 @@ export default function TabsSettting() {
       <Row gutter={[24, 0]}>
         <Col span={24} md={6}>
           <Tabs
+          type="card"
             defaultActiveKey={pathname}
             onChange={handleClick}
             tw="w-screen md:w-[60rem]"

@@ -5,15 +5,20 @@ import {
   TagOutlined,
 } from "@ant-design/icons";
 import { Menu, Button, Popover, Typography, Skeleton } from "antd";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import tw from "twin.macro";
+import axios  from 'axios';
+import { useQuery } from "react-query";
+import AppContext from "../context/AppContext";
 
-function Sidenav({ color, user, setting }) {
+function Sidenav({ color }) {
   const { Title } = Typography;
   const [visible, setVisible] = useState(false);
   const [clicked, setClicked] = useState(false);
+  const { setUser, setSetting } = useContext(AppContext);
+
   const handleClickChange = (open) => {
     setClicked(open);
   };
@@ -25,7 +30,26 @@ function Sidenav({ color, user, setting }) {
       return window.scrollY > 0 && setClicked(false);
     });
   });
-  console.log(clicked, "Click");
+  const { data:settingData,status:settingStatus } = useQuery(
+    "settings",
+    () => axios.get("settings").then((res) => res.data?.data)
+  )
+  const { data,status } = useQuery(
+    "profile",
+    () => axios.get("user/profile").then((res) => res.data?.data)
+  )
+
+  const text = <Title level={5}>{settingData?.setting?.company_name}</Title>;
+  useEffect(() => {
+    data && setUser({data:data?.user,
+    status:status
+    })
+  }, [data])
+  useEffect(() => {
+    settingData && setSetting({data:settingData?.setting,
+    status:settingStatus
+    })
+  }, [settingData])
   const dashboard = [
     <svg
       width="20"
@@ -249,26 +273,31 @@ function Sidenav({ color, user, setting }) {
       </Menu.Item>
     </Menu>
   );
-
-  const text = <Title level={5}>{setting?.company_name}</Title>;
+  
   return (
     <>
       <div className="profile" style={{ position: "relative" }}>
-        {user ? (
+        {status === "success" && (
           <>
             <img
-              src={user?.avatar + "Heri Setiawan"}
+              src={data?.user?.avatar + "+" + data?.user?.last_name}
               className="profile-photo"
               alt="profile"
             />
             <span style={{ marginTop: "1rem" }}>
-              {user?.first_name ? user?.first_name : "Heri"}
+              {data?.user?.first_name ? data?.user?.first_name : "Heri"}
             </span>
-            <span tw="font-bold">{setting?.company_name}</span>
           </>
-        ) : (
-          <Skeleton.Avatar size={90} shape="circle" />
-        )}
+         )
+        //   : (
+        //   <Skeleton.Avatar size={90} shape="circle" />
+        // )
+        } 
+        {settingStatus === "success" &&
+            <span tw="font-bold">{settingData?.setting?.company_name}</span>
+
+
+        }
         {/* bell dihidden sementara */}
         {/* <div style={{ position: "absolute", right: "-8px", top: "4px" }}>
           {bell}

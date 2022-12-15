@@ -12,7 +12,7 @@ import {
 import { Button, Checkbox, Menu, Popover, Tooltip, Typography } from "antd";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import TableCustom from "../../components/Button copy";
+import TableCustom from "../../components/Table";
 import CardDetailInvoice from "../../components/CardDetailInvoice";
 import PopupNewInvoice from "./PopupNewInvoice";
 import tw from "twin.macro";

@@ -160,7 +160,6 @@ function Header({
       ></path>
     </svg>,
   ];
-console.log(name,"name");
   return (
     <>
       {name.includes("dashboard") && (

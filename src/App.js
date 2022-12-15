@@ -65,12 +65,15 @@ import RecurringArchived from "./pages/invoices/RecurringArchived";
 import RecurringDeleted from "./pages/invoices/RecurringDeleted";
 import NewRecurringTemplate from "./pages/report/NewRecurringTemplate";
 
+const queryClient = new QueryClient();
+
 function App() {
   let { pathname } = useLocation();
-  const queryClient = new QueryClient();
   const { isAuthenticated } = useAuth();
   const { token } = useAuth();
   const [user, setUser] = useState("");
+  const [setting, setSetting] = useState("");
+
 
 
   let history = useHistory();
@@ -108,12 +111,15 @@ function App() {
       return Promise.reject(error);
     }
   );
+  
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
         <AppContext.Provider
           value={{
             user: user,
+            setting:setting,
+            setSetting:setSetting,
             setUser: setUser,
           }}
         >

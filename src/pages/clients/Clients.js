@@ -28,7 +28,7 @@ import tw from "twin.macro";
 import CardClient from "../../components/CardClient";
 import Photo from "../../assets/images/mask-group.svg";
 import AllClientTabs from "../../components/ClientsComponent/AllClientTabs";
-import TableCustom from "../../components/Button copy/index";
+import TableCustom from "../../components/Table/index";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import FormAdvanceSearch from "./FormAdvanceSearch";
 import TabHome from "./TabHome";

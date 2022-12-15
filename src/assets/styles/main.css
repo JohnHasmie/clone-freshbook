@@ -2092,6 +2092,13 @@ body {
 
 .ant-input {
   border-radius: 6px;
+  /* height: 40px; */
+  border: 1px solid #d9d9d9;
+}
+.ant-input-password {
+  border-radius: 6px;
+  height: 40px;
+  border: 1px solid #d9d9d9;
 }
 
 .ant-select-selector{
@@ -2103,10 +2110,8 @@ body {
   color: rgba(0, 0, 0, 0.85);
 }
 
-.ant-input {
-  height: 40px;
-  border: 1px solid #d9d9d9;
-}
+
+
 
 .font-bold {
   font-weight: 700;
@@ -3353,6 +3358,31 @@ color:#0063c1;
 .ant-tabs-tab{
   font-size: 16px;
 }
+.ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab-active, .ant-tabs-card.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-tab-active {
+  border-bottom-color: #fff !important;
+  border: 1px solid #f0f0f0;
+
+}
+
+
+.ant-tabs {
+
+  color: #096dd9;
+
+}
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: rgba(0, 0, 0, 0.85) ;
+  text-shadow: 0 0 0.25px currentColor;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab, .ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
+margin: 0;
+padding: 8px 16px;
+background: transparent;
+border: 0;
+transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
 /* tabs end */
 
 
