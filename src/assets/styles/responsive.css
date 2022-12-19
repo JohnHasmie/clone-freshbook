@@ -16,6 +16,7 @@
   .layout-dashboard .header-control .sidebar-toggler {
     display: none;
   }
+
   
 }
 
@@ -77,4 +78,13 @@
     padding: 0;
     margin: 0 20px 0 ; 
   }
+    /* custom notification */
+.ant-notification-topLeft .ant-notification-notice, .ant-notification-bottomLeft .ant-notification-notice {
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: -30px;
+
+}
+
+/* end custom notification */
 }

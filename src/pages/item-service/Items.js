@@ -1,10 +1,11 @@
-import { Checkbox, Menu, Popover, Table, Tooltip } from "antd";
-import React, { useState } from "react";
+import { Menu, Modal, notification, Popover, Table, Tooltip } from "antd";
+import React, { useEffect, useState } from "react";
 import { Button } from "antd";
 import InputSearch from "../../components/InputSearch";
 import {
   DownOutlined,
   ExclamationCircleOutlined,
+  FileTextOutlined,
   HddOutlined,
   RestOutlined,
   RightOutlined,
@@ -13,21 +14,95 @@ import {
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { numberWithDot } from "../../components/Utils";
-import { Link, useHistory } from "react-router-dom";
+import { Link, NavLink, useHistory } from "react-router-dom";
 import tw from "twin.macro";
+import EditItem from "./EditItem";
+import { ModalConfirm } from "../../components/ModalConfirm.style";
 
-export default function Items() {
-  const history = useHistory();
-  const queryClient = useQueryClient();
-
-  const [checked, setChecked] = useState([]);
+const Items = () => {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
   });
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [clicked, setClicked] = useState(false);
+  const [clickedRow, setClickedRow] = useState(false);
+
+  const [clickedId, setClickedId] = useState("");
+
+  const [clickedRows, setClickedRows] = useState(false);
+  const [searchField, setSearchField] = useState("");
+  const history = useHistory();
+  const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [checkIndex, setCheckIndex] = useState(0);
+  const [marginResponsive, setMarginResponsive] = useState("");
+  const [isType, setIsType] = useState('');
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    if(isType === "delete"){
+    mutation.mutate(selectedRowKeys[0]);}else{
+      mutationArchive.mutate(selectedRowKeys[0])
+    }
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const columns = [
+    {
+      title: "Name/Description",
+      dataIndex: "name",
+      key: "name",
+      render: (text, record) => (
+        <div>
+          <span>{record.name}</span> <p>{record.desc}</p>{" "}
+        </div>
+      ),
+      sorter: (a, b) => a.name.length - b.name.length,
+    },
+    {
+      title: "Current Stock",
+      dataIndex: "current",
+      key: "current",
+      render: (text, record) => (
+        <>
+          <Popover
+            placement="bottom"
+            content={
+              <EditItem
+                query="items-by-client"
+                id={record.key}
+                hide={hideClickRow}
+                data={record}
+              />
+            }
+            trigger="click"
+            visible={clickedRow && clickedId === record.key}
+            onVisibleChange={() => handleClickRowChange(record.key, record.i)}
+          >
+            <span>{text}</span>
+          </Popover>
+        </>
+      ),
+      sorter: (a, b) => a.current - b.current,
+    },
+
+    {
+      title: "Rate/Taxes",
+      key: "rate",
+      dataIndex: "rate",
+      sorter: (a, b) => a.rate - b.rate,
+    },
+  ];
 
   const { data: dataItems, status } = useQuery(
-    ["item-by-client", filter],
+    ["items-by-client", filter],
     async (key) =>
       axios
         .get("items/1", {
@@ -36,88 +111,50 @@ export default function Items() {
         .then((res) => res.data)
   );
 
-  const handleCheck = (v) => {
-    const newChecked = [...checked];
-    const findById = newChecked.find((x) => x === v);
-    if (findById) {
-      const findIndex = checked.indexOf(v);
-      newChecked.splice(findIndex, 1);
-    } else {
-      newChecked.push(v);
-    }
-    setChecked(newChecked);
-  };
-
-  const handleCheckAll = () => {
-    const all = dataItems?.data?.data?.map((item, i) => item.id);
-    if (dataItems?.data?.data?.length === checked.length) {
-      setChecked([]);
-    } else {
-      setChecked(all);
-    }
-  };
-
-  const handleRemove = () => {
-    const newChecked = [...checked];
-    mutation.mutate(newChecked[0]);
-    newChecked.splice(0, 1);
-    setChecked(newChecked);
-  };
-  const columns = [
-    {
-      title: (
-        <Checkbox
-          checked={checked.length !== 0 && dataItems?.data?.data?.length === checked.length}
-          disabled={dataItems?.data?.data?.length === 0}
-          className="font-normal"
-          onChange={handleCheckAll}
-        />
-      ),
-      dataIndex: "checkbox",
-      key: "checkbox",
-      width: "5%",
-    },
-    {
-      title: "Name/Description",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Current Stock",
-      dataIndex: "current",
-      key: "current",
-    },
-
-    {
-      title: "Rate/Taxes",
-      key: "rate",
-      dataIndex: "rate",
-    },
-  ];
-
-  const data = dataItems?.data?.data
-    ?.filter((x) => x.deleted_at == null)
-    .map((item, i) => ({
-      key: i,
-      checkbox: (
-        <Checkbox
-          className="font-normal"
-          value={item.id}
-          checked={checked.includes(item.id)}
-          onChange={(e) => handleCheck(e.target.value)}
-        />
-      ),
-      name: (
-        <div>
-          <div tw="text-black">{item.name}</div>
-          <span tw="text-gray-500">{item.description}</span>
-        </div>
-      ),
+  const filteredData =
+    status === "success" &&
+    dataItems?.data?.data.filter((item) => {
+      return (
+        item.name.toLowerCase().includes(searchField.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchField.toLowerCase()) ||
+        String(item.rate).toLowerCase().includes(searchField.toLowerCase())
+      );
+    });
+  const data =
+    status === "success" &&
+    filteredData?.map((item, i) => ({
+      key: item.id,
+      i: i,
+      name: item.name,
+      desc: item.description,
       current: item.qty,
-      rate: <span>$ {numberWithDot(item.rate)}</span>,
+      rate: numberWithDot(item.rate),
     }));
+   // function for archive, waiting from backend
+   const mutationArchive = useMutation(
+    async (data) => {
+      return axios.delete(`items/1/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("items-by-client");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `The selected items has been archived`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
 
-  const onSearch = (value) => console.log(value);
   const mutation = useMutation(
     async (data) => {
       return axios.delete(`items/1/${data}`).then((res) => res.data);
@@ -125,16 +162,64 @@ export default function Items() {
     {
       onSuccess: () => {
         setTimeout(() => {
-          queryClient.invalidateQueries("item-by-client");
+          queryClient.invalidateQueries("items-by-client");
         }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `The selected items has been deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
       },
     }
   );
+  const handleModal = (type) => {
+    if(type === "delete"){
+      setIsType('delete')}else{
+        setIsType('archive')
+      }
+    showModal();
+    hide();
+  };
 
+  const onSelectChange = (newSelectedRowKeys, x, y) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+
+  const handleClickRowChange = (id, index) => {
+    if (clickedRow === false) {
+      setClickedRow(true);
+      setClickedId(id);
+      setCheckIndex(index);
+    } else {
+      setClickedRow(false);
+      setClickedId("");
+      setCheckIndex("");
+    }
+  };
+  const hideClickRow = () => {
+    setClickedRow(false);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
+  const hasSelected = selectedRowKeys.length > 0;
   const bulkList = (
     <div tw="border border-[#7f8c9f]">
       <Menu>
-        <Menu.Item>
+        <Menu.Item onClick={()=>handleModal("archive")}>
           <div>
             <HddOutlined />
             <span>Archive</span>
@@ -142,7 +227,7 @@ export default function Items() {
         </Menu.Item>
 
         <Menu.Item>
-          <div onClick={handleRemove}>
+          <div onClick={()=>handleModal("delete")}>
             <RestOutlined />
             <span>Delete</span>
           </div>
@@ -150,9 +235,28 @@ export default function Items() {
       </Menu>
     </div>
   );
+  useEffect(() => {
+    if (filteredData.length < 3 && clickedRow) {
+      setMarginResponsive("400px");
+    } else if (checkIndex === filteredData.length - 1) {
+      setMarginResponsive("400px");
+    } else {
+      if (!clickedRow) {
+        setMarginResponsive("");
+      }
+    }
+  }, [filteredData, checkIndex, clickedRow]);
+
+  // useEffect(() => {
+  //   if(clickedRows){
+  //     setClickedRow(true)
+  //     setClickedRows(false)
+  //   }
+  // }, [clickedRows])
+
   return (
     <>
-      <div tw="w-full md:w-[98%] md:mb-5">
+      <div tw="w-full md:w-[98%]" style={{ marginBottom: marginResponsive }}>
         <div
           style={{
             display: "flex",
@@ -163,18 +267,27 @@ export default function Items() {
           <div tw="flex items-center">
             <span tw="text-xl font-bold text-black">
               Items
-              <Tooltip placement="top" title="Items can be added to invoice to bill your clients">
+              <Tooltip
+                placement="top"
+                title="Items can be added to invoice to bill your clients"
+              >
                 <ExclamationCircleOutlined tw="mx-1 text-xs align-top" />
               </Tooltip>
             </span>
-            {checked.length > 0 && (
+            {hasSelected && (
               <>
                 <RightOutlined tw=" ml-2" />
                 <span tw="text-xl font-bold text-black ml-2">Selected</span>
                 <span tw="align-middle bg-gray-300 text-black rounded-full px-2  mx-2">
-                  {checked.length}
+                  {selectedRowKeys.length}
                 </span>
-                <Popover placement="bottom" content={bulkList} trigger="click">
+                <Popover
+                  placement="bottom"
+                  content={bulkList}
+                  trigger="click"
+                  visible={clicked}
+                  onVisibleChange={handleClickChange}
+                >
                   <div className="flex items-center justify-center">
                     <Button>
                       <span tw="mr-2">Bulk Actions</span>
@@ -185,10 +298,39 @@ export default function Items() {
               </>
             )}
           </div>
-          <InputSearch placeholder="Search" prefix={<SearchOutlined />} />
+          <InputSearch
+            onChange={(e) => setSearchField(e.target.value)}
+            placeholder="Search"
+            prefix={<SearchOutlined />}
+          />
         </div>
+        <ModalConfirm
+          title="Confirm"
+          visible={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          width={500}
+          closable={false}
+        >
+          <span tw="text-lg">{isType === "delete" ? "Are you sure you want to delete this?" : "Are you sure you want to archive this?"}</span>
+        </ModalConfirm>
         <div className="table-responsive">
           <Table
+            onRow={(record, rowIndex) => {
+              return {
+                //   onClick: event => {
+                //     setClickedRows(true)
+                //   setClickedId(record.key)
+                //   setCheckIndex(record.i)
+                // },
+                onDoubleClick: (event) => {
+                  setClickedRow(!clickedRow);
+                  setClickedId(record.key);
+                  setCheckIndex(record.i);
+                },
+              };
+            }}
+            rowSelection={rowSelection}
             columns={columns}
             dataSource={data}
             pagination={false}
@@ -198,8 +340,7 @@ export default function Items() {
         <div tw="flex justify-between mt-5">
           <div>
             <span tw="text-sm text-black font-bold">
-              1-{dataItems?.data?.data?.length} of{" "}
-              {dataItems?.data?.data?.length}{" "}
+              1-{filteredData.length} of {filteredData.length}{" "}
             </span>
           </div>
           <div tw="flex flex-col items-center">
@@ -221,4 +362,5 @@ export default function Items() {
       </div>
     </>
   );
-}
+};
+export default Items;

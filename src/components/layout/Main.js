@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "axios";
 
 import { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
@@ -6,13 +6,15 @@ import { Layout, Drawer, Affix } from "antd";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
 import TabsSettting from "./TabsSettting";
-import {useQuery} from "react-query"
+import { useQuery } from "react-query";
 import tw from "twin.macro";
 import AccordionInvoice from "../AccordionInvoice";
-import { LayoutInvoice } from '../../pages/invoices/LayoutInvoice.style';
+import { LayoutInvoice, LayoutSetting } from "../../pages/invoices/Layout.style";
 import HeaderInvoice from "./HeaderInvoice";
 
 import React from "react";
+import ButtonSubmit from "../ButtonSubmit";
+import HeaderSetting from "./HeaderSetting";
 
 const { Header: AntHeader, Content, Sider } = Layout;
 export const MainContext = React.createContext();
@@ -24,7 +26,6 @@ function Main({ children }) {
   const [fixed, setFixed] = useState(false);
   const [user, setUser] = useState(null);
   const [setting, setSetting] = useState(null);
-
 
   const openDrawer = () => setVisible(!visible);
   const handleSidenavType = (type) => setSidenavType(type);
@@ -56,9 +57,8 @@ function Main({ children }) {
   // useEffect(() => {
   //   settingData && setSetting(settingData?.data?.setting)
   // }, [settingData])
-  
+
   return (
-    
     <Layout
       className={`layout-dashboard ${
         pathname === "profile" ? "layout-profile" : ""
@@ -108,41 +108,22 @@ function Main({ children }) {
       >
         <Sidenav color={sidenavColor} user={user} setting={setting} />
       </Sider>
-{!pathname.includes('invoice-detail') ?
-      <Layout>
-        {fixed ? (
-          <Affix>
-            <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
-              <Header
-                onPress={openDrawer}
-                name={pathname}
-                subName={pathname}
-                handleSidenavColor={handleSidenavColor}
-                handleSidenavType={handleSidenavType}
-                handleFixedNavbar={handleFixedNavbar}
-              />
-            </AntHeader>
-          </Affix>
-        ) :  (
-          <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
-            <Header
-              onPress={openDrawer}
-              name={pathname}
-              subName={pathname}
-              handleSidenavColor={handleSidenavColor}
-              handleSidenavType={handleSidenavType}
-              handleFixedNavbar={handleFixedNavbar}
-            />
-          </AntHeader>
-        ) 
-        }
-
-        <Content className="content-ant" >{children}</Content>
-        {/* <Footer /> */}
-      </Layout>
-    :<LayoutInvoice>
-         {fixed ? (
-          <Affix>
+      {pathname.includes("invoice-detail") ? (
+        <LayoutInvoice>
+          {fixed ? (
+            <Affix>
+              <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+                <HeaderInvoice
+                  onPress={openDrawer}
+                  name={pathname}
+                  subName={pathname}
+                  handleSidenavColor={handleSidenavColor}
+                  handleSidenavType={handleSidenavType}
+                  handleFixedNavbar={handleFixedNavbar}
+                />
+              </AntHeader>
+            </Affix>
+          ) : (
             <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
               <HeaderInvoice
                 onPress={openDrawer}
@@ -153,30 +134,74 @@ function Main({ children }) {
                 handleFixedNavbar={handleFixedNavbar}
               />
             </AntHeader>
-          </Affix>
-        ) :  (
-          <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
-            <HeaderInvoice
-              onPress={openDrawer}
-              name={pathname}
-              subName={pathname}
-              handleSidenavColor={handleSidenavColor}
-              handleSidenavType={handleSidenavType}
-              handleFixedNavbar={handleFixedNavbar}
-            />
-          </AntHeader>
-        ) 
-        }
+          )}
 
-<AccordionInvoice/>
+          <AccordionInvoice />
 
-<Content tw="mx-auto " >{children}</Content>
+          <Content tw="mx-auto ">{children}</Content>
+        </LayoutInvoice>
+      ) : pathname.includes("global") ? (
+        <LayoutSetting>
+           {fixed ? (
+            <Affix>
+              <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+                <HeaderSetting
+                  onPress={openDrawer}
+                  name={pathname}
+                  subName={pathname}
+                  handleSidenavColor={handleSidenavColor}
+                  handleSidenavType={handleSidenavType}
+                  handleFixedNavbar={handleFixedNavbar}
+                />
+              </AntHeader>
+            </Affix>
+          ) : (
+            <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+              <HeaderSetting
+                onPress={openDrawer}
+                name={pathname}
+                subName={pathname}
+                handleSidenavColor={handleSidenavColor}
+                handleSidenavType={handleSidenavType}
+                handleFixedNavbar={handleFixedNavbar}
+              />
+            </AntHeader>
+          )}
+          <Content className="content-ant">{children}</Content>
+        </LayoutSetting>
+      ) : (
+        <Layout>
+          {fixed ? (
+            <Affix>
+              <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+                <Header
+                  onPress={openDrawer}
+                  name={pathname}
+                  subName={pathname}
+                  handleSidenavColor={handleSidenavColor}
+                  handleSidenavType={handleSidenavType}
+                  handleFixedNavbar={handleFixedNavbar}
+                />
+              </AntHeader>
+            </Affix>
+          ) : (
+            <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+              <Header
+                onPress={openDrawer}
+                name={pathname}
+                subName={pathname}
+                handleSidenavColor={handleSidenavColor}
+                handleSidenavType={handleSidenavType}
+                handleFixedNavbar={handleFixedNavbar}
+              />
+            </AntHeader>
+          )}
 
-    </LayoutInvoice>  
-    
-    }
+          <Content className="content-ant">{children}</Content>
+          {/* <Footer /> */}
+        </Layout>
+      )}
     </Layout>
-    
   );
 }
 

@@ -168,7 +168,7 @@ export default function GlobalSetting() {
           ]}
           autoComplete="off"
         >
-          <div tw="w-full md:w-9/12	">
+          <div tw="w-full md:w-9/12	md:ml-24">
             <Row gutter={24} tw="mb-20">
               <Col span={24}>
                 <Title level={3}>Account Details</Title>
@@ -244,7 +244,7 @@ export default function GlobalSetting() {
                   <Col span={24}>
                     <p
                       onClick={() => setShowEmail(true)}
-                      tw="text-blue-700 -mt-5 cursor-pointer"
+                      tw="text-blue-700  cursor-pointer"
                     >
                       Change Email
                     </p>
@@ -309,7 +309,7 @@ export default function GlobalSetting() {
                   <Col span={24}>
                     <p
                       onClick={openPassword}
-                      tw="text-blue-700 -mt-5 cursor-pointer"
+                      tw="text-blue-700  cursor-pointer"
                     >
                       Change Password
                     </p>

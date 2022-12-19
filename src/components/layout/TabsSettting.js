@@ -12,7 +12,7 @@ export default function TabsSettting() {
     // console.log(key,"key");
   };
   return (
-    <div tw='overflow-x-auto md:overflow-x-hidden w-screen md:w-auto justify-center'>
+    <div tw=' w-screen md:w-auto justify-center'>
       <Row gutter={[24, 0]}>
         <Col span={24} md={6}>
           <Tabs

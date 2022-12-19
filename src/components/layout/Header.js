@@ -378,7 +378,7 @@ function Header({
               <span>Import Items</span>
             </ButtonInvite>
             <Popover
-              placement="bottom"
+              placement="bottomLeft"
               content={<NewItem hide={hide} />}
               trigger="click"
               visible={clicked}

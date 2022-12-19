@@ -12,6 +12,7 @@ import tw from "twin.macro";
 import axios  from 'axios';
 import { useQuery } from "react-query";
 import AppContext from "../context/AppContext";
+import { unsetClientCredential } from '../../hooks/useAuth';
 
 function Sidenav({ color }) {
   const { Title } = Typography;
@@ -229,6 +230,14 @@ function Sidenav({ color }) {
     </svg>,
   ];
 
+  
+
+  async function logout() {
+    await axios.post("auth/logout").then((res) => res.data)
+    await unsetClientCredential()
+    hide()
+    window.location.href = "/"
+  }
   const content = (
     <Menu theme="light" mode="inline" style={{ width: "300px" }}>
       <Menu.Item className="menu-border">
@@ -259,21 +268,16 @@ function Sidenav({ color }) {
         </NavLink>
       </Menu.Item>
       <Menu.Item>
-        <NavLink
-          tw="text-base"
-          onClick={() => {
-           
-            hide();
-          }}
-          to="/"
+        <button
+          tw="bg-transparent pl-0 cursor-pointer"
+          onClick={logout}
         >
           <LogoutOutlined />
           <span>Log Out</span>
-        </NavLink>
+        </button>
       </Menu.Item>
     </Menu>
   );
-  
   return (
     <>
       <div className="profile" style={{ position: "relative" }}>

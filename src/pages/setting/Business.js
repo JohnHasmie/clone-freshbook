@@ -168,7 +168,7 @@ export default function Business() {
           },
         ]}
       >
-        <div tw="w-full md:w-9/12	">
+        <div tw="w-full md:w-9/12	md:ml-24">
           <Row gutter={24} tw="mb-20">
             <Col xs={24} lg={24} style={{ marginBottom: "20px" }}>
               <Title level={3}>Business Details</Title>

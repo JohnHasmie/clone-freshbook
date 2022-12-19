@@ -1,39 +1,113 @@
-import { Checkbox, Table } from "antd";
-import React, { useState } from "react";
+import { Checkbox, Menu, notification, Popover, Table } from "antd";
+import React, { useEffect, useState } from "react";
 import { Typography } from "antd";
 import { Button } from "antd";
 import Search from "antd/lib/transfer/search";
 import InputSearch from "../../components/InputSearch";
-import { RightOutlined, SearchOutlined } from "@ant-design/icons";
+import { DownOutlined, HddOutlined, RestOutlined, RightOutlined, SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import tw from "twin.macro";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { numberWithDot } from "../../components/Utils";
 import { Link, useHistory } from "react-router-dom";
 import PaginationFooter from "../../components/layout/PaginationFooter";
+import EditItem from "./EditItem";
+import { ModalConfirm } from "../../components/ModalConfirm.style";
 
 const { Title } = Typography;
 
 export default function ItemsArchived() {
   const history = useHistory();
+
+  const [filter, setFilter] = useState({
+    limit: 10,
+    page: 1,
+  });
+  const queryClient = useQueryClient();
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [clicked, setClicked] = useState(false);
+  const [clickedRow, setClickedRow] = useState(false);
+  const [isType, setIsType] = useState('');
+
+  
+  const [clickedId, setClickedId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [checkIndex, setCheckIndex] = useState(0);
+  const [marginResponsive, setMarginResponsive] = useState("");
+
   const showModal = () => {
     setIsModalOpen(true);
   };
+  const handleModal = (type) => {
+    if(type === "delete"){
+      setIsType('delete')}else{
+        setIsType('unarchive')
+      }
+    showModal();
+    hide();
+  };
+
+  const onSelectChange = (newSelectedRowKeys, x, y) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+
+  const handleClickRowChange = (id, index) => {
+    if (clickedRow === false) {
+      setClickedRow(true);
+      setClickedId(id);
+      setCheckIndex(index);
+    } else {
+      setClickedRow(false);
+      setClickedId("");
+      setCheckIndex("");
+    }
+  };
+  const hideClickRow = () => {
+    setClickedRow(false);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
+  const hasSelected = selectedRowKeys.length > 0;
+  const bulkList = (
+    <div tw="border border-[#7f8c9f]">
+      <Menu>
+        <Menu.Item>
+          <div  onClick={()=>handleModal("unarchive")}>
+          <UndoOutlined />
+            <span>Unarchive</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item>
+          <div onClick={()=>handleModal("delete")}>
+            <RestOutlined />
+            <span>Delete</span>
+          </div>
+        </Menu.Item>
+      </Menu>
+    </div>
+  );
   const handleOk = () => {
+    if(isType === "delete"){
+    mutation.mutate(selectedRowKeys[0]);}else{
+      mutationUnarchive.mutate(selectedRowKeys[0])
+    }
     setIsModalOpen(false);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const [checked, setChecked] = useState([]);
-  const [filter, setFilter] = useState({
-    limit: 10,
-    page: 1,
-  });
-
   const { data: dataItems, status } = useQuery(
-    ["item-by-client", filter],
+    ["items-archived", filter],
     async (key) =>
       axios
         .get("items/1", {
@@ -41,65 +115,126 @@ export default function ItemsArchived() {
         })
         .then((res) => res.data)
   );
-  const handleCheck = (v) => {
-    const newChecked = [...checked];
-    const findById = newChecked.find((x) => x === v);
-    if (findById) {
-      const findIndex = checked.indexOf(v);
-      newChecked.splice(findIndex, 1);
-    } else {
-      newChecked.push(v);
-    }
-    setChecked(newChecked);
-  };
 
-  const handleCheckAll = () => {
-    const all = dataItems?.data?.data?.map((item, i) => item.id);
-    if (dataItems?.data?.data?.length === checked.length) {
-      setChecked([]);
-    } else {
-      setChecked(all);
+  // function for get items archived, waiting data from backend
+  const data =
+    status === "success" &&
+    dataItems?.data?.data.filter(x=>x.deleted_at !== null).map((item, i) => ({
+      key: item.id,
+      i: i,
+      name: item.name,
+      desc: item.description,
+      current: item.qty,
+      rate: numberWithDot(item.rate),
+    }));
+
+    // function for unarchive, waiting from backend
+    const mutationUnarchive = useMutation(
+      async (data) => {
+        return axios.delete(`items/1/${data}`).then((res) => res.data);
+      },
+      {
+        onSuccess: () => {
+          setTimeout(() => {
+            queryClient.invalidateQueries("items-by-client");
+          }, 500);
+          setSelectedRowKeys([]);
+          notification.success({
+            message: `The selected items has been unarchived`,
+            placement: "topLeft",
+          });
+        },
+        onError: () => {
+          notification.error({
+            message: `An Error Occurred Please Try Again Later`,
+            placement: "topLeft",
+          });
+        },
+      }
+    );
+
+  const mutation = useMutation(
+    async (data) => {
+      return axios.delete(`items/1/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("items-by-client");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `The selected items has been deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
     }
-  };
+  );
+
 
   const columns = [
     {
-      title: (
-        <Checkbox
-        checked={checked.length !== 0 && dataItems?.data?.data?.length === checked.length}
-        disabled={dataItems?.data?.data?.length === 0}
-          className="font-normal"
-          onChange={handleCheckAll}
-        />
-      ),
-      dataIndex: "checkbox",
-      key: "checkbox",
-      width: "5%",
-    },
-    {
-      title: "Name",
+      title: "Name/Description",
       dataIndex: "name",
       key: "name",
-      width: "80%",
+      render: (text, record) => (
+        <div>
+          <span>{record.name}</span> <p>{record.desc}</p>{" "}
+        </div>
+      ),
+      sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: "Current Stock",
       dataIndex: "current",
       key: "current",
+      render: (text, record) => (
+        <>
+          <Popover
+            placement="bottom"
+            content={
+              <EditItem   query="items-archived" id={record.key} hide={hideClickRow} data={record} />
+            }
+            trigger="click"
+            visible={clickedRow && clickedId === record.key}
+            onVisibleChange={() => handleClickRowChange(record.key, record.i)}
+          >
+            <span>{text}</span>
+          </Popover>
+        </>
+      ),
+      sorter: (a, b) => a.current - b.current,
     },
 
     {
       title: "Rate/Taxes",
       key: "rate",
       dataIndex: "rate",
+      sorter: (a, b) => a.rate - b.rate,
     },
   ];
+  useEffect(() => {
+    if (dataItems?.data?.data.length < 3 && clickedRow) {
+      setMarginResponsive("400px");
+    } else if (checkIndex === dataItems?.data?.data.length - 1) {
+      setMarginResponsive("400px");
+    } else {
+      if (!clickedRow) {
+        setMarginResponsive("");
+      }
+    }
+  }, [dataItems?.data?.data, checkIndex, clickedRow]);
 
-  const data = [];
 
   return (
     <>
-      <div tw="w-full md:w-[98%] md:mb-5">
+      <div tw="w-full md:w-[98%]" style={{ marginBottom: marginResponsive }}>
         <div
           style={{
             display: "flex",
@@ -116,10 +251,54 @@ export default function ItemsArchived() {
             </span>
             <RightOutlined tw=" ml-2" />
             <span tw="text-xl font-bold text-black ml-2">Archived</span>
+            {hasSelected && (
+              <>
+                <RightOutlined tw=" ml-2" />
+                <span tw="text-xl font-bold text-black ml-2">Selected</span>
+                <span tw="align-middle bg-gray-300 text-black rounded-full px-2  mx-2">
+                  {selectedRowKeys.length}
+                </span>
+                <Popover
+                  placement="bottom"
+                  content={bulkList}
+                  trigger="click"
+                  visible={clicked}
+                  onVisibleChange={handleClickChange}
+                >
+                  <div className="flex items-center justify-center">
+                    <Button>
+                      <span tw="mr-2">Bulk Actions</span>
+                      <DownOutlined />
+                    </Button>
+                  </div>
+                </Popover>
+              </>
+            )}
           </div>
         </div>
+        <ModalConfirm
+          title="Confirm"
+          visible={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          width={500}
+          closable={false}
+        >
+          <span tw="text-lg">{isType === "delete" ? "Are you sure you want to delete this?" : "This is archived. Would you like to unarchive it?"}</span>
+        </ModalConfirm>
         <div className="table-responsive">
           <Table
+            onRow={(record, rowIndex) => {
+              return {
+             
+                onDoubleClick: (event) => {
+                  setClickedRow(!clickedRow);
+                  setClickedId(record.key);
+                  setCheckIndex(record.i);
+                },
+              };
+            }}
+            rowSelection={rowSelection}
             columns={columns}
             dataSource={data}
             pagination={false}
@@ -129,13 +308,13 @@ export default function ItemsArchived() {
         <div tw="flex justify-between mt-5">
           <div>
             <span tw="text-sm text-black font-bold">
-              1-{data.length - 1} of {data.length - 1}{" "}
+              1-{data.length} of {data.length}{" "}
             </span>
           </div>
 
-          <div>
+          {/* <div>
             <PaginationFooter />
-          </div>
+          </div> */}
         </div>
       </div>
     </>

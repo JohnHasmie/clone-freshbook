@@ -42,7 +42,7 @@ export default function EmailNotification() {
   };
   return (
     <>
-      <div className="layout-content">
+      <div className="layout-content"  tw="md:ml-24">
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mt-25 mb-24">
             <Title level={3}>Email Notifications</Title>

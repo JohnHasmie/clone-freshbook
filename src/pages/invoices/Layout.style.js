@@ -40,3 +40,8 @@ export const LayoutInvoice = styled(Layout)(() => [
 
 ])
 
+export const LayoutSetting = styled(Layout)(() => [
+    tw`md:!ml-48`,
+   
+
+])
