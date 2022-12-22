@@ -32,11 +32,11 @@ export default function MoreAction() {
 }
 
 
-export function MoreActionClients() {
+export function MoreActionClients({pdfRefetch}) {
   return (
     <div >
     <Menu>
-      <Menu.Item>
+      <Menu.Item key="import">
         <div>
         <ImportOutlined />
           <span
@@ -48,10 +48,10 @@ export function MoreActionClients() {
         </div>
       </Menu.Item>
 
-      <Menu.Item>
+      <Menu.Item key="export">
         <div>
         <ExportOutlined />
-          <span tw="cursor-pointer" onClick={() => console.log("print")}>
+          <span tw="cursor-pointer" onClick={() => pdfRefetch()}>
             Export Clients
           </span>
         </div>

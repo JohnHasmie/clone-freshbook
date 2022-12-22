@@ -8,7 +8,7 @@ import {
   PhoneOutlined,
 } from "@ant-design/icons";
 import { Col, Menu, Popover, Row } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CardClient from "../CardClient";
 import CardDetail from "../CardDetail";
 import Photo from "../../assets/images/mask-group.svg";
@@ -16,11 +16,26 @@ import tw from "twin.macro";
 import DashboardChart from "../chart/DashboardChart";
 import BarChartClient from '../chart/BarChartClient';
 import { useHistory } from "react-router-dom";
+import axios from "axios";
+import { useQuery } from "react-query";
+import AppContext from "../context/AppContext";
 
-export default function ClientInfo() {
+export default function ClientInfo({clientId}) {
   const [filterInvoice, setFilterInvoice] = useState("usd");
-  const history=useHistory()
+  const {  setGlobalDetailClient } = useContext(AppContext);
 
+  const history=useHistory()
+  const { data: detailClient, status:statusDetailClient } = useQuery(
+    "detail-client",
+    async (key) =>
+      axios
+        .get(`clients/${clientId}`)
+        .then((res) => res.data.data)
+  );
+  useEffect(() => {
+    statusDetailClient === "success" &&
+    setGlobalDetailClient(detailClient?.client)
+  }, [statusDetailClient])
   const invoiceList = (
     <div>
       <Menu>
@@ -45,32 +60,32 @@ export default function ClientInfo() {
   return (
     <Row gutter={24} tw="mb-1.5 max-w-full">
       <Col span={8}>
-        <CardClient
+      {statusDetailClient === "success" && <CardClient
           title="Default size card"
           size="small"
           style={{
-            width: 300,
+            width: "auto",
           }}
         >
-          <div tw="flex -mt-2">
-            <img src={Photo} alt="profile" tw="w-14 h-14" />
-            <div tw="grid ml-3 gap-0">
-              <h3 tw="font-bold text-base">Heri Setiawan</h3>
+          <div tw="grid grid-cols-4">
+            <img src={detailClient.client.avatar} alt="profile" tw="w-14 h-14 rounded-full col-span-1" />
+            <div tw="grid gap-0 col-span-3">
+              <h3 tw="font-bold text-base">{detailClient.client.first_name + " " + detailClient.client.last_name }</h3>
               <div>
                 <MailOutlined tw="mr-1" />
-                <span>kywu@mailinator.com</span>
+                <span>{detailClient.client.email}</span>
               </div>
               <div>
                 <PhoneOutlined tw="mr-1" />
-                <span>+6289669235897</span>
+                <span>{detailClient.client.phone}</span>
               </div>
               <div>
                 <AimOutlined tw="mr-1" />
-                <span>Indonesia</span>
+                <span>{detailClient.client.country}</span>
               </div>
             </div>
           </div>
-        </CardClient>
+        </CardClient>}
       </Col>
       <Col span={16}>
         <CardDetail

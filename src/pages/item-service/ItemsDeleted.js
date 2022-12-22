@@ -98,7 +98,7 @@ export default function ItemsDeleted() {
   // function for get items deleted, waiting data from backend
   const data =
     status === "success" &&
-    dataItems?.data?.data /* .filter(x=>x.deleted_at !== null) */
+    dataItems?.data?.data.filter(x=>x.deleted_at !== null)
       .map((item, i) => ({
         key: item.id,
         i: i,

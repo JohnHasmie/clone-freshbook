@@ -15,14 +15,14 @@ import {
 } from "@ant-design/icons";
 import {
   Button,
-  Checkbox,
   Form,
   Menu,
+  notification,
   Popover,
   Tooltip,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardClient from "../../components/CardClient";
@@ -33,146 +33,295 @@ import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import FormAdvanceSearch from "./FormAdvanceSearch";
 import TabHome from "./TabHome";
 import PaginationFooter from "../../components/layout/PaginationFooter";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import axios from "axios";
+import { numberWithDot, truncate } from "../../components/Utils";
+import { ModalConfirm } from "../../components/ModalConfirm.style";
+
 
 export default function Clients() {
   const { Title } = Typography;
   const history = useHistory();
   const [isAdvance, setIsAdvance] = useState(false);
   const [form] = Form.useForm();
-  const [checked, setChecked] = useState([]);
   const [isToggle, setIsToggle] = useState(true);
+  const [filter, setFilter] = useState({
+    limit: 10,
+    page: 1,
+  });
+  const [searchField, setSearchField] = useState({
+    company_name: "",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    note: "",
+    total_outstanding: "",
+    credit_number: "",
+    credit_amount: "",
+  });
+  const [keywordSearch, setKeywordSearch] = useState("");
+  const [typeSearch, setTypeSearch] = useState("");
 
+  const queryClient = useQueryClient();
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [isHover, setIsHover] = useState(false);
+  const [isType, setIsType] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clicked, setClicked] = useState(false);
+  const [clientName, setClientName] = useState("");
 
+  const onChange = (e) => {
+    setSearchField({ ...searchField, [e.target.name]: e.target.value });
+  };
   const handleMouseEnter = () => {
     setIsHover(true);
   };
   const handleMouseLeave = () => {
     setIsHover(false);
   };
-  const handleCheck = (v) => {
-    const newChecked = [...checked];
-    const findById = newChecked.find((x) => x === v);
-    if (findById) {
-      const findIndex = checked.indexOf(v);
-      newChecked.splice(findIndex, 1);
-    } else {
-      newChecked.push(v);
-    }
-    setChecked(newChecked);
-  };
-  const data = [
-    {
-      key: "1",
-      checkbox: (
-        <Checkbox
-          className="font-normal"
-          value={"1"}
-          checked={checked.includes("1")}
-          onChange={(e) => handleCheck(e.target.value)}
-        />
-      ),
-      organization: (
-        <div>
-          <h3>Company Name</h3>
-          <p>First Client</p>
-        </div>
-      ),
-      internal: <span></span>,
 
-      credit: <span></span>,
-      outstanding: (
-        <div tw="grid justify-start relative">
-          <div
-            className="isVisible"
-            tw="absolute bottom-10 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
-          >
-            <div tw="hover:bg-gray-100 ">
-              <Tooltip placement="top" title="edit">
-                <EditOutlined tw="px-2 py-1  " />
-              </Tooltip>
-            </div>
-            <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
-              <Tooltip placement="top" title="archive">
-                <HddOutlined tw="px-2 py-1 " />
-              </Tooltip>
-            </div>
-            <div tw="hover:bg-gray-100 ">
-              <Tooltip placement="top" title="delete">
-                <RestOutlined tw="px-2 py-1 " />
-              </Tooltip>
-            </div>
-          </div>
-          <span tw="font-bold text-black text-right">$20,000,000.00</span>
-        </div>
-      ),
-    },
-  ];
-  const handleCheckAll = () => {
-    const all = data?.map((item) => item.key);
-    if (data?.length === checked.length) {
-      setChecked([]);
-    } else {
-      setChecked(all);
+  const handleModal = (type) => {
+    switch (type.key) {
+      case "archive":
+        setIsType("archive");
+        break;
+      case "delete":
+        setIsType("delete");
+        break;
+      default:
+        setIsType("");
+        break;
     }
+    if (type.client) {
+      setClientName(type.client);
+    }
+
+    setIsModalOpen(true);
+    setClicked(false);
   };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const handleOk = () => {
+    switch (isType) {
+      case "archive":
+        mutationArchive.mutate(selectedRowKeys[0]);
+        break;
+      case "delete":
+        mutation.mutate(selectedRowKeys[0]);
+        break;
+      default:
+        setIsType("");
+        break;
+    }
+
+    setIsModalOpen(false);
+  };
+
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+
+  const { data: dataClients, status } = useQuery(
+    ["clients", filter],
+    async (key) =>
+      axios
+        .get("clients", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
+
+  
+
+  const mutation = useMutation(
+    async (data) => {
+      return axios.delete(`clients/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("clients");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `${
+            clientName
+              ? clientName
+              : `The selected ${selectedRowKeys.length} clients`
+          }has been succesfully deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+
+  const mutationArchive = useMutation(
+    async (data) => {
+      return axios.delete(`clients/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("clients");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `${
+            clientName
+              ? clientName
+              : `The selected ${selectedRowKeys.length} clients`
+          }has been succesfully archived`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+
+  const filteredData =
+    status === "success" &&
+    dataClients?.data.filter((item) => {
+      return (
+        item.company_name
+          .toLowerCase()
+          .includes(searchField.company_name.toLowerCase()) ||
+        item.first_name
+          .toLowerCase()
+          .includes(
+            searchField.name
+              ? searchField.name.toLocaleLowerCase()
+              : searchField?.company_name.toLowerCase()
+          ) ||
+        item?.email.toLowerCase().includes(searchField.email.toLowerCase()) ||
+        localFilter(item, keywordSearch, typeSearch)
+      );
+    });
+
+  const data =
+    status === "success" &&
+    filteredData?.map((item) => ({
+      key: item.id,
+      company_name: item.company_name,
+      first_name: item.first_name,
+      last_name: item.last_name,
+      note: "-",
+      credit: "",
+      total_outstanding: `Rp ${numberWithDot(20000)} IDR`,
+    }));
+
   const columns = [
     {
-      title: (
-        <Checkbox
-          checked={data.length !== 0 && data?.length === checked.length}  disabled={data.length === 0}
-          className="font-normal"
-          onChange={handleCheckAll}
-        />
-      ),
-      dataIndex: "checkbox",
-      key: "checkbox",
-      width: "5%",
-
-    },
-    {
-      title: "Organization/Primary Contact",
+      title: "Organization / Primary Contact",
       dataIndex: "organization",
       key: "organization",
-      width: "20%",
+      render: (text, record) => (
+        <div>
+          <span>{record.company_name}</span>{" "}
+          <p>
+            {record.first_name} {record.last_name}
+          </p>{" "}
+        </div>
+      ),
+      sorter: (a, b) => a.company_name.length - b.company_name.length,
     },
     {
       title: "Internal Note",
-      dataIndex: "internal",
-      key: "internal",
-      width: "30%",
+      dataIndex: "note",
+      key: "note",
+
+      sorter: (a, b) => a.note - b.note,
     },
 
     {
       title: "Credit",
       key: "credit",
       dataIndex: "credit",
+      sorter: (a, b) => a.credit - b.credit,
     },
 
     {
       title: "Total Outstanding",
-      key: "outstanding",
-      dataIndex: "outstanding",
-      width: "20%",
+      key: "total_outstanding",
+      dataIndex: "total_outstanding",
+      align: "right",
+      render: (text, record) => (
+        <div>
+          <div
+            className="isVisible"
+            tw="absolute bottom-14 right-0 flex invisible rounded-full bg-white shadow-sm border border-gray-200"
+          >
+            <div tw="hover:bg-gray-100 ">
+              <Tooltip placement="top" title="edit">
+                <EditOutlined tw="p-2" onClick={()=>history.push(`clients/${record.key}/edit`)}/>
+                
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
+              <Tooltip placement="top" title="archive">
+                <HddOutlined
+                  tw="p-2"
+                  onClick={() =>
+                    handleModal({ key: "archive", client: record.company_name })
+                  }
+                />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100 ">
+              <Tooltip placement="top" title="delete">
+                <RestOutlined
+                  tw="p-2"
+                  onClick={() =>
+                    handleModal({ key: "delete", client: record.company_name })
+                  }
+                />
+              </Tooltip>
+            </div>
+          </div>
+          <span>{record.total_outstanding}</span>
+        </div>
+      ),
+      sorter: (a, b) => a.total_outstanding.length - b.total_outstanding.length,
     },
   ];
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const hasSelected = selectedRowKeys.length > 0;
   const bulkList = (
     <div tw="w-36">
       <Menu>
-        <Menu.Item>
+        <Menu.Item key="edit" onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} disabled={selectedRowKeys.length > 1}>
           <div>
             <EditOutlined />
             <span>Edit</span>
           </div>
         </Menu.Item>
 
-        <Menu.Item>
+        <Menu.Item onClick={handleModal} key="archive">
           <div>
             <HddOutlined />
             <span>Archive</span>
           </div>
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item onClick={handleModal} key="delete">
           <div>
             <RestOutlined />
             <span>Delete</span>
@@ -181,7 +330,14 @@ export default function Clients() {
       </Menu>
     </div>
   );
-
+  useEffect(() => {
+    if (selectedRowKeys.length < 2) {
+      const getName = data && data?.filter((x) => x.key === selectedRowKeys[0]);
+      setClientName(getName[0]?.company_name);
+    } else {
+      setClientName("");
+    }
+  }, [selectedRowKeys]);
   return (
     <>
       <div className="layout-content">
@@ -203,44 +359,62 @@ export default function Clients() {
                   Remove <CloseOutlined tw="ml-1" />
                 </span>
               </div>
-              <div tw="flex" style={{ opacity: isHover ? "0.5" : "1" }}>
-                <div
-                  style={{
-                    width: 250,
-                  }}
-                  onClick={() => history.push("/clients/new")}
-                  tw="cursor-pointer border border-dashed flex w-72 rounded-md  mr-5 justify-center items-center"
-                >
-                  <div tw="flex flex-col">
-                    <PlusOutlined tw="text-3xl text-green-400" />
-                    <span tw="text-lg text-2xl font-bold">New Client</span>
-                  </div>
-                </div>
-                <Link to={`clients/1/client-detail`}>
-                  <CardClient
-                    title="Default size card"
-                    size="small"
+              <div tw="flex gap-5" style={{ opacity: isHover ? "0.5" : "1" }}>
+                {dataClients?.data.length < 4 && (
+                  <div
                     style={{
                       width: 250,
                     }}
+                    onClick={() => history.push("/clients/new")}
+                    tw="cursor-pointer border-2 border-dashed border-grayDefault flex w-72 rounded-md  justify-center items-center"
                   >
-                    <div tw="flex justify-between">
-                      <img src={Photo} alt="profile" tw="w-14 h-14" />
-                      <div tw="grid justify-items-end ">
-                        <h3 tw="font-bold text-lg">Sutton Rowland</h3>
-                        <p tw="text-sm">Sutton Rowland Inc</p>
-                      </div>
+                    <div tw="flex flex-col">
+                      <PlusOutlined tw="text-3xl text-green-400" />
+                      <span tw="text-lg  font-bold">New Client</span>
                     </div>
-                    <div>
-                      <MailOutlined tw="mr-1" />
-                      <span>kywu@mailinator.com</span>
-                    </div>
-                    <div>
-                      <PhoneOutlined tw="mr-1" />
-                      <span>+6289669235897</span>
-                    </div>
-                  </CardClient>
-                </Link>
+                  </div>
+                )}
+                {dataClients?.data
+                  ?.sort((a, b) => b.id - a.id)
+                  .map((item, i) => (
+                    <Link to={`/clients/${item.id}/client-detail`} key={i}>
+                      <CardClient
+                        title="Default size card"
+                        size="small"
+                        style={{
+                          width: 240,
+                          display: `${i > 3 && "none"}`,
+                        }}
+                      >
+                        <div tw="flex ">
+                          <img
+                            src={item.avatar}
+                            alt="profile-client"
+                            tw="w-14 h-14 rounded-full mr-3"
+                          />
+                          <div tw="flex flex-col ">
+                            <h3 tw="font-bold">
+                              {truncate(
+                                item.first_name + " " + item.last_name,
+                                15
+                              )}{" "}
+                            </h3>
+                            <p tw="text-sm">
+                              {truncate(item.company_name, 18)}
+                            </p>
+                          </div>
+                        </div>
+                        <div>
+                          <MailOutlined tw="mr-1" />
+                          <span>{item.email}</span>
+                        </div>
+                        <div>
+                          <PhoneOutlined tw="mr-1" />
+                          <span>{item.phone}</span>
+                        </div>
+                      </CardClient>
+                    </Link>
+                  ))}
               </div>
             </div>
           ) : (
@@ -260,11 +434,11 @@ export default function Clients() {
             <AllClientTabs />
             <div tw="grid md:flex justify-between mb-4">
               <div tw="flex items-center">
-                {checked.length > 0 ? (
+                {hasSelected ? (
                   <>
                     <span
-                      onClick={() => history.push("/clients")}
-                      tw="text-xl font-bold text-primary"
+                      onClick={() => setSelectedRowKeys([])}
+                      tw="text-xl font-bold text-primary cursor-pointer"
                     >
                       Clients
                     </span>
@@ -272,12 +446,14 @@ export default function Clients() {
                     <RightOutlined tw=" ml-2" />
                     <span tw="text-xl font-bold text-black ml-2">Selected</span>
                     <span tw="align-middle bg-gray-300 text-black rounded-full px-2  mx-2">
-                      {checked.length}
+                      {selectedRowKeys.length}
                     </span>
                     <Popover
                       placement="bottom"
                       content={bulkList}
                       trigger="click"
+                      visible={clicked}
+                      onVisibleChange={handleClickChange}
                     >
                       <div className="flex items-center justify-center">
                         <Button>
@@ -293,6 +469,8 @@ export default function Clients() {
               </div>
               <div tw="flex relative cursor-pointer">
                 <InputAdvanceSearch
+                  onChange={onChange}
+                  name="company_name"
                   placeholder="Search"
                   prefix={<SearchOutlined />}
                 />
@@ -308,13 +486,42 @@ export default function Clients() {
             </div>
             {isAdvance ? (
               <div tw="bg-gray-100 border-y-2 border-gray-400 p-3 mb-4">
-                <FormAdvanceSearch form={form} setIsAdvance={setIsAdvance} />
+                <FormAdvanceSearch
+                  form={form}
+                  setIsAdvance={setIsAdvance}
+                  searchProps={[searchField, setSearchField]}
+                  typeSearchProps={[typeSearch, setTypeSearch]}
+                  dataClients={dataClients}
+                  keywordSearchProps={[keywordSearch, setKeywordSearch]}
+                />
               </div>
             ) : (
               <></>
             )}
+            <ModalConfirm
+              title="Confirm"
+              visible={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+              width={500}
+              closable={false}
+            >
+              <span tw="text-lg">
+                {clientName
+                  ? `Are you sure you want to ${isType} ${clientName}?`
+                  : `Are you sure you want to ${isType} ${selectedRowKeys.length} clients?`}
+              </span>
+            </ModalConfirm>
             <div className="table-responsive">
               <TableCustom
+                onRow={(record, rowIndex) => {
+                  return {
+                    onDoubleClick: (event) => {
+                      history.push(`/clients/${record.id}/client-detail`);
+                    },
+                  };
+                }}
+                rowSelection={rowSelection}
                 columns={columns}
                 dataSource={data}
                 pagination={false}
@@ -342,8 +549,8 @@ export default function Clients() {
                 </p>
               </div>
               <div>
-                <span tw="text-gray-500">Items per page:</span>
-                <PaginationFooter />
+                <span tw="text-gray-500">Items per page: </span>
+                <PaginationFooter filterProps={[filter, setFilter]} />
               </div>
             </div>
           </div>
@@ -351,4 +558,22 @@ export default function Clients() {
       </div>
     </>
   );
+}
+
+export function localFilter(item, keywordSearch, typeSearch) {
+  switch (typeSearch) {
+    case "phone":
+      item?.phone.toLowerCase().includes(keywordSearch.toLowerCase());
+      break;
+    case "address":
+      item?.address.toLowerCase().includes(keywordSearch.toLowerCase());
+      break;
+    case "all":
+      item?.address.toLowerCase().includes(keywordSearch.toLowerCase()) ||
+        item?.phone.toLowerCase().includes(keywordSearch.toLowerCase());
+      break;
+    default:
+      item?.phone.toLowerCase().includes(keywordSearch.toLowerCase());
+      break;
+  }
 }

@@ -2,6 +2,7 @@ import {  Card } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledCard = styled(Card)(({ hidden }) => [
+    tw`hover:border hover:border-gray-400`,
     css`
         && {
 
@@ -15,7 +16,7 @@ export const StyledCard = styled(Card)(({ hidden }) => [
             }
 
             .ant-card-body{
-                ${tw`p-6`}
+                ${tw`p-3`}
             }
 
             span{

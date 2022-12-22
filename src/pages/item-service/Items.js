@@ -35,7 +35,6 @@ const Items = () => {
   const history = useHistory();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [checkIndex, setCheckIndex] = useState(0);
   const [marginResponsive, setMarginResponsive] = useState("");
   const [isType, setIsType] = useState('');
 
@@ -202,11 +201,11 @@ const Items = () => {
     if (clickedRow === false) {
       setClickedRow(true);
       setClickedId(id);
-      setCheckIndex(index);
+      setMarginResponsive("400px")
     } else {
       setClickedRow(false);
       setClickedId("");
-      setCheckIndex("");
+      setMarginResponsive("")
     }
   };
   const hideClickRow = () => {
@@ -235,22 +234,13 @@ const Items = () => {
       </Menu>
     </div>
   );
-  useEffect(() => {
-    if (filteredData.length < 3 && clickedRow) {
-      setMarginResponsive("400px");
-    } else if (checkIndex === filteredData.length - 1) {
-      setMarginResponsive("400px");
-    } else {
-      if (!clickedRow) {
-        setMarginResponsive("");
-      }
-    }
-  }, [filteredData, checkIndex, clickedRow]);
+
 
   // useEffect(() => {
   //   if(clickedRows){
-  //     setClickedRow(true)
-  //     setClickedRows(false)
+  //    setMarginResponsive("400px")
+  //   }else{
+  //     setMarginResponsive('')
   //   }
   // }, [clickedRows])
 
@@ -312,21 +302,18 @@ const Items = () => {
           width={500}
           closable={false}
         >
-          <span tw="text-lg">{isType === "delete" ? "Are you sure you want to delete this?" : "Are you sure you want to archive this?"}</span>
+          <span tw="text-lg">{`Are you sure you want to ${isType} this?` }</span>
         </ModalConfirm>
         <div className="table-responsive">
           <Table
             onRow={(record, rowIndex) => {
               return {
-                //   onClick: event => {
-                //     setClickedRows(true)
-                //   setClickedId(record.key)
-                //   setCheckIndex(record.i)
-                // },
+           
                 onDoubleClick: (event) => {
                   setClickedRow(!clickedRow);
                   setClickedId(record.key);
-                  setCheckIndex(record.i);
+                  setMarginResponsive("400px")
+                
                 },
               };
             }}

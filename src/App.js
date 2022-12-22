@@ -42,7 +42,6 @@ import ItemsArchived from "./pages/item-service/ItemsArchived";
 import ItemsDeleted from "./pages/item-service/ItemsDeleted";
 import Email from "./pages/clients/Email";
 import NewInvoice from "./pages/invoices/NewInvoice";
-import NewClient from "./pages/clients/NewClient";
 import DetailInvoiceClient from "./pages/clients/DetailInvoice";
 import DetailRecurring from "./pages/clients/DetailRecurring";
 import RecurringInvoice from "./pages/invoices/Recurring";
@@ -64,6 +63,7 @@ import InvoicesDeleted from "./pages/invoices/InvoicesDeleted";
 import RecurringArchived from "./pages/invoices/RecurringArchived";
 import RecurringDeleted from "./pages/invoices/RecurringDeleted";
 import NewRecurringTemplate from "./pages/report/NewRecurringTemplate";
+import FormClient from "./pages/clients/FormClient";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +73,8 @@ function App() {
   const { token } = useAuth();
   const [user, setUser] = useState("");
   const [setting, setSetting] = useState("");
+  const [globalDetailClient, setGlobalDetailClient] = useState("");
+
 
 
 
@@ -119,8 +121,10 @@ function App() {
           value={{
             user: user,
             setting:setting,
+            globalDetailClient:globalDetailClient,
             setSetting:setSetting,
             setUser: setUser,
+            setGlobalDetailClient:setGlobalDetailClient,
           }}
         >
           <Switch>
@@ -168,7 +172,12 @@ function App() {
               component={AccountTrialBalance}
             />
             <Route exact path="/invoices/new" component={NewInvoice} />
-            <Route exact path="/clients/new" component={NewClient} />
+            <Route exact path="/clients/new" component={FormClient} />
+            <Route
+                exact
+                path="/clients/:clientId/edit"
+                component={FormClient}
+              />
             <Route exact path="/recurring-template/new" component={NewRecurringTemplate} />
         
 

@@ -1,11 +1,18 @@
 import { Select } from "antd";
 import React from "react";
 
-export default function PaginationFooter() {
+export default function PaginationFooter({filterProps}) {
+  const [filter,setFilter]= filterProps
   return (
     <Select
-      defaultValue={100}
+      value={filter.limit}
+      onChange={(e)=>setFilter({...filter, limit:e})}
       options={[
+       
+        {
+          value: 10,
+          label: 10,
+        },
         {
           value: 30,
           label: 30,

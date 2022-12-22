@@ -11,7 +11,7 @@ export const StyledCardReporting = styled(Card)(({ hidden,bordered  }) => [
             }
 
             .ant-card-body{
-                ${tw`p-6`}
+                ${tw`p-10`}
             }
       
             table{

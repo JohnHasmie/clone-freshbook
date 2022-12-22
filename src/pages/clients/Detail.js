@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 
 import ClientInfo from "../../components/ClientsComponent/ClientInfo";
@@ -29,10 +29,15 @@ import {
 import tw from "twin.macro";
 import TableCustom from "../../components/Table";
 import FormAddContact from "./FormAddContact";
+import { useQuery, useQueryClient } from "react-query";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import AppContext from "../../components/context/AppContext";
 
 export default function Detail() {
-  const { Title } = Typography;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {clientId}=useParams()
+  const {  globalDetailClient } = useContext(AppContext);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -46,6 +51,10 @@ export default function Detail() {
     setIsModalOpen(false);
   };
   const [checked, setChecked] = useState([]);
+
+
+
+  
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);
@@ -195,12 +204,12 @@ export default function Detail() {
   return (
     <>
       <div className="layout-content">
-        <ClientInfo />
+        <ClientInfo clientId={clientId} />
         <div tw="max-w-screen-xl mr-5 mb-10 mt-20"  >
             <ClientTabs />
           <div tw="flex items-end " >
             <span tw="text-xl font-bold text-black">
-              Contacts for Sutton Rowland Inc
+              Contacts for {globalDetailClient?.company_name}
             </span>
             {checked.length > 0 ? (
               <>
@@ -255,3 +264,4 @@ export default function Detail() {
     </>
   );
 }
+

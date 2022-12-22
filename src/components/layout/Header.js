@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Divider, Popover, Menu } from "antd";
 import {
   DownOutlined,
@@ -9,7 +9,7 @@ import {
   LeftOutlined,
   ContainerOutlined,
 } from "@ant-design/icons";
-import { NavLink, useHistory } from "react-router-dom";
+import { NavLink, useHistory, useParams } from "react-router-dom";
 import ButtonCustom from "../Button";
 import tw from "twin.macro";
 import ButtonInvite from "../ButtonInvite";
@@ -19,6 +19,9 @@ import {
   MoreActionClientsDetail,
 } from "../Reports/MoreAction";
 import NewItem from "../NewItem";
+import AppContext from "../context/AppContext";
+import { useQuery } from "react-query";
+import axios from "axios";
 
 const toggler = [
   <svg
@@ -45,6 +48,8 @@ function Header({
 
   const [visible, setVisible] = useState(false);
   const [clicked, setClicked] = useState(false);
+  const {  globalDetailClient } = useContext(AppContext);
+
   const handleClickChange = (open) => {
     setClicked(open);
   };
@@ -52,8 +57,29 @@ function Header({
     setClicked(false);
   };
 
-  // useEffect(() => window.scrollTo(0, 0));
 
+  // useEffect(() => window.scrollTo(0, 0));
+  const { status: pdfStatus, refetch: pdfRefetch } = useQuery(
+    "downloadPDF",
+    async () =>
+      axios
+        .get("clients/export", {
+          responseType: "blob",
+        })
+        .then((res) => {
+          const url = window.URL.createObjectURL(new Blob([res.data]))
+          const link = document.createElement("a")
+          link.href = url
+          link.setAttribute("download.pdf")
+          document.body.appendChild(link)
+          link.click()
+
+          return res.data
+        }),
+    {
+      enabled: false,
+    }
+  )
   const content = (
     <div className="user-pop">
       <ul>
@@ -160,6 +186,8 @@ function Header({
       ></path>
     </svg>,
   ];
+
+
   return (
     <>
       {name.includes("dashboard") && (
@@ -227,17 +255,17 @@ function Header({
               {toggler}
             </ButtonCustom>
           </div>
-          <div tw="md:col-span-2">
+          <div tw=" md:col-span-2">
             <button
               onClick={() => history.goBack()}
-              tw="bg-transparent flex items-center mt-5 text-primary cursor-pointer"
+              tw="bg-transparent flex justify-start -ml-2 items-center mt-5 text-primary cursor-pointer"
             >
               <LeftOutlined />
-              <span tw="ml-1">Clients</span>
+              <span tw="ml-1 text-lg">Clients</span>
             </button>
           </div>
           <div tw="flex items-center">
-            <span tw="capitalize text-4xl font-bold">Boni Syahrudin Inc</span>
+            <span tw="capitalize text-4xl font-bold">{globalDetailClient?.company_name}</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <Popover
@@ -284,7 +312,7 @@ function Header({
             <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
               <Popover
                 placement="bottom"
-                content={MoreActionClients}
+                content={<MoreActionClients pdfRefetch={pdfRefetch} />}
                 trigger="click"
               >
                 <ButtonInvite tw="!py-6 md:mr-5">

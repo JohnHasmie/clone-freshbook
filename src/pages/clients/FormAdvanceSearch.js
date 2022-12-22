@@ -1,5 +1,5 @@
 import { AutoComplete, Button, Form, Input, Select } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import tw from "twin.macro";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
 import ButtonMore from "../../components/Reports/ButtonMore";
@@ -7,18 +7,92 @@ import { styled } from "twin.macro";
 import { InputKeyword, SelectKeyword } from "./AdvanceSearch.style";
 import { Option } from "antd/lib/mentions";
 
-export default function FormAdvanceSearch({form,setIsAdvance }) {
+export default function FormAdvanceSearch({
+  form,
+  setIsAdvance,
+  searchProps,
+  typeSearchProps,
+  dataClients,
+  keywordSearchProps,
+}) {
+  const [localSearch, setLocalSearch] = useState({
+    company_name: "",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    note: "",
+    total_outstanding: "",
+    credit_number: "",
+    credit_amount: "",
+  });
+  const [localKeyword, setLocalKeyword] = useState("");
+  const [searchField, setSearchField] = searchProps;
+  const [typeSearch, setTypeSearch] = typeSearchProps;
+  const [keywordSearch, setKeywordSearch] = keywordSearchProps;
+
+  const onChange = (e) => {
+    setLocalSearch({ ...localSearch, [e.target.name]: e.target.value });
+  };
+  const onChangeKeyword = (e) => {
+    if(!typeSearch){
+    setTypeSearch("all")}
+    setLocalKeyword(e.target.value);
+  };
 
   const onFinish = (values) => {
-    console.log("Success:", values);
+    setSearchField({ ...searchField, ...localSearch, status: true });
+    setKeywordSearch(localKeyword);
+    setIsAdvance(false);
   };
   const onReset = () => {
+    // form.resetFields();
+    setLocalSearch({
+      company_name: "",
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      note: "",
+      total_outstanding: "",
+      credit_number: "",
+      credit_amount: "",
+    });
+    setLocalKeyword("");
+  };
+  const backButton = () => {
     form.resetFields();
+    setLocalSearch({
+      company_name: "",
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      note: "",
+      total_outstanding: "",
+      credit_number: "",
+      credit_amount: "",
+    });
+    setLocalKeyword("");
+
+    setIsAdvance(false);
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+  useEffect(() => {
+    if (searchField.status) {
+      console.log("berjalan");
+      setLocalSearch({ ...searchField });
+    }
+  }, [searchField]);
+  useEffect(() => {
+    if (keywordSearch) {
+      setLocalKeyword(keywordSearch);
+    }
+  }, [keywordSearch]);
+console.log(localSearch,"local");
   return (
     <Form
       onFinish={onFinish}
@@ -26,52 +100,89 @@ export default function FormAdvanceSearch({form,setIsAdvance }) {
       layout="vertical"
       size={"large"}
       form={form}
+      fields={[
+        {
+          name: ["company_name"],
+          value: localSearch.company_name,
+        },
+        {
+          name: ["name"],
+          value: localSearch.name,
+        },
+        {
+          name: ["email"],
+          value: localSearch.email,
+        },
+      ]}
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
-          <Form.Item label="Organization" name="organization">
+          <Form.Item label="Organization" name="company_name">
             <AutoComplete
+              onChange={(e) =>
+                onChange({
+                  target: { value: e, name: "company_name" },
+                })
+              }
               placeholder="Search for an organization"
               filterOption={true}
-              options={[
-                { label: "Boni Syahrudin Inc", value: "Boni Syahrudin Inc" },
-                { label: "John Doe Inc", value: "John Doe Inc" },
-              ]}
+              options={dataClients?.data?.map((x) => ({
+                label: x.company_name,
+                value: x.company_name,
+              }))}
             />
           </Form.Item>
         </div>
 
         <div>
-          <Form.Item label="Contact Name" name="contact">
+          <Form.Item label="Contact Name" name="name">
             <AutoComplete
               placeholder="Search for a contact name"
               filterOption={true}
-              options={[
-                { label: "Boni Syahrudin", value: "Boni Syahrudin" },
-                { label: "John Doe", value: "John Doe" },
-              ]}
+              onChange={(e) =>
+                onChange({
+                  target: { value: e, name: "name" },
+                })
+              }
+              options={dataClients?.data?.map((x) => ({
+                label: `${x.first_name} ${x.last_name}`,
+                value: x.first_name,
+              }))}
             />
           </Form.Item>
         </div>
         <div>
           <Form.Item label="Email" name="email">
             <AutoComplete
+              onChange={(e) =>
+                onChange({
+                  target: { value: e, name: "email" },
+                })
+              }
               placeholder="Search for a contact email"
               filterOption={true}
-              options={[
-                { label: "bonis@gmail.com", value: "bonis@gmail.com" },
-                { label: "johndoe@gmail.com", value: "johndoe@gmail.com" },
-              ]}
+              options={dataClients?.data?.map((x) => ({
+                label: x.email,
+                value: x.email,
+              }))}
             />
           </Form.Item>
         </div>
         <div tw="col-span-2 ">
           <Form.Item label="Keyword Search" name="keyword">
             <div tw="flex relative">
-              <InputKeyword type="text" placeholder="Keyword or Number" />
+              <InputKeyword
+                type="text"
+                onChange={onChangeKeyword}
+                value={localKeyword}
+                placeholder="Keyword or Number"
+              />
               <SelectKeyword
                 tw="inline-flex "
-                defaultValue="all"
+                value={typeSearch}
+                onChange={(e) => {
+                  setTypeSearch(e);
+                }}
                 options={[
                   {
                     value: "all",
@@ -86,11 +197,11 @@ export default function FormAdvanceSearch({form,setIsAdvance }) {
                     label: "Address",
                   },
                   {
-                    value: "internal",
+                    value: "note",
                     label: "Internal Note",
                   },
                   {
-                    value: "total",
+                    value: "total_outstanding",
                     label: "Total Outstanding",
                   },
                   {
@@ -108,15 +219,12 @@ export default function FormAdvanceSearch({form,setIsAdvance }) {
         </div>
       </div>
       <div tw="flex justify-between items-start">
-        <button tw="bg-transparent text-primary cursor-pointer "  onClick={onReset}>
+        <span tw="bg-transparent text-primary cursor-pointer" onClick={onReset}>
           Reset all
-        </button>
+        </span>
         <div tw="flex">
           <div>
-            <ButtonMore
-              tw="text-lg px-8 mr-2"
-              onClick={() => setIsAdvance(false)}
-            >
+            <ButtonMore tw="text-lg px-8 mr-2" onClick={backButton}>
               Cancel
             </ButtonMore>
           </div>
@@ -149,7 +257,6 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
       layout="vertical"
       size={"large"}
       form={form}
-
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
@@ -270,7 +377,7 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
     console.log("Success:", values);
   };
   const handleReset = () => {
-    console.log(form,"Form");
+    console.log(form, "Form");
     form.resetFields();
   };
 

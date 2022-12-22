@@ -14,6 +14,8 @@ export default function GlobalSetting() {
   const [showPassword, setShowPassword] = useState(false);
   const [showEmail, setShowEmail] = useState(false);
 
+
+
   const { user } = useContext(AppContext);
   const [isForm, setIsForm] = useState({
     first_name: "",
@@ -126,6 +128,7 @@ export default function GlobalSetting() {
           layout="vertical"
           size={"large"}
           form={form}
+    
           scrollToFirstError
           fields={[
             {
