@@ -46,6 +46,10 @@ export default function Invoices() {
   const [form] = Form.useForm();
   const history = useHistory();
   const [checked, setChecked] = useState([]);
+  const [filter, setFilter] = useState({
+    limit: 10,
+    page: 1,
+  });
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);
@@ -470,7 +474,7 @@ export default function Invoices() {
               </div>
               <div>
                 <span tw="text-gray-500">Items per page:</span>
-                {/* <PaginationFooter /> */}
+                <PaginationFooter filterProps={[filter,setFilter]}/>
               </div>
             </div>
           </div>

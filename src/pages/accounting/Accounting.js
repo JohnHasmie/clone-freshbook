@@ -27,7 +27,7 @@ export default function Accounting() {
       title: <h1>Balance Sheet</h1>,
       path:'/dashboard/reports/balance',
       desc: (
-        <span>
+        <span tw="-mt-2" >
          A snapshot of your company's assets, liabilities, and equity at any given point in time
         </span>
       ),
@@ -38,7 +38,7 @@ export default function Accounting() {
       path:'/dashboard/reports/trial-balance',
 
       desc: (
-        <span>A quick gut check to make sure your books are balanced</span>
+        <span tw="-mt-2">A quick gut check to make sure your books are balanced</span>
       ),
     },
     {
@@ -46,21 +46,21 @@ export default function Accounting() {
       title: <h1>Payments Collected</h1>,
       path:'/dashboard/reports/payments-collected',
 
-      desc: <span>Payments you have collected over a period of time</span>,
+      desc: <span tw="-mt-2">Payments you have collected over a period of time</span>,
     }
   ];
   return (
     <>
       <div className="layout-content">
-        <div tw="max-w-screen-xl mr-5 mb-10 mt-20">
+        <div tw="max-w-screen-xl mr-5 mb-10" >
           <div tw="flex items-center mb-5 ">
             <span tw="text-xl font-bold text-black">Accounting Reports </span>
 
           </div>
-          <div tw="grid grid-cols-2 gap-3">
+          <div tw="grid md:grid-cols-2 gap-3">
             {data.map((item, i) => (
              <Link key={i} to={item.path}>
-               <CardReport tw="min-h-[8rem]  ">
+               <CardReport tw="min-h-[7rem]  ">
                  <div tw="flex items-center">
                    {item.icon}
                    <div tw="grid gap-y-0 ml-5">

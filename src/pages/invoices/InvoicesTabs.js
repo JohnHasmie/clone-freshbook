@@ -22,6 +22,7 @@ export default function InvoiceTabs() {
   };
   return (
     <Tabs
+    type="card"
       defaultActiveKey={pathname}
       onChange={handleClick}
       tw="w-screen md:w-[60rem]"

@@ -27,7 +27,10 @@ export default function Recurring() {
   const [status, setStatus] = useState("sent");
   const history = useHistory();
   const [isToggle, setIsToggle] = useState(true);
-
+  const [filter, setFilter] = useState({
+    limit: 10,
+    page: 1,
+  });
   const [isHover, setIsHover] = useState(false);
 
   const handleMouseEnter = () => {
@@ -185,7 +188,7 @@ export default function Recurring() {
               </div>
               <div tw="flex" style={{ opacity: isHover ? "0.5" : "1" }}>
                 <div
-                  onClick={() => history.push("invoices/new")}
+                  onClick={() => history.push("/invoices/new")}
                   tw="cursor-pointer border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
                 >
                   <div tw="flex flex-col">
@@ -307,7 +310,7 @@ export default function Recurring() {
               </div>
               <div tw="invisible">
                 <span tw="text-gray-500">Items per page:</span>
-                <PaginationFooter />
+                <PaginationFooter filterProps={[filter,setFilter]} />
               </div>
             </div>
           </div>
