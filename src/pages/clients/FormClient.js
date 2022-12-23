@@ -295,7 +295,7 @@ useEffect(() => {
                   ]}
                   
                 >
-                  <Input tw="!h-10" onChange={onChange} name="first_name" type="text" />
+                  <Input  onChange={onChange} name="first_name" type="text" />
                 </Form.Item>
               </div>
               <div tw="col-span-2 md:col-span-1">
@@ -309,7 +309,7 @@ useEffect(() => {
                     },
                   ]}
                 >
-                  <Input tw="!h-10" onChange={onChange} name="last_name" type="text" />
+                  <Input  onChange={onChange} name="last_name" type="text" />
                 </Form.Item>
               </div>
               <div tw="col-span-2">
@@ -323,7 +323,7 @@ useEffect(() => {
                     },
                   ]}
                 >
-                  <Input tw="!h-10" onChange={onChange} name="company_name" type="text" />
+                  <Input  onChange={onChange} name="company_name" type="text" />
                 </Form.Item>
               </div>
               <Divider tw="col-span-2" />
@@ -337,12 +337,12 @@ useEffect(() => {
                   }
                 ]}
                 >
-                  <Input tw="!h-10" onChange={onChange} name="email" type="email" />
+                  <Input  onChange={onChange} name="email" type="email" />
                 </Form.Item>
               </div>
               <div tw="col-span-2 w-6/12">
                 <Form.Item label="Phone Number" name="phone">
-                  <Input tw="!h-10" onChange={onChange} name="phone" type="number" />
+                  <Input  onChange={onChange} name="phone" type="number" />
                 </Form.Item>
               </div>
               {isAdd.business_phone ? (
@@ -351,7 +351,7 @@ useEffect(() => {
                     label="Business Phone Number"
                     name="business_phone"
                   >
-                    <Input tw="!h-10" onChange={onChange} name="business_phone" type="text" />
+                    <Input  onChange={onChange} name="business_phone" type="text" />
                   </Form.Item>
                 </div>
               ) : (
@@ -372,7 +372,7 @@ useEffect(() => {
                     label="Mobile Phone Number"
                     name="mobile_phone"
                   >
-                    <Input tw="!h-10" onChange={onChange} name="mobile_phone" type="text" />
+                    <Input  onChange={onChange} name="mobile_phone" type="text" />
                   </Form.Item>
                 </div>
               ) : (
@@ -389,14 +389,14 @@ useEffect(() => {
               <Divider tw="col-span-2" />
               {isAdd.address ? (
                 <>
-                  <div tw="col-span-2 w-6/12">
+                  <div tw="col-span-1">
                     <Form.Item label="Country" name="country">
                       <Select
-                       onChange={(e) =>
-                        onChange({
-                          target: { value: e, name: "country" },
-                        })
-                      }
+                      //  onChange={(e) =>
+                      //   onChange({
+                      //     target: { value: e, name: "country" },
+                      //   })
+                      // }
                         options={countryList.map((item) => ({
                           label: item,
                           value: item,
@@ -406,38 +406,38 @@ useEffect(() => {
                   </div>
                   <div tw="col-span-2">
                     <Form.Item label="Address Line 1" name="address">
-                      <Input tw="!h-10" onChange={onChange} name="address" type="text" />
+                      <Input  onChange={onChange} name="address" type="text" />
                     </Form.Item>
                   </div>
                   <div tw="col-span-2">
                     <Form.Item label="Address Line 2" name="address_2">
-                      <Input tw="!h-10" onChange={onChange} name="address_2" type="text" />
+                      <Input  onChange={onChange} name="address_2" type="text" />
                     </Form.Item>
                   </div>
                   <div tw="col-span-2 w-6/12">
                     <Form.Item label="City" name="city">
-                      <Input tw="!h-10" onChange={onChange} name="city" type="text" />
+                      <Input  onChange={onChange} name="city" type="text" />
                     </Form.Item>
                   </div>
                   <div tw="col-span-2 w-6/12">
                     <Form.Item label="State" name="state">
-                      <Input tw="!h-10" onChange={onChange} name="state" type="text" />
+                      <Input  onChange={onChange} name="state" type="text" />
                     </Form.Item>
                   </div>
                   <div tw="col-span-2 w-6/12">
                     <Form.Item label="ZIP Code" name="zip">
-                      <Input tw="!h-10" onChange={onChange} name="zip" type="text" />
+                      <Input  onChange={onChange} name="zip" type="text" />
                     </Form.Item>
                   </div>
                   <Divider tw="col-span-2" />
                   <div>
                     <Form.Item label="Tax Name" name="tax_name">
-                      <Input tw="!h-10" onChange={onChange} name="tax_name" type="text"  />
+                      <Input  onChange={onChange} name="tax_name" type="text"  />
                     </Form.Item>
                   </div>
                   <div>
                     <Form.Item label="Tax Number" name="tax_number">
-                      <Input tw="!h-10" onChange={onChange} name="tax_number" type="text" />
+                      <Input  onChange={onChange} name="tax_number" type="text" />
                     </Form.Item>
                   </div>
                 </>

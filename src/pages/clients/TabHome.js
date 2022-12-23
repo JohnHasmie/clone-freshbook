@@ -19,8 +19,8 @@ const handleClick=(type)=>{
         onClick={() => handleClick("overdue")}
       >
         <div>
-          <span tw="text-4xl font-bold text-blue-700">$0 </span>
-          <span tw="text-sm font-bold text-blue-700 ">USD</span>
+          <span tw="text-4xl font-bold text-blue-700">Rp.0 </span>
+          <span tw="text-sm font-bold text-blue-700 ">IDR</span>
         </div>
 
         <p tw="text-secondary">overdue</p>
@@ -30,8 +30,8 @@ const handleClick=(type)=>{
         onClick={() => handleClick("outstanding")}
       >
         <div>
-          <span tw="text-4xl font-bold text-blue-700">$0 </span>
-          <span tw="text-sm font-bold text-blue-700 ">USD</span>
+          <span tw="text-4xl font-bold text-blue-700">Rp.0 </span>
+          <span tw="text-sm font-bold text-blue-700 ">IDR</span>
         </div>
         <p>total outstanding</p>
       </div>
@@ -40,8 +40,8 @@ const handleClick=(type)=>{
         onClick={() => handleClick("draft")}
       >
         <div>
-          <span tw="text-4xl font-bold text-blue-700">$0 </span>
-          <span tw="text-sm font-bold text-blue-700 ">USD</span>
+          <span tw="text-4xl font-bold text-blue-700">Rp.0 </span>
+          <span tw="text-sm font-bold text-blue-700 ">IDR</span>
         </div>
         <p>in draft</p>
       </div>

@@ -32,10 +32,10 @@ export default function ItemsArchived() {
 
   
   const [clickedId, setClickedId] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [checkIndex, setCheckIndex] = useState(0);
   const [marginResponsive, setMarginResponsive] = useState("");
-
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };

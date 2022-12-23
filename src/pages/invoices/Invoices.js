@@ -470,7 +470,7 @@ export default function Invoices() {
               </div>
               <div>
                 <span tw="text-gray-500">Items per page:</span>
-                <PaginationFooter />
+                {/* <PaginationFooter /> */}
               </div>
             </div>
           </div>

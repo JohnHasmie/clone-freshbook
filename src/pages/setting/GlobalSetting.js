@@ -302,7 +302,7 @@ export default function GlobalSetting() {
                 <>
                   <Col span={24}>
                     <Form.Item label="Password" name="password">
-                      <Input.Password
+                      <Input
                         name="password"
                         type="password"
                         disabled
@@ -322,7 +322,7 @@ export default function GlobalSetting() {
                 <>
                   <Col span={24}>
                     <Form.Item label="Password" name="password">
-                      <Input.Password
+                      <Input
                         onChange={onChange}
                         name="password"
                         placeholder="Current Password"
@@ -340,7 +340,7 @@ export default function GlobalSetting() {
                         },
                       ]}
                     >
-                      <Input.Password
+                      <Input
                         onChange={onChange}
                         name="new_password"
                         type="password"
@@ -376,7 +376,7 @@ export default function GlobalSetting() {
                         }),
                       ]}
                     >
-                      <Input.Password
+                      <Input
                         onChange={onChange}
                         name="new_password_confirmation"
                         placeholder="Confirm New Password"

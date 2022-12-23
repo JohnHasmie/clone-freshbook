@@ -5,11 +5,10 @@ export const StyledTable = styled(Table)(({ hidden }) => [
     tw``,
     css`
         && {
-            .ant-table-tbody > tr.ant-table-row-level-0:hover > td{
-                .isVisible{
-                    ${tw`visible`}
-                }
-
+            .ant-table-tbody {
+                background: rgba(224, 248, 232, 1);
+                font-style: italic;
+                color:#8c8c8c;
             }
             tbody > tr:hover > td {
                 background: rgba(224, 248, 232, 1);

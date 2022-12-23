@@ -257,7 +257,7 @@ function Header({
           </div>
           <div tw=" md:col-span-2">
             <button
-              onClick={() => history.goBack()}
+              onClick={() => history.push('/clients')}
               tw="bg-transparent flex justify-start -ml-2 items-center mt-5 text-primary cursor-pointer"
             >
               <LeftOutlined />
@@ -290,7 +290,7 @@ function Header({
             </Popover>
           </div>
 
-          <Divider tw="md:col-span-2" />
+          <Divider tw="mt-0 md:col-span-2" />
         </div>
       ) : (
         name.includes("clients") &&  (

@@ -517,7 +517,7 @@ export default function Clients() {
                 onRow={(record, rowIndex) => {
                   return {
                     onDoubleClick: (event) => {
-                      history.push(`/clients/${record.id}/client-detail`);
+                      history.push(`/clients/${record.key}/client-detail`);
                     },
                   };
                 }}
