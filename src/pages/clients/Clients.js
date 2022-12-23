@@ -39,6 +39,7 @@ import { numberWithDot, truncate } from "../../components/Utils";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 
 
+
 export default function Clients() {
   const { Title } = Typography;
   const history = useHistory();
@@ -220,8 +221,10 @@ export default function Clients() {
       last_name: item.last_name,
       note: "-",
       credit: "",
-      total_outstanding: `Rp ${numberWithDot(20000)} IDR`,
+      total_outstanding: 2000,
     }));
+const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {data && getTotal(data?.map(x=>x.total_outstanding))} </div>);
+
 
   const columns = [
     {
@@ -266,7 +269,7 @@ export default function Clients() {
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
-                <EditOutlined tw="p-2" onClick={()=>history.push(`clients/${record.key}/edit`)}/>
+                <EditOutlined tw="p-2" onClick={()=>history.push(`/clients/${record.key}/edit`)}/>
                 
               </Tooltip>
             </div>
@@ -291,7 +294,7 @@ export default function Clients() {
               </Tooltip>
             </div>
           </div>
-          <span>{record.total_outstanding}</span>
+          <span>{`Rp. ${numberWithDot(record.total_outstanding)} IDR`}</span>
         </div>
       ),
       sorter: (a, b) => a.total_outstanding.length - b.total_outstanding.length,
@@ -525,6 +528,7 @@ export default function Clients() {
                 columns={columns}
                 dataSource={data}
                 pagination={false}
+                footer={defaultFooter}
                 className="ant-border-space"
               />
             </div>
@@ -576,4 +580,10 @@ export function localFilter(item, keywordSearch, typeSearch) {
       item?.phone.toLowerCase().includes(keywordSearch.toLowerCase());
       break;
   }
+}
+export function getTotal(outstanding) {
+  const sum = outstanding.reduce((accumulator, value) => {
+    return accumulator + value;
+  }, 0);
+  return `Rp. ${numberWithDot(sum)} IDR`
 }

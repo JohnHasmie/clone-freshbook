@@ -3391,7 +3391,7 @@ color:#0063c1;
 margin: 0;
 padding: 8px 16px;
 background: transparent;
-border: 0;
+border: 1px transparent;
 transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 

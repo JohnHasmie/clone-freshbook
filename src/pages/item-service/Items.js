@@ -302,7 +302,7 @@ const Items = () => {
           width={500}
           closable={false}
         >
-          <span tw="text-lg">{`Are you sure you want to ${isType} this?` }</span>
+          <span tw="text-lg">{`Are you sure you want to ${selectedRowKeys.length > 1 ? selectedRowKeys.length : isType} this?` }</span>
         </ModalConfirm>
         <div className="table-responsive">
           <Table

@@ -1,5 +1,5 @@
 import { Checkbox, Table, Typography } from "antd";
-import React from "react";
+import React, { useContext } from "react";
 import tw from "twin.macro";
 
 import { Link, useHistory, useParams } from "react-router-dom";
@@ -16,10 +16,11 @@ import {
   SyncOutlined,
 } from "@ant-design/icons";
 import CardReport from "../../components/CardReport";
+import AppContext from "../../components/context/AppContext";
 
 export default function DetailReports() {
-  const { Title } = Typography;
-
+  const { clientId } = useParams();
+  const { globalDetailClient } = useContext(AppContext);
   const data = [
     {
       icon: <PieChartOutlined />,
@@ -68,17 +69,17 @@ export default function DetailReports() {
   return (
     <>
       <div className="layout-content">
-        <ClientInfo />
+        <ClientInfo clientId={clientId}/>
         <div tw="max-w-screen-xl mr-5 mb-10 mt-20" >
           <ClientTabs />
           <div tw="flex items-center mb-5 ">
-            <span tw="text-xl font-bold text-black">Reports for Company Name </span>
+            <span tw="text-xl font-bold text-black">Reports for {globalDetailClient?.company_name} </span>
 
           </div>
           <div tw="grid grid-cols-2 gap-3">
             {data.map((item, i) => (
              <Link key={i} to={item.path}>
-               <CardReport >
+               <CardReport>
                  <div tw="flex items-center">
                    {item.icon}
                    <div tw="grid gap-y-0 ml-5">

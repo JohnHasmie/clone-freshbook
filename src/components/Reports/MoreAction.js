@@ -61,7 +61,7 @@ export function MoreActionClients({pdfRefetch}) {
   )
 }
 
-export function MoreActionClientsDetail() {
+export function MoreActionClientsDetail({globalDetailClient,history}) {
   return (
     <div >
     <Menu>
@@ -70,7 +70,7 @@ export function MoreActionClientsDetail() {
         <EditOutlined />
           <span
             tw="cursor-pointer"
-            onClick={() => console.log("to edit page")}
+            onClick={() => history.push(`/clients/${globalDetailClient?.id}/edit`)}
           >
             Edit Client
           </span>

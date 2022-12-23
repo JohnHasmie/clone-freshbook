@@ -2,13 +2,13 @@ import { Card } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledCardReport = styled(Card)(({ hidden }) => [
-    tw`border-gray-200 `,
+    tw`border-gray-200 !rounded `,
     css`
         && {
     
-
+           
             .ant-card-body{
-                ${tw`p-6`}
+                ${tw`p-4`}
             }
        
             .anticon {

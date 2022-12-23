@@ -200,7 +200,7 @@ function App() {
 
               <Route
                 exact
-                path="/clients/:clientId/recurring-templates"
+                path="/clients/:clientId/client-detail/recurring-templates"
                 component={DetailRecurring}
               />
 
@@ -211,12 +211,12 @@ function App() {
               />
               <Route
                 exact
-                path="/clients/:clientId/reports"
+                path="/clients/:clientId/client-detail/reports"
                 component={DetailReports}
               />
               <Route
                 exact
-                path="/clients/:clientId/invoices"
+                path="/clients/:clientId/client-detail/invoices"
                 component={DetailInvoiceClient}
               />
                 <Route

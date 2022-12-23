@@ -12,15 +12,15 @@ export default function ClientTabs() {
       case `/clients/${id}/client-detail`:
         history.push(`/clients/${id}/client-detail`);
         break;
-      case `/clients/${id}/invoices`:
-        history.push(`/clients/${id}/invoices`);
+      case `/clients/${id}/client-detail/invoices`:
+        history.push(`/clients/${id}/client-detail/invoices`);
         break;
-      case `/clients/${id}/reports`:
-        history.push(`/clients/${id}/reports`);
+      case `/clients/${id}/client-detail/reports`:
+        history.push(`/clients/${id}/client-detail/reports`);
         break;
 
-      case `/clients/${id}/recurring-templates`:
-        history.push(`/clients/${id}/recurring-templates`);
+      case `/clients/${id}/client-detail/recurring-templates`:
+        history.push(`/clients/${id}/client-detail/recurring-templates`);
 
         break;
 
@@ -31,18 +31,19 @@ export default function ClientTabs() {
   };
   return (
     <Tabs
+    type="card"
       defaultActiveKey={pathname}
       onChange={handleClick}
       tw="w-screen md:w-[60rem]"
     >
       <Tabs.TabPane tab="Contacts" key={`/clients/${id}/client-detail`} />
-      <Tabs.TabPane tab="Invoices" key={`/clients/${id}/invoices`} />
+      <Tabs.TabPane tab="Invoices" key={`/clients/${id}/client-detail/invoices`} />
       <Tabs.TabPane
         tab="Recurring Templates"
-        key={`/clients/${id}/recurring-templates`}
+        key={`/clients/${id}/client-detail/recurring-templates`}
       />
 
-      <Tabs.TabPane tab="Reports" key={`/clients/${id}/reports`} />
+      <Tabs.TabPane tab="Reports" key={`/clients/${id}/client-detail/reports`} />
     </Tabs>
   );
 }

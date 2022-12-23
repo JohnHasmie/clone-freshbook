@@ -270,7 +270,7 @@ function Header({
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <Popover
               placement="bottom"
-              content={MoreActionClientsDetail}
+              content={<MoreActionClientsDetail globalDetailClient={globalDetailClient} history={history}/>}
               trigger="click"
             >
               <ButtonInvite tw="!py-6 md:mr-5">
