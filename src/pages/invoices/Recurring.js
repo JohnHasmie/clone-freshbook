@@ -80,7 +80,7 @@ export default function Recurring() {
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
-                <EditOutlined tw="px-2 py-1  " />
+                <EditOutlined tw="px-2 py-1  " onClick={()=>history.push(`/recurring-template/1/edit`)} />
               </Tooltip>
             </div>
             <div tw="hover:bg-gray-100  ">

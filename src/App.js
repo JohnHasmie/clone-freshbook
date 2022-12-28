@@ -179,6 +179,7 @@ function App() {
                 component={FormClient}
               />
             <Route exact path="/recurring-template/new" component={NewRecurringTemplate} />
+            <Route exact path="/recurring-template/:recurringId/edit" component={NewRecurringTemplate} />
         
 
             <Main>

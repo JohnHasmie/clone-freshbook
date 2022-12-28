@@ -8,6 +8,7 @@ import {
   Form,
   Input,
   Checkbox,
+  notification,
 } from "antd";
 import logo1 from "../assets/images/logos-facebook.svg";
 import logo2 from "../assets/images/logo-apple.svg";
@@ -114,10 +115,18 @@ export default class SignUp extends Component {
           password_confirmation: values.password_confirmation,
         })
         .then((response) => {
+          notification.success({
+            message: `Sign up succes`,
+            placement: "topLeft",
+          });
           window.location.href = "/sign-in";
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error,"error"); 
+          notification.error({
+            message: `An Error Occurred Please Try Again Later`,
+            placement: "topLeft",
+          });
         });
     };
 
@@ -188,14 +197,7 @@ export default class SignUp extends Component {
                 onFinishFailed={onFinishFailed}
                 className="row-col"
               >
-                {/* <Form.Item
-                  name="Name"
-                  rules={[
-                    { required: true, message: "Please input your username!" },
-                  ]}
-                >
-                  <Input placeholder="Name" />
-                </Form.Item> */}
+               
                 <Form.Item
                   name="email"
                   rules={[

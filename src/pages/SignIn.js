@@ -12,6 +12,7 @@ import {
   Form,
   Input,
   Switch,
+  notification,
 } from "antd";
 import signinbg from "../assets/images/img-signin.jpg";
 import {
@@ -105,11 +106,16 @@ export default class SignIn extends Component {
           });
         })
         .catch((error) => {
-          if (process.env.REACT_APP_CHECK_LOGIN === true) {
-            alert(error);
-          } else {
-            window.location.href = "/dashboard";
-          }
+          console.log(error,"error");
+          notification.error({
+            message: `Invalid email or password`,
+            placement: "topLeft",
+          });
+          // if (process.env.REACT_APP_CHECK_LOGIN === true) {
+          //   alert(error);
+          // } else {
+          //   window.location.href = "/dashboard";
+          // }
         });
     };
 

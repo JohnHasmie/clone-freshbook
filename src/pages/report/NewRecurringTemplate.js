@@ -3,6 +3,7 @@ import {
     Col,
     Divider,
     Form,
+    Input,
     List,
     Popover,
     Radio,
@@ -12,7 +13,7 @@ import {
     Typography,
   } from "antd";
   import React, { useState } from "react";
-  import { useHistory } from "react-router-dom";
+  import { useHistory, useLocation } from "react-router-dom";
   import tw from "twin.macro";
 
   import { bell, toggler } from "../../components/Icons";
@@ -24,9 +25,24 @@ import CardDetailInvoice from "../../components/CardDetailInvoice";
 import InvoiceHead from "../invoices/InvoiceHead";
 import InvoiceLines from "../invoices/InvoiceLines";
 import Filter from "../../components/Reports/Filter";
+import TextArea from "antd/lib/input/TextArea";
   
   export default function NewRecurringTemplate() {
     const [open, setOpen] = useState(false);
+    const {pathname}=useLocation()
+    const [inputwidth, setinputWidth] = useState(50);
+
+    const onChange = (e) => {
+      let length = e.target.value.length;
+      setIsForm({ ...isForm, [e.target.name]: e.target.value });
+
+      if (length === 0) {
+        setinputWidth(50);
+      }
+      if (inputwidth <= 100) {
+         setinputWidth(50 + e.target.value.length * 5);
+      }
+    };
     const [clicked, setClicked] = useState(false);
     const handleClickChange = (open) => {
       setClicked(open);
@@ -45,6 +61,8 @@ import Filter from "../../components/Reports/Filter";
       zip: "57695",
       country: "Indonesia",
     });
+  const [form]=Form.useForm();
+
   
   
     const handleInput = (e) => {
@@ -53,7 +71,6 @@ import Filter from "../../components/Reports/Filter";
     const onFinish = (values) => {
       console.log("Success:", values);
     };
-  
     const onFinishFailed = (errorInfo) => {
       console.log("Failed:", errorInfo);
     };
@@ -97,7 +114,7 @@ import Filter from "../../components/Reports/Filter";
           </div>
   
           <div tw="flex items-center">
-            <span tw="capitalize text-4xl font-bold">New Recurring Template</span>
+            <span tw="capitalize text-4xl font-bold text-black">{pathname.includes("edit")? 'Edit Recurring Template' :'New Recurring Template'}</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <ButtonMore tw="!py-2" onClick={() => history.goBack()}>
@@ -114,7 +131,10 @@ import Filter from "../../components/Reports/Filter";
           </div>
         </div>
   
-        <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2">
+        <Form size="default"
+        layout={'vertical'}
+        form={form}
+        tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2">
           <CardDetailInvoice tw="md:col-span-9 mb-10 mt-10 md:mt-2">
             <div tw="grid gap-y-2 md:flex justify-between mb-10">
               <img
@@ -124,12 +144,12 @@ import Filter from "../../components/Reports/Filter";
               />
               <div tw="flex justify-between">
                 <div tw="mr-3">
-                  <input
-                    type="text"
+                  <Input
                     name="name"
                     value={isForm.name}
                     onChange={handleInput}
-                    tw=" w-20 text-sm"
+                    tw="w-fit"
+                    // onChange={onChange} style={{ width: inputwidth }}
                   />
                 </div>
                 <div tw="flex flex-col items-end">
@@ -219,7 +239,7 @@ import Filter from "../../components/Reports/Filter";
   
             <InvoiceLines />
   
-            <div tw="grid grid-cols-12 mt-10 mb-20">
+            <div tw="grid grid-cols-12 mt-10 ">
               <div tw="col-span-8"></div>
               <table tw="col-span-4">
                 <tbody>
@@ -252,9 +272,19 @@ import Filter from "../../components/Reports/Filter";
                 </tfoot>
               </table>
             </div>
+            <div tw="grid gap-y-5 mb-20">
+           <div>
+             <h3 tw="text-sm">Notes</h3>
+             <TextArea tw="border-0" name="notes" placeholder="Enter notes or bank transfer details (optional)"  autoSize />
+           </div>
+           <div>
+             <h3 tw="text-sm">Terms</h3>
+             <TextArea tw="border-0" name="terms" placeholder="Enter terms or conditions (optional)"  autoSize />
+           </div>
+            </div>
           </CardDetailInvoice>
           <Filter Filtering={RecurringSettings} setOpen={setOpen} open={true} />
-        </div>
+        </Form>
       </div>
     );
   }
