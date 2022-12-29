@@ -4,7 +4,7 @@ import tw, { styled, css } from "twin.macro";
 export const ClientsPopup = styled(Popover)(() => [])
 
 export const PopupTrigger = styled.button(() => [
-    tw`bg-transparent cursor-pointer`,
+    tw`bg-transparent cursor-pointer text-left`,
 ])
 
 export const ListClientsWrapper = styled.ul(() => [

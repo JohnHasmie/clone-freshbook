@@ -7,18 +7,31 @@ import Photo from "../../assets/images/mask-group.svg";
 const dummyClients = [{
     name: 'Daquan Bridges',
     email: 'daquan@gmail.com',
+    company: 'Happy Company',
+    address1: 'Studio 55l Helen Spring',
+    address2: 'West Harrisonfurt',
+    zipcode: 'CM0 7HA',
+    country: 'United Kingdom',
 }, {
     name: 'Heri Setiawan',
     email: 'heri.dehero@gmail.com',
+    company: 'Company Name',
+    address1: 'Apt Building',
+    address2: 'Jakarta, DKI Jakarta',
+    zipcode: '40555',
+    country: 'Indonesia',
 }]
 
-const ListClients = ({ hide }) => {
+const ListClients = ({ hide, setValue }) => {
     return (
         <ListClientsWrapper>
             {
                 dummyClients.map(client => {
                     return (
-                        <ListClientItem onClick={hide} key={client.email}>
+                        <ListClientItem onClick={() => {
+                            hide()
+                            setValue(client)
+                        }} key={client.email}>
                             <CardClient
                                 title="Default size card"
                                 size="small"
@@ -47,18 +60,26 @@ const InvoiceHead = () => {
         <PopoverClickable
             placement="right"
             renderContent={ListClients}
-            renderChildren={({ visible, hide, show }) => {
+            renderChildren={({ visible, value, hide, show }) => {
                 return (
                     <PopupTrigger tw="grid gap-0" onClick={visible ? hide : show}>
                         <span tw="text-gray-400">Billed To</span>
-                        <span tw="text-xs">First Client</span>
-                        <span tw="text-xs">Company Name</span>
-                        <span tw="text-xs">Apt Building</span>
-                        <span tw="text-xs">Jakarta, DKI Jakarta</span>
-                        <span tw="text-xs">40555</span>
-                        <span tw="text-xs">Indonesia</span>
+                        <span tw="text-sm">{value.name}</span>
+                        <span tw="text-sm">{value.company}</span>
+                        <span tw="text-sm">{value.address1}</span>
+                        <span tw="text-sm">{value.address2}</span>
+                        <span tw="text-sm">{value.zipcode}</span>
+                        <span tw="text-sm">{value.country}</span>
                     </PopupTrigger>
                 )
+            }}
+            defaultValue={{
+                name: 'First Client',
+                company: 'Company Name',
+                address1: 'Apt Building',
+                address2: 'Jakarta, DKI Jakarta',
+                zipcode: '40555',
+                country: 'Indonesia',
             }}
         />
     )

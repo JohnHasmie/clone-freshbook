@@ -1,19 +1,13 @@
 import {
   Button,
-  Col,
-  Divider,
-  Form,
   List,
   Popover,
-  Radio,
-  Row,
-  Select,
-  Space,
   Typography,
 } from "antd";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import tw from "twin.macro";
+import "twin.macro";
+import dayjs from "../../global/dayjs"
 import CardDetailInvoice from "../../components/CardDetailInvoice";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
@@ -23,6 +17,8 @@ import InvoiceLines from "./InvoiceLines";
 import { SettingButton } from "./NewInvoice.style";
 import { bell, toggler } from "../../components/Icons";
 import ButtonCustom from "../../components/Button/index";
+import DatePicker from "../../components/DatePicker";
+import EditableText from "../../components/EditableText";
 
 export default function NewInvoice() {
   const [open, setOpen] = useState(false);
@@ -180,23 +176,29 @@ export default function NewInvoice() {
               </div>
             </div>
           </div>
-          <div tw="grid grid-cols-4 mb-16">
+          <div tw="grid grid-cols-[1.5fr_repeat(3, 1fr)] mb-16">
             <InvoiceHead />
             <div tw="grid gap-0 ">
               <span tw="text-gray-400">Date of Issue</span>
-              <span tw="text-xs ">25/10/2022</span>
+              <span tw="text-sm">
+                <DatePicker defaultValue={dayjs()} />
+              </span>
               <span tw="invisible text-xs">hide</span>
               <span tw="invisible text-xs">hide</span>
 
               <span tw="text-gray-400">Due Date</span>
-              <span tw="text-xs ">24/11/2022s</span>
+              <span tw="text-sm">
+                <DatePicker defaultValue={dayjs()} />
+              </span>
 
               <span tw="invisible text-xs">hide</span>
               <span tw="invisible text-xs">hide</span>
             </div>
             <div tw="grid gap-0">
               <span tw="text-gray-400">Invoice Number</span>
-              <span tw="text-xs">00148</span>
+              <span tw="text-xs">
+                <EditableText>00148</EditableText>
+              </span>
               <span tw="invisible text-xs">hide</span>
               <span tw="invisible text-xs">hide</span>
               <span tw="invisible text-xs">hide</span>

@@ -1,7 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons"
 import { Button } from "antd"
 import { useState } from "react"
-import tw from "twin.macro"
+import "twin.macro"
 import EditableText from "../../components/EditableText"
 import { formatter } from "../../components/Utils"
 
