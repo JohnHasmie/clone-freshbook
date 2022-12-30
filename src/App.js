@@ -62,8 +62,8 @@ import InvoicesArchived from "./pages/invoices/InvoicesArchived";
 import InvoicesDeleted from "./pages/invoices/InvoicesDeleted";
 import RecurringArchived from "./pages/invoices/RecurringArchived";
 import RecurringDeleted from "./pages/invoices/RecurringDeleted";
-import NewRecurringTemplate from "./pages/report/NewRecurringTemplate";
 import FormClient from "./pages/clients/FormClient";
+import FormRecurringTemplate from "./pages/report/FormRecurringTemplate";
 
 const queryClient = new QueryClient();
 
@@ -178,8 +178,8 @@ function App() {
                 path="/clients/:clientId/edit"
                 component={FormClient}
               />
-            <Route exact path="/recurring-template/new" component={NewRecurringTemplate} />
-            <Route exact path="/recurring-template/:recurringId/edit" component={NewRecurringTemplate} />
+            <Route exact path="/recurring-template/new" component={FormRecurringTemplate} />
+            <Route exact path="/recurring-template/:recurringId/edit" component={FormRecurringTemplate} />
         
 
             <Main>
@@ -280,6 +280,7 @@ function App() {
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </div>
+    
   );
 }
 

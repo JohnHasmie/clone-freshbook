@@ -262,14 +262,16 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
       dataIndex: "total_outstanding",
       align: "right",
       render: (text, record) => (
-        <div>
+        <div tw="z-50">
           <div
             className="isVisible"
             tw="absolute bottom-14 right-0 flex invisible rounded-full bg-white shadow-sm border border-gray-200"
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
-                <EditOutlined tw="p-2" onClick={()=>history.push(`/clients/${record.key}/edit`)}/>
+                <EditOutlined tw="p-2" onClick={(e)=>{
+                  e.stopPropagation()
+                  history.push(`/clients/${record.key}/edit`)}}/>
                 
               </Tooltip>
             </div>
@@ -519,7 +521,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
               <TableCustom
                 onRow={(record, rowIndex) => {
                   return {
-                    onDoubleClick: (event) => {
+                    onClick: (event) => {
                       history.push(`/clients/${record.key}/client-detail`);
                     },
                   };
