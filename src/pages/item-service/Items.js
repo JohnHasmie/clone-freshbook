@@ -29,13 +29,12 @@ const Items = () => {
   const [clickedRow, setClickedRow] = useState(false);
 
   const [clickedId, setClickedId] = useState("");
+  const [marginResponsive, setMarginResponsive] = useState("");
 
-  const [clickedRows, setClickedRows] = useState(false);
   const [searchField, setSearchField] = useState("");
   const history = useHistory();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [marginResponsive, setMarginResponsive] = useState("");
   const [isType, setIsType] = useState('');
 
   const showModal = () => {
@@ -104,7 +103,7 @@ const Items = () => {
     ["items-by-client", filter],
     async (key) =>
       axios
-        .get("items/1", {
+        .get("items", {
           params: key.queryKey[1],
         })
         .then((res) => res.data)

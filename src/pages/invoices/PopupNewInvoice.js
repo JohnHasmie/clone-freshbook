@@ -2,36 +2,127 @@ import {
   Button,
   Checkbox,
   Col,
+  DatePicker,
   Divider,
   Form,
   Input,
   Modal,
+  notification,
   Select,
 } from "antd";
+import axios from "axios";
+import moment from "moment";
 import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import tw from "twin.macro";
 import CardPopup from "../../components/CardPopup";
+import { DatePickerCustom } from "../report/ReportCustom.style";
 
-export default function PopupNewInvoice({hide}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const dateFormat = "DD/MM/YYYY";
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
+export default function PopupNewInvoice({hide,invoiceId,data,id}) {
+  console.log(data?.key,"cek");
+  const [filter, setFilter] = useState({
+    limit: 10,
+  });
+  const [isForm, setIsForm] = useState({
+amount:'',
+method_id:'',
+note:'',
+date:new Date()
+  })
+  const [form]=Form.useForm();
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+  const queryClient = useQueryClient();
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    console.log("Success:", values);
+    console.log(values,"cek");
+    if(data === null){
+      mutation.mutate({
+        ...values,
+        invoice_id:invoiceId,
+        payment_at:values.date ? values.date._d : new Date()  ,
+  
+      })
+    }else{
+      mutationEdit.mutate({
+        ...values,
+        invoice_id:invoiceId,
+        payment_at:values.date ? values.date._d : new Date()  ,
+        status:'success'
+  
+      })
+    }
+   
+    form.resetFields();
+
+    hide()
   };
+
+  const { data: paymentMethod, statusPaymentMethod } = useQuery(
+    ["payments-method", filter],
+    async (key) =>
+      axios
+        .get(`payments/method`, {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
+
+  const mutation = useMutation(
+    async (data) => {
+      return axios.post("payments", data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries("payment-listing");
+        notification.success({
+          message: `A payment was Added`,
+          // description:'This information will appear on your invoice',
+          placement: "topLeft",
+        });
+        
+
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        console.log(err.response.data.message);
+      },
+    }
+  );
+
+  const mutationEdit = useMutation(
+    async (data) => {
+      return axios.put(`payments/${id}`, data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries("payment-listing");
+        notification.success({
+          message: `A payment was Upadted`,
+          // description:'This information will appear on your invoice',
+          placement: "topLeft",
+        });
+        
+
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        console.log(err.response.data.message);
+      },
+    }
+  );
+
   return (
     <>
       <CardPopup title="Add a Payment">
@@ -39,37 +130,53 @@ export default function PopupNewInvoice({hide}) {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           layout="vertical"
+          size="large"
+          form={form}
+          fields={
+            data &&
+            [
+            {
+              name: ["amount"],
+              value: data.amount,
+            },
+            {
+              name: ["method_id"],
+              value: data.method_id,
+            },
+            {
+              name: ["date"],
+              value: moment(new Date(), dateFormat) 
+            },
+            {
+              name: ["note"],
+              value: data.note,
+            },
+
+          ]}
         >
-          <Form.Item name="price" tw="px-2 pt-2">
+          <Form.Item name="amount" tw="px-2 pt-2">
             <Input type="text" placeholder="Rp0.00" />
           </Form.Item>
 
-          <Form.Item name="payment_method" tw="px-2 ">
+          <Form.Item name="method_id" tw="px-2 ">
             <Select
               placeholder="Payment Method"
-              options={[
-                { label: "2Checkout", value: "2Checkout" },
-                { label: "ACH", value: "ACH" },
-                { label: "Bank Transfer", value: "Bank Transfer" },
-                { label: "Cash", value: "Cash" },
-                { label: "Check", value: "Check" },
-                { label: "Credit Card", value: "Credit Card" },
-                { label: "Debit", value: "Debit" },
-                { label: "Other", value: "Other" },
-                { label: "Paypal", value: "Paypal" },
-                { label: "AMEX", value: "AMEX" },
-                { label: "Diners Club", value: "Diners Club" },
-                { label: "Discover", value: "Discover" },
-                { label: "JCB", value: "JCB" },
-                { label: "MasterCard", value: "MasterCard" },
-                { label: "Visa", value: "Visa" },
-              ]}
+              options={               
+                paymentMethod?.data?.map((item)=>(
+                  { label: item.name, value: item.id }
+                ))            
+            }
             />
           </Form.Item>
           <Form.Item name="date" tw="px-2 ">
-            <Input type="text" placeholder="Date" />
+            {/* <Input type="text" placeholder="Date" /> */}
+            <DatePicker
+            tw="w-full rounded-md"
+            defaultValue={moment(new Date(), dateFormat)}
+                   format={dateFormat}
+                 />
           </Form.Item>
-          <Form.Item name="payment_notes" tw="px-2 ">
+          <Form.Item name="note" tw="px-2 ">
             <Input type="text" placeholder="Payment Notes (Optional)" />
           </Form.Item>
           <Form.Item name="notification_email" tw="px-2 ">

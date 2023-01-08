@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect,useContext } from "react";
 import { Popover, Button } from "antd";
 import {
   DownOutlined,
@@ -12,6 +12,7 @@ import ButtonMore from "../Reports/ButtonMore";
 
 import MoreAction from "../Reports/MoreAction";
 import InvoiceSetting from "../../pages/invoices/InvoiceSetting";
+import AppContext from "../context/AppContext";
 
 const bell = [
   <svg
@@ -55,11 +56,11 @@ function HeaderInvoice({
   handleFixedNavbar,
 }) {
   const history = useHistory();
-
+const {globalDetailInvoice}=useContext(AppContext)
 
   return (
     <div tw="md:ml-24">
-      <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
+   {globalDetailInvoice &&   <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
         <div tw="flex justify-between md:hidden">
           <div>{bell}</div>
           <ButtonCustom
@@ -81,7 +82,7 @@ function HeaderInvoice({
           </button>
         </div>
         <div tw="flex items-end">
-          <span tw="capitalize text-3xl font-bold">Invoice 00146</span>
+          <span tw="capitalize text-3xl font-bold">Invoice {globalDetailInvoice?.code}</span>
           <Popover placement="bottom" content={InvoiceSetting} trigger="click">
             <UnorderedListOutlined tw="ml-3 text-2xl" />
           </Popover>
@@ -98,7 +99,7 @@ function HeaderInvoice({
             <span tw="text-lg">Edit</span>
           </Button>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

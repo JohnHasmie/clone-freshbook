@@ -123,10 +123,27 @@ export default class SignUp extends Component {
         })
         .catch((error) => {
           console.log(error,"error"); 
-          notification.error({
-            message: `An Error Occurred Please Try Again Later`,
-            placement: "topLeft",
-          });
+          switch (error?.response?.status) {
+            case 422:
+              notification.error({
+                message: `Invalid email or password`,
+                placement: "topLeft",
+              });
+              break;
+              case 500:
+                notification.error({
+                  message: `Internal Server Error`,
+                  placement: "topLeft",
+                });
+                break;
+          
+            default:
+              notification.error({
+                message: `An Error Occurred Please Try Again Later`,
+                placement: "topLeft",
+              });
+              break;
+          }
         });
     };
 

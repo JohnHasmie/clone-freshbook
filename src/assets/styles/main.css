@@ -3468,3 +3468,11 @@ transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 content: attr(data-placeholder);
 color:#a2aab4fd
 }
+
+.ant-upload-list-picture-card-container {
+  display: inline-block;
+  width: 200px !important;
+  height: 200px !important;
+  margin: 0 8px 8px 0;
+  vertical-align: top;
+}

@@ -8,6 +8,7 @@ export const UploadCustom = styled(Upload)(() => [
             .ant-upload.ant-upload-select-picture-card {
                 ${tw`!w-[200px] !h-[200px]`}
             }
+          
         }
     `,
 

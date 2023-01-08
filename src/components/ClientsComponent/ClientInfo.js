@@ -31,6 +31,7 @@ export default function ClientInfo({clientId}) {
       axios
         .get(`clients/${clientId}`)
         .then((res) => res.data.data)
+        
   );
   useEffect(() => {
     statusDetailClient === "success" &&
