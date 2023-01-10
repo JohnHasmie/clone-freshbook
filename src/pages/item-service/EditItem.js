@@ -57,7 +57,7 @@ qty:data.current
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    let newValues={...values,client_id:1}
+    let newValues={...values,client_id:data.client_id}
     mutation.mutate(newValues);
     hide()
 

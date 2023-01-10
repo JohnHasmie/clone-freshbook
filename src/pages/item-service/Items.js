@@ -18,6 +18,7 @@ import { Link, NavLink, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import EditItem from "./EditItem";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import TableCustom from '../../components/Table/index';
 
 const Items = () => {
   const [filter, setFilter] = useState({
@@ -127,6 +128,7 @@ const Items = () => {
       desc: item.description,
       current: item.qty,
       rate: numberWithDot(item.rate),
+      client_id:item.client_id
     }));
    // function for archive, waiting from backend
    const mutationArchive = useMutation(
@@ -235,13 +237,6 @@ const Items = () => {
   );
 
 
-  // useEffect(() => {
-  //   if(clickedRows){
-  //    setMarginResponsive("400px")
-  //   }else{
-  //     setMarginResponsive('')
-  //   }
-  // }, [clickedRows])
 
   return (
     <>
@@ -304,7 +299,7 @@ const Items = () => {
           <span tw="text-lg">{`Are you sure you want to ${selectedRowKeys.length > 1 ? selectedRowKeys.length : isType} this?` }</span>
         </ModalConfirm>
         <div className="table-responsive">
-          <Table
+          <TableCustom
             onRow={(record, rowIndex) => {
               return {
            

@@ -1,4 +1,4 @@
-import { Button, Menu, Modal, Popover, Tooltip } from "antd";
+import { Button, Menu, Modal, notification, Popover, Tooltip } from "antd";
 import React, { useContext, useState } from "react";
 
 import ClientInfo from "../../components/ClientsComponent/ClientInfo";
@@ -18,11 +18,14 @@ import {
 import tw from "twin.macro";
 import TableCustom from "../../components/Table";
 import FormAddContact from "./FormAddContact";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { useHistory, useParams } from "react-router-dom";
 import AppContext from "../../components/context/AppContext";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import moment from "moment";
+import { numberWithDot, translateBg } from "../../components/Utils";
+import PaginationFooter from "../../components/layout/PaginationFooter";
 
 export default function DetailInvoice() {
   const [clicked, setClicked] = useState(false);
@@ -33,6 +36,12 @@ export default function DetailInvoice() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const history=useHistory()
   const [isType, setIsType] = useState('');
+  const [filter, setFilter] = useState({
+    limit: 10,
+    page: 1,
+  });
+  const queryClient = useQueryClient();
+
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -56,6 +65,7 @@ export default function DetailInvoice() {
     setClicked(false);
   };
   const handleOk = () => {
+    mutationDelete.mutate(selectedRowKeys[0])
     setIsModalOpen(false);
   };
 
@@ -82,23 +92,88 @@ export default function DetailInvoice() {
     </div>
   );
 
- 
-
-  const data = [
-        {
-          key: "1",
-     
-          company_name:"Abc Inc",
-          invoice_number:"0989",
-          date:"28/11/2022",
-          due_date:"Due in 1 Month",
-          description: "Recurring",
-          amount:0,
-          status:"draft"
+  const { data: dataInvoices, status } = useQuery(
+    ["invoices-listing", filter],
+    async (key) =>
+      axios
+        .get("invoices", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
+  const data =
+  status === "success" &&
+  dataInvoices?.data?.map((item) => ({
+    key: item.id,
+    company_name: item.client.company_name,
+    invoice_number:item.code,
+    date: item.issued_at ,
+    due_date:item.due_date,
+    description: item.notes,
+    amount:item.total,
+    status:item.status
+  }));
+  const handleAction=(e,type,record)=>{
+    e.stopPropagation()
+    switch (type) {
+      case 'edit':
+        history.push(`/invoices/${record.key}/edit`)
+        break;
+        case 'duplicate':
+        history.push(`/invoices/${record.key}/edit`)
+        break;
+        case 'payment':
+        history.push(`/invoices/${record.key}/edit`)
+        break;
     
-        
-        }
-      ];
+      default:
+        history.push(`/invoices`)
+    
+        break;
+    }}
+
+
+    const mutationDelete = useMutation(
+      async (data) => {
+        return axios.delete(`invoices/${data}`).then((res) => res.data);
+      },
+      {
+        onSuccess: () => {
+          setTimeout(() => {
+            queryClient.invalidateQueries("invoices-listing");
+          }, 500);
+          setSelectedRowKeys([]);
+          notification.success({
+            message: `The selected invoice has been deleted.`,
+            placement: "topLeft",
+          });
+        },
+        onError: (error) => {
+          switch (error?.response?.status) {
+            case 422:
+              notification.error({
+                message: `Invalid input`,
+                placement: "topLeft",
+              });
+              break;
+              case 500:
+                notification.error({
+                  message: `Internal Server Error`,
+                  placement: "topLeft",
+                });
+                break;
+          
+            default:
+              notification.error({
+                message: `An Error Occurred Please Try Again Later`,
+                placement: "topLeft",
+              });
+              break;
+          }
+        },
+      }
+    );
+
 
   const columns = [
    
@@ -121,25 +196,26 @@ export default function DetailInvoice() {
       dataIndex: "description",
       key: "description",
       sorter: (a, b) => a.description.length - b.description.length,
+      width:'30%'
 
     },
 
     {
-      title: "Issued Date /Due Date",
+      title: "Issued Date / Due Date",
       key: "issued_due_date",
       dataIndex: "issued_due_date",
       render: (text, record) => (
         <div>
-          <span>{record.date}</span>{" "}
+          <span>{moment(record.date).format("MM/DD/YYYY")}</span>{" "}
           <p tw="text-xs">
-            {record.due_date} 
+            {`Due ${moment(record.due_date).endOf('month').from(record.date)} `} 
           </p>{" "}
         </div>
       ),
       sorter: (a, b) => a.date.length - b.date.length,
     },
     {
-      title: "Amount /Status",
+      title: "Amount / Status",
       key: "amount",
       dataIndex: "amount",
       render: (text, record) => (
@@ -150,18 +226,23 @@ export default function DetailInvoice() {
           >
             <div tw="hover:bg-gray-100 hover:rounded-l-full ">
               <Tooltip placement="top" title="edit">
-                <EditOutlined tw="p-2  " />
+                <EditOutlined tw="p-2" onClick={(e)=>{
+                  handleAction(e,'edit',record)}} />
               </Tooltip>
             </div>
 
             <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
               <Tooltip placement="top" title="duplicate">
-                <CopyOutlined tw="p-2" />
+                <CopyOutlined tw="p-2" onClick={(e)=>{
+                  handleAction(e,'duplicate',record)}} />
               </Tooltip>
             </div>
             <div tw="hover:bg-gray-100   border-r border-gray-200 ">
               <Tooltip placement="top" title="add payment">
-                <DollarOutlined tw="p-2 " />
+                <DollarOutlined tw="p-2 "
+                onClick={(e)=>{
+                  handleAction(e,'payment',record)}}
+                />
               </Tooltip>
             </div>
             <div tw="hover:bg-gray-100  hover:rounded-r-full ">
@@ -170,8 +251,8 @@ export default function DetailInvoice() {
               </Tooltip>
             </div>
           </div>
-          <span>{record.amount}</span>{" "}
-          <span tw="bg-orange-400 text-xs rounded p-1 ml-auto ">{record.status} </span>
+          <span>Rp{numberWithDot(record.amount)}</span>{" "}
+          <span tw="text-xs rounded p-1 ml-auto" style={{background:translateBg(record.status)}}>{record.status} </span>
          
         </div>
       ),
@@ -246,15 +327,17 @@ export default function DetailInvoice() {
           width={500}
           closable={false}
         >
-          <span tw="text-lg">{`Are you sure you want to ${selectedRowKeys.length > 1 ? selectedRowKeys.length : isType} this?` }</span>
+          <span tw="text-lg">{`Are you sure you want to ${selectedRowKeys.length > 1 ? selectedRowKeys.length : isType} this invoice?` }</span>
         </ModalConfirm>
           <div className="table-responsive">
             <TableCustom
-              // onRow={(record, rowIndex) => {
-              //   return {
-              //     onDoubleClick: (event) => showModal(),
-              //   };
-              // }}
+           onRow={(record, rowIndex) => {
+            return {
+              onClick: (event) => {
+                history.push(`/invoices/${record.key}/invoice-detail`);
+              },
+            };
+          }}
               rowSelection={rowSelection}
               columns={columns}
               dataSource={data}
@@ -268,6 +351,10 @@ export default function DetailInvoice() {
                 1-{data?.length} of {data?.length}{" "}
               </span>
             </div>
+            <div>
+                <span tw="text-gray-500">Items per page: </span>
+                <PaginationFooter filterProps={[filter, setFilter]} />
+              </div>
           </div>
         </div>
       </div>

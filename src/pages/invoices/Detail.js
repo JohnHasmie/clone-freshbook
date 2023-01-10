@@ -1,31 +1,34 @@
 import {
   DownOutlined,
   EditOutlined,
-
   PlusOutlined,
   RestOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { Button,  Menu, Popover, } from "antd";
+import { Button,  Menu, notification, Popover, } from "antd";
 import React, { useState, useContext, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import TableCustom from "../../components/Table";
 import CardDetailInvoice from "../../components/CardDetailInvoice";
-import PopupNewInvoice from "./PopupNewInvoice";
 import tw from "twin.macro";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import AppContext from "../../components/context/AppContext";
 import moment from "moment";
 import { numberWithDot } from "../../components/Utils";
+import PopupPayment from "./PopupPayment";
 
 export default function Detail() {
-  const [checked, setChecked] = useState([]);
+
   const [clicked, setClicked] = useState(false);
+  const [clickedList, setClickedList] = useState(false);
+
   const [filter, setFilter] = useState({
     limit_comment: 1,
   });
   const [clickedRow, setClickedRow] = useState(false);
+  const queryClient = useQueryClient();
+
 
   const [clickedId, setClickedId] = useState("");
   const [marginResponsive, setMarginResponsive] = useState("");
@@ -40,15 +43,15 @@ export default function Detail() {
 
   });
   const { invoiceId } = useParams();
-
-
-
-  
+  const {pathname}= useLocation()  
   const {  setGlobalDetailInvoice } =
     useContext(AppContext);
 
   const handleClickChange = (open) => {
     setClicked(open);
+  };
+  const handleClickChangeList = (open) => {
+    setClickedList(open);
   };
   const hide = () => {
     setClicked(false);
@@ -87,7 +90,6 @@ export default function Detail() {
   }, [status]);
 
 
-
   const { data: listPayment, status:statusListPayment } = useQuery(
     ["payment-listing", filterPayment],
     async (key) =>
@@ -108,7 +110,8 @@ export default function Detail() {
     payment_method:item.payment_method.name,
     note:item.note,
     amount:item.amount,
-    method_id:item.payment_method.id
+    method_id:item.payment_method.id,
+    status:item.status
   }))
  
 
@@ -120,11 +123,45 @@ export default function Detail() {
     onChange: onSelectChange,
   };
   const hasSelected = selectedRowKeys.length > 0;
+  const mutationDelete = useMutation(
+    async (data) => {
+      return axios.delete(`payments/${selectedRowKeys[0]}`).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries("payment-listing");
+        setClickedList(false)
+        setSelectedRowKeys([])
+
+        notification.success({
+          message: `A payment was deleted`,
+          // description:'This information will appear on your invoice',
+          placement: "topLeft",
+        });
+        
+
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        setClickedList(false)
+
+        console.log(err.response.data.message);
+      },
+    }
+  );
 
   const bulkList = (
     <div>
       <Menu>
-        <Menu.Item key="edit" /* onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} */ disabled={selectedRowKeys.length > 1}>
+        <Menu.Item key="edit" onClick={()=>{
+          setClickedRow(!clickedRow);
+          setClickedId(selectedRowKeys[0]);
+          setMarginResponsive("400px")
+          setClickedList(false)
+        }} disabled={selectedRowKeys.length > 1}>
           <div>
             <EditOutlined />
             <span>Edit</span>
@@ -137,7 +174,7 @@ export default function Detail() {
           </div>
         </Menu.Item>
 
-        <Menu.Item key="delete">
+        <Menu.Item key="delete" onClick={()=>mutationDelete.mutate()} disabled={selectedRowKeys.length > 1}>
           <div>
             <RestOutlined />
             <span>Delete</span>
@@ -177,7 +214,7 @@ export default function Detail() {
           <Popover
             placement="top"
             content={
-              <PopupNewInvoice
+              <PopupPayment
                 invoiceId={detailInvoice?.id}
                 hide={hideClickRow}
                 id={record.key}
@@ -306,10 +343,10 @@ export default function Detail() {
              <span tw="text-gray-400">Billed To</span>
                     <span tw="text-xs w-28">{detailInvoice?.client.first_name} {detailInvoice?.client.last_name}</span>
                     <span tw="text-xs w-28">{detailInvoice?.client.company_name}</span>
-                    <span tw="text-xs">Apt Building</span>
-                    <span tw="text-xs">Jakarta, DKI Jakarta</span>
-                    <span tw="text-xs">40555</span>
-                    <span tw="text-xs">Indonesia</span>
+                    <span tw="text-xs">{detailInvoice?.client.address}</span>
+                    <span tw="text-xs">{detailInvoice?.client.city}</span>
+                    <span tw="text-xs">{detailInvoice?.client.zip}</span>
+                    <span tw="text-xs">{detailInvoice?.client.country}</span>
              </div>
              <div tw="space-y-5 ">
                <div>
@@ -359,7 +396,7 @@ export default function Detail() {
                       <th>Line Total</th>
                     </tr>
                
-                  {detailInvoice?.items_detail?.map((detail,i)=>
+                  {detailInvoice?.items_detail.length > 0 && detailInvoice?.items_detail?.map((detail,i)=>
                   (
                   <tr key={i} tw="border-b text-sm  border-gray-300 text-right">
                       <th tw="grid text-left py-2">
@@ -384,7 +421,7 @@ export default function Detail() {
                     <tbody>
                       <tr tw="text-right">
                         <td>Subtotal</td>
-                        <td>Rp{numberWithDot(detailInvoice.subtotal)}</td>
+                        <td>Rp{detailInvoice?.subtotal !== null && numberWithDot(detailInvoice?.subtotal)}</td>
                       </tr>
                       <tr tw="border-b  border-gray-300 text-right">
                         <td>Tax</td>
@@ -392,7 +429,7 @@ export default function Detail() {
                       </tr>
                       <tr tw="text-right ">
                         <td tw="pt-1">Total</td>
-                        <td>Rp{numberWithDot(detailInvoice.total)}</td>
+                        <td>Rp{numberWithDot(detailInvoice?.total)}</td>
                       </tr>
                       <tr tw="text-right">
                         <td>Amount Paid</td>
@@ -415,76 +452,80 @@ export default function Detail() {
                 </div>
               </CardDetailInvoice>
             )}
-            <div tw="mt-20">
-              <div tw="flex items-center ">
-                <span tw="text-xl font-bold text-black">
-                  All Payment for Invoices {detailInvoice?.code}{" "}
-                </span>
-                <Popover
-                  placement="top"
-                  content={<PopupNewInvoice hide={hide} id={0} data={null} invoiceId={detailInvoice?.id} />}
-                  trigger="click"
-                  visible={clicked}
-                  onVisibleChange={handleClickChange}
-                >
-                  <PlusOutlined tw="mx-2 text-white bg-success text-xl flex items-center py-1.5 px-2  rounded-md font-bold cursor-pointer " />
-                </Popover>
-                {hasSelected ? (
-                  <>
-                    <Popover
-                      placement="bottom"
-                      content={bulkList}
-                      trigger="click"
-                    >
-                      <div className="flex items-center justify-center">
-                        <Button>
-                          <span tw="mr-2">More Actions</span>
-                          <DownOutlined />
-                        </Button>
-                      </div>
-                    </Popover>
-                  </>
-                ) : (
-                  <>
-                    <Popover
-                      tw="invisible"
-                      placement="bottom"
-                      content={bulkList}
-                      trigger="click"
-                    >
-                      <div className="flex items-center justify-center">
-                        <Button>
-                          <span tw="mr-2">More Actions</span>
-                          <DownOutlined />
-                        </Button>
-                      </div>
-                    </Popover>
-                  </>
-                )}
-              </div>
-            </div>
-            <div className="table-responsive">
-              <TableCustom
-                tw="mb-10 w-20"
-                onRow={(record, rowIndex) => {
-                  return {
-               
-                    onDoubleClick: (event) => {
-                      event.preventDefault()
-                      setClickedRow(!clickedRow);
-                      setClickedId(record.key);
-                      setMarginResponsive("400px")
-                    
-                    },
-                  };
-                }}
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-                className="ant-border-space"
-              />
-            </div>
+       { !pathname.includes('recurring') && <>
+             <div tw="mt-20">
+               <div tw="flex items-center ">
+                 <span tw="text-xl font-bold text-black">
+                   All Payment for Invoices {detailInvoice?.code}{" "}
+                 </span>
+                 <Popover
+                   placement="top"
+                   content={<PopupPayment hide={hide} id={0} data={null} invoiceId={detailInvoice?.id} />}
+                   trigger="click"
+                   visible={clicked}
+                   onVisibleChange={handleClickChange}
+                 >
+                   <PlusOutlined tw="mx-2 text-white bg-success text-xl flex items-center py-1.5 px-2  rounded-md font-bold cursor-pointer " />
+                 </Popover>
+                 {hasSelected ? (
+                   <>
+                     <Popover
+                       placement="bottom"
+                       content={bulkList}
+                       trigger="click"
+                       visible={clickedList}
+                       onVisibleChange={handleClickChangeList}
+                     >
+                       <div className="flex items-center justify-center">
+                         <Button>
+                           <span tw="mr-2">More Actions</span>
+                           <DownOutlined />
+                         </Button>
+                       </div>
+                     </Popover>
+                   </>
+                 ) : (
+                   <>
+                     <Popover
+                       tw="invisible"
+                       placement="bottom"
+                       content={bulkList}
+                       trigger="click"
+                     >
+                       <div className="flex items-center justify-center">
+                         <Button>
+                           <span tw="mr-2">More Actions</span>
+                           <DownOutlined />
+                         </Button>
+                       </div>
+                     </Popover>
+                   </>
+                 )}
+               </div>
+             </div>
+             <div className="table-responsive">
+               <TableCustom
+                 tw="mb-10 w-20"
+                 onRow={(record, rowIndex) => {
+                   return {
+                
+                     onDoubleClick: (event) => {
+                       event.preventDefault()
+                       setClickedRow(!clickedRow);
+                       setClickedId(record.key);
+                       setMarginResponsive("400px")
+                     
+                     },
+                   };
+                 }}
+                 rowSelection={rowSelection}
+                 columns={columns}
+                 dataSource={data}
+                 pagination={false}
+                 className="ant-border-space"
+               />
+             </div>
+         </>}
           </div>
         </div>
       </div>

@@ -62,7 +62,7 @@ import InvoicesDeleted from "./pages/invoices/InvoicesDeleted";
 import RecurringArchived from "./pages/invoices/RecurringArchived";
 import RecurringDeleted from "./pages/invoices/RecurringDeleted";
 import FormClient from "./pages/clients/FormClient";
-import FormRecurringTemplate from "./pages/report/FormRecurringTemplate";
+import FormRecurringTemplate from "./pages/invoices/FormRecurringTemplate";
 import FormInvoice from "./pages/invoices/FormInvoice";
 
 const queryClient = new QueryClient();
@@ -187,8 +187,8 @@ function App() {
                 path="/clients/:clientId/edit"
                 component={FormClient}
               />
-            <Route exact path="/recurring-template/new" component={FormRecurringTemplate} />
-            <Route exact path="/recurring-template/:recurringId/edit" component={FormRecurringTemplate} />
+            <Route exact path="/recurring-template/new" component={FormInvoice} />
+            <Route exact path="/recurring-template/:invoiceId/edit" component={FormInvoice} />
         
 
             <Main>
@@ -232,6 +232,11 @@ function App() {
                 <Route
                 exact
                 path="/invoices/:invoiceId/invoice-detail"
+                component={DetailInvoice}
+              />
+                <Route
+                exact
+                path="/invoices/:invoiceId/invoice-detail/recurring-template"
                 component={DetailInvoice}
               />
 

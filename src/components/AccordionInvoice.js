@@ -12,6 +12,7 @@ export default function AccordionInvoice() {
   };
   const [message, setMessage] = useState("");
   const { globalDetailInvoice } = useContext(AppContext);
+  console.log(globalDetailInvoice?.status,"cek");
   return (
     <Collapse tw="md:ml-5 mb-10 " defaultActiveKey={[]} onChange={onChange}>
          {globalDetailInvoice === "" && (

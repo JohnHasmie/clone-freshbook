@@ -5,7 +5,7 @@ import {
   LeftOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import ButtonCustom from "../Button";
 import tw from "twin.macro";
 import ButtonMore from "../Reports/ButtonMore";
@@ -57,6 +57,7 @@ function HeaderInvoice({
 }) {
   const history = useHistory();
 const {globalDetailInvoice}=useContext(AppContext)
+let { pathname } = useLocation();
 
   return (
     <div tw="md:ml-24">
@@ -81,10 +82,10 @@ const {globalDetailInvoice}=useContext(AppContext)
             <span tw="ml-1">Invoices</span>
           </button>
         </div>
-        <div tw="flex items-end">
-          <span tw="capitalize text-3xl font-bold">Invoice {globalDetailInvoice?.code}</span>
+        <div tw="flex items-center">
+          <span tw="capitalize text-2xl font-bold">{pathname.includes('recurring')? 'Recurring Template' : 'Invoice'} {globalDetailInvoice?.code}</span>
           <Popover placement="bottom" content={InvoiceSetting} trigger="click">
-            <UnorderedListOutlined tw="ml-3 text-2xl" />
+            <UnorderedListOutlined tw="ml-3 text-xl" />
           </Popover>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">

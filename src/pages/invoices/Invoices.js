@@ -19,9 +19,7 @@ import {
   VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
 import {
-  Button,
-  Checkbox,
-  Divider,
+  Button, 
   Form,
   Menu,
   Popover,
@@ -116,7 +114,11 @@ export default function Invoices() {
       amount:item.total,
       status:item.status
     }));
-const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data && getTotal(data?.map(x=>x.amount))} </div>);
+
+const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data && getTotal(data?.map(x=>{
+  const splitAmount=x.amount.split(".")
+  return parseInt(splitAmount[0])
+}))} </div>);
 
  
 

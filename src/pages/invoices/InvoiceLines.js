@@ -11,7 +11,7 @@ const InvoiceLines = ({linesProps}) => {
         setLines([
             ...lines,
             {
-                item: 'Item title',
+                name: 'Item title',
                 description: 'Item description',
                 rate:0,
                 qty: 1,
@@ -42,7 +42,7 @@ setLines(newLines)
                                     <tr tw="border-b text-sm  border-gray-300 text-right">
                                         <th tw="grid text-left py-2">
                                             <span>
-                                                <EditableText linesProps={[lines, setLines]} type={"item"} i={i} >{line.item}</EditableText>
+                                                <EditableText linesProps={[lines, setLines]} type={"name"} i={i} >{line.name}</EditableText>
                                             </span>
                                             <span tw="text-xs">
                                                 <EditableText linesProps={[lines, setLines]} type={"description"} i={i} >{line.description}</EditableText>

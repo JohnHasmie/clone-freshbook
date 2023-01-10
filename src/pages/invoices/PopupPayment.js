@@ -1,12 +1,9 @@
 import {
   Button,
   Checkbox,
-  Col,
   DatePicker,
-  Divider,
   Form,
   Input,
-  Modal,
   notification,
   Select,
 } from "antd";
@@ -20,17 +17,11 @@ import { DatePickerCustom } from "../report/ReportCustom.style";
 
 const dateFormat = "DD/MM/YYYY";
 
-export default function PopupNewInvoice({hide,invoiceId,data,id}) {
-  console.log(data?.key,"cek");
+export default function PopupPayment({hide,invoiceId,data,id}) {
   const [filter, setFilter] = useState({
     limit: 10,
   });
-  const [isForm, setIsForm] = useState({
-amount:'',
-method_id:'',
-note:'',
-date:new Date()
-  })
+
   const [form]=Form.useForm();
 
   const queryClient = useQueryClient();
@@ -53,7 +44,6 @@ date:new Date()
         ...values,
         invoice_id:invoiceId,
         payment_at:values.date ? values.date._d : new Date()  ,
-        status:'success'
   
       })
     }
@@ -151,6 +141,10 @@ date:new Date()
               name: ["note"],
               value: data.note,
             },
+            {
+              name: ["status"],
+              value: data?.status,
+            },
 
           ]}
         >
@@ -179,6 +173,19 @@ date:new Date()
           <Form.Item name="note" tw="px-2 ">
             <Input type="text" placeholder="Payment Notes (Optional)" />
           </Form.Item>
+          {data !== null && 
+            <Form.Item label="Status" name="status" tw="px-2">
+            <Select
+      
+              options={[
+                {label:'Success',value:'success'},
+                {label:'Pending',value:'pending'},
+                {label:'Failed',value:'failed'},
+
+              ]}
+            />
+          </Form.Item>
+          }
           <Form.Item name="notification_email" tw="px-2 ">
             <Checkbox>Send client a payment notification email</Checkbox>
           </Form.Item>

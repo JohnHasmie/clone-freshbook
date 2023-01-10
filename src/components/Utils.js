@@ -1,5 +1,5 @@
 export const numberWithDot = (x) => {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
 export const formatter = (num) => {
@@ -54,4 +54,11 @@ export function translateBg(status) {
   }
 
   return newBg;
+}
+
+export function getTotalGlobal(outstanding) {
+  const sum = outstanding.reduce((accumulator, value) => {
+    return accumulator + value;
+  }, 0);
+  return `Rp. ${numberWithDot(sum)} IDR`
 }

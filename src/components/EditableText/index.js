@@ -4,12 +4,13 @@ import { useEffect, useState } from "react"
 const EditableText = ({ children,linesProps,type,i }) => {
     const [lines, setLines]=linesProps
     const [value, setValue] = useState(children)
-    useEffect(() => {
-        const newLines=[...lines]
-        newLines[i].total=newLines[i].rate*newLines[i].qty
-        setLines(newLines)
+    // useEffect(() => {
+    //     const newLines=[...lines]
+    //     newLines[i].total=newLines[i].rate*newLines[i].qty
+    //     String(newLines[i].total)
+    //     setLines(newLines)
 
-    }, [value])
+    // }, [value])
     
     return (
         <Text 
@@ -19,9 +20,10 @@ const EditableText = ({ children,linesProps,type,i }) => {
                     setValue(str)
                     const newLines=[...lines]
                     newLines[i][type]=str
+                    newLines[i].id=lines.length
                     if(type === "rate" || "qty"){
         newLines[i].total= parseInt(newLines[i].rate)*parseInt(newLines[i].qty)
-        console.log('berjalan',newLines[i].total);
+        String(newLines[i].total)
 }
                     setLines(newLines)
                 }

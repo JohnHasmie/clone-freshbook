@@ -9,7 +9,7 @@ export const AccordionCustomPanel = styled(CollapsePanel)(({bg}) => [
                 ${tw` md:pl-24`}
             }
             .ant-collapse-header {
-                background-color:bg
+                background-color:${bg}
             }
             .ant-collapse-content-box {
                 ${tw`md:pl-24`}

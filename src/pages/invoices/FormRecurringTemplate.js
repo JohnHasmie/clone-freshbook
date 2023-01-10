@@ -1,18 +1,22 @@
 import {
   Button,
   Card,
-
+  DatePicker,
+  Divider,
   Form,
-  
+  Input,
   List,
   notification,
   Popover,
-  
+  Radio,
+  Row,
+  Select,
+  Space,
   Typography,
-
+  Upload,
 } from "antd";
-import React, { useState,useEffect } from "react";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
 
 import { bell, toggler } from "../../components/Icons";
@@ -33,15 +37,12 @@ import {
   DatePickerCustom,
   UploadCustom,
 } from "../report/ReportCustom.style";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 
-export default function FormInvoice() {
+export default function FormRecurringTemplate() {
   const [open, setOpen] = useState(false);
-  const [isTitle, setIsTitle] = useState("Invoice");
-
   const { pathname } = useLocation();
-  const {invoiceId}=useParams()
 
   const [clicked, setClicked] = useState(false);
   const [lines, setLines] = useState([]);
@@ -73,55 +74,11 @@ export default function FormInvoice() {
     notes: "",
     terms: "",
   });
-  const [filter, setFilter] = useState({
-    limit_comment: 1,
-  });
+
   const [isClient, setIsClient] = useState("");
   const [form] = Form.useForm();
   const dateFormat = "DD/MM/YYYY";
   const queryClient = useQueryClient();
-
-
-  const { data: detailInvoice, status } = useQuery(
-    ["invoice-detail", filter],
-    async (key) =>
-      axios
-        .get(`invoices/detail/${invoiceId}`, {
-          params: key.queryKey[1],
-        })
-        .then((res) => res.data.data)
-  );
-useEffect(() => {
-  if(pathname.includes('recurring')){
-    setIsTitle("Recurring")
-  }
-}, [pathname])
-
-
-  useEffect(() => {
-  if(status === "success"){
-  setIsForm({...isForm,
-  code:detailInvoice.code,
-  notes:detailInvoice.notes,
-  terms:detailInvoice.terms,
-  issued_at:detailInvoice.issued_at,
-  due_date:detailInvoice.due_date,
-  reference:detailInvoice.references,
-  })
-  if(detailInvoice?.items_detail !== null){
-    const newLines= detailInvoice?.items_detail?.map(x=>{
-      return { 
-        name: x.name,
-                description: x.description,
-                rate:x.rate,
-                qty: x.pivot.qty,
-                total: x.pivot.total,
-                id:x.id
-      }
-    })
-  setLines(newLines)}
-  setIsClient(detailInvoice.client_id)}
-  }, [status])
 
   const handleInput = (e) => {
     setIsForm({ ...isForm, [e.target.name]: e.target.value });
@@ -148,31 +105,8 @@ useEffect(() => {
       },
     }
   );
-
-  const mutationUpdate = useMutation(
-    async (data) => {
-      return axios.put(`invoices/${invoiceId}`, data).then((res) => res.data);
-    },
-    {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries("invoices-listing");
-        notification.success({
-          message: `Invoice has been updated`,
-          placement: "topLeft",
-        });
-        history.push("/invoices");
-      },
-      onError: (err) => {
-        notification.error({
-          message: `An Error Occurred Please Try Again Later`,
-          placement: "topLeft",
-        });
-        console.log(err.response.data.message);
-      },
-    }
-  );
   const onFinish = (values) => {
-  form.submit()
+    form.submit()
     const newData = {
       ...isForm,
       items: lines,
@@ -191,13 +125,12 @@ useEffect(() => {
         },
       ],
     };
-    if(invoiceId){
-      mutationUpdate.mutate(newData)
-    }else{
-    mutation.mutate(newData);}
+    mutation.mutate(newData);
     console.log("Success submitted:", newData);
   };
-
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
   const RecurringSettings = (
     <div>
       <div tw="flex justify-between ">
@@ -284,7 +217,7 @@ useEffect(() => {
 
         <div tw="flex items-center">
           <span tw="capitalize text-4xl font-bold text-black">
-            {pathname.includes("edit") ? `Edit ${isTitle}` : `New ${isTitle}`}
+            {pathname.includes("edit") ? "Edit Recurring Template" : "New Recurring Template"}
           </span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
@@ -293,11 +226,12 @@ useEffect(() => {
           </ButtonMore>
           <Button
             tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center "
+            htmlType="submit"
             onClick={onFinish}
           >
             <span tw="text-lg">Save...</span>
           </Button>
-          {!pathname.includes("recurring") && (
+          {/* {!pathname.includes("recurring") && (
             <Popover
               placement="bottom"
               content={<SendEmail hide={hide} />}
@@ -309,7 +243,7 @@ useEffect(() => {
                 <span tw="text-lg">Send To...</span>
               </Button>
             </Popover>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -319,7 +253,6 @@ useEffect(() => {
         form={form}
         // onFinish={onFinish}
         tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2"
-     
       >
         <div tw="md:col-span-9 space-y-5 mb-10 mt-10 md:mt-2">
           <CardDetailInvoice>
@@ -557,8 +490,7 @@ useEffect(() => {
               <div tw="text-right">
                 <h3 tw="text-gray-400">Amount Due (IDR)</h3>
                 <span tw="font-medium text-3xl ">
-                  {lines.length > 0 && getTotal(lines?.map((x) => { const splitAmount=x.total.split(".")
-  return parseInt(splitAmount[0])}))}
+                  {lines && getTotal(lines?.map((x) => x.total))}
                 </span>
               </div>
             </div>
@@ -571,8 +503,7 @@ useEffect(() => {
                 <tbody>
                   <tr tw="text-right">
                     <td>Subtotal</td>
-                    <td> {lines.length > 0 && getTotal(lines?.map((x) => { const splitAmount=x.total.split(".")
-  return parseInt(splitAmount[0])}))}</td>
+                    <td>{lines && getTotal(lines?.map((x) => x.total))}</td>
                   </tr>
                   <tr tw="border-b  border-gray-300 text-right">
                     <td>Tax</td>
@@ -580,8 +511,7 @@ useEffect(() => {
                   </tr>
                   <tr tw="text-right ">
                     <td tw="pt-1">Total</td>
-                    <td>  {lines.length > 0 && getTotal(lines?.map((x) => { const splitAmount=x.total.split(".")
-  return parseInt(splitAmount[0])}))} </td>
+                    <td>{lines && getTotal(lines?.map((x) => x.total))}</td>
                   </tr>
                   <tr tw="text-right">
                     <td>Amount Paid</td>
@@ -594,8 +524,7 @@ useEffect(() => {
 
                     <td tw=" grid gap-0 items-end ">
                       <span tw="font-semibold ">
-                   {lines.length > 0 && getTotal(lines?.map((x) => { const splitAmount=x.total.split(".")
-  return parseInt(splitAmount[0])}))}
+                        {lines && getTotal(lines?.map((x) => x.total))}
                       </span>
                       <span tw="text-gray-600 text-right">USD</span>
                     </td>
@@ -654,10 +583,4 @@ export function getTotal(v) {
     return accumulator + value;
   }, 0);
   return `Rp${numberWithDot(sum)}`;
-}
-function totalIteration(data){
-  data?.map(x=>{
-    const splitAmount=x.amount.split(".")
-    return parseInt(splitAmount[0])
-  })
 }

@@ -460,16 +460,20 @@ export default function Invoices() {
 
   const data =
     status === "success" &&
-    filteredData?.map((item) => ({
-      key: item.id,
-      client: item.client.company_name,
-      invoice_number: item.code,
-      issued_at: item.issued_at,
-      due_date: item.due_date,
-      description: item.notes,
-      amount: item.total,
-      status: item.status,
-    }));
+    filteredData
+      ?.filter((item) => item.recurring !== null)
+      ?.map((item) => ({
+        key: item.id,
+        client: item.client.company_name,
+        invoice_number: item.code,
+        issued_at: item.issued_at,
+        due_date: item.due_date,
+        description: item.notes,
+        amount: item.total,
+        status: item.status,
+        frequency: item.recurring.type,
+        duration: item.recurring.delivery_option,
+      }));
 
   const columns = [
     {
@@ -488,7 +492,7 @@ export default function Invoices() {
           {moment(record.issued_at).format("MM/DD/YYYY")}
         </span>
       ),
-      sorter: (a, b) => a.date.length - b.date.length,
+      sorter: (a, b) => a.issued_at.length - b.issued_at.length,
     },
 
     {
@@ -497,10 +501,10 @@ export default function Invoices() {
       dataIndex: "frequency_duration",
       render: (text, record) => (
         <div>
-          <span>Every Month</span> <p tw="text-xs">Infinite</p>{" "}
+          <span>{record.frequency}</span> <p tw="text-xs">{record.duration}</p>{" "}
         </div>
       ),
-      sorter: (a, b) => a.date.length - b.date.length,
+      sorter: (a, b) => a.frequency.length - b.frequency.length,
     },
     {
       title: "Amount / Status",
@@ -626,12 +630,14 @@ export default function Invoices() {
               <div tw="flex" style={{ opacity: isHover ? "0.5" : "1" }}>
                 {dataInvoices?.data.length < 4 && (
                   <div
-                    onClick={() => history.push("/invoices/new")}
+                    onClick={() => history.push("/recurring-template/new")}
                     tw="cursor-pointer border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
                   >
                     <div tw="flex flex-col">
                       <PlusOutlined tw="text-xl text-green-400" />
-                      <span tw="text-base  font-bold">New Invoice</span>
+                      <span tw="text-base  font-bold">
+                        New Recurring Template
+                      </span>
                     </div>
                   </div>
                 )}
@@ -690,7 +696,7 @@ export default function Invoices() {
                       All Recurring Templates
                     </span>
                     <PlusOutlined
-                      onClick={() => history.push("/invoices/new")}
+                      onClick={() => history.push("/recurring-template/new")}
                       tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold py-1.5 px-2 cursor-pointer "
                     />
                   </>
@@ -727,11 +733,17 @@ export default function Invoices() {
               closable={false}
             >
               <span tw="text-lg">
-                {isType === "archive" ? `Are you sure you want to archive ${selectedRowKeys.length ===1 ? 'this': selectedRowKeys.length} recurring template? Archived templates are still active - they just don't appear in your regular list.`
-              :
-              `Are you sure you want to delete ${selectedRowKeys.length ===1 ? 'this': selectedRowKeys.length} recurring template?`  
-              
-              }
+                {isType === "archive"
+                  ? `Are you sure you want to archive ${
+                      selectedRowKeys.length === 1
+                        ? "this"
+                        : selectedRowKeys.length
+                    } recurring template? Archived templates are still active - they just don't appear in your regular list.`
+                  : `Are you sure you want to delete ${
+                      selectedRowKeys.length === 1
+                        ? "this"
+                        : selectedRowKeys.length
+                    } recurring template?`}
               </span>
             </ModalConfirm>
             <div className="table-responsive">
@@ -739,7 +751,7 @@ export default function Invoices() {
                 onRow={(record, rowIndex) => {
                   return {
                     onClick: (event) => {
-                      history.push(`/invoices/${record.key}/edit`);
+                      history.push(`/invoices/${record.key}/invoice-detail/recurring-template`);
                     },
                   };
                 }}
@@ -781,9 +793,4 @@ export default function Invoices() {
     </>
   );
 }
-export function getTotal(outstanding) {
-  const sum = outstanding.reduce((accumulator, value) => {
-    return accumulator + value;
-  }, 0);
-  return `Rp. ${numberWithDot(sum)} IDR`;
-}
+

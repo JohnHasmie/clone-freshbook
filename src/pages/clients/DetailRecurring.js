@@ -260,17 +260,15 @@
 
 
 
-import { Button, Menu, Modal, Popover, Tooltip } from "antd";
+import { Button, Menu, Modal, notification, Popover, Tooltip } from "antd";
 import React, { useContext, useState } from "react";
 
 import ClientInfo from "../../components/ClientsComponent/ClientInfo";
 import ClientTabs from "../../components/ClientsComponent/ClientTabs";
 import {
-  CopyOutlined,
-  DollarOutlined,
+
   DownOutlined,
   EditOutlined,
-  EllipsisOutlined,
   HddOutlined,
   PlusOutlined,
   RestOutlined,
@@ -279,23 +277,32 @@ import {
 
 import tw from "twin.macro";
 import TableCustom from "../../components/Table";
-import FormAddContact from "./FormAddContact";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { useHistory, useParams } from "react-router-dom";
 import AppContext from "../../components/context/AppContext";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 import { numberWithDot } from "../../components/Utils";
+import moment from "moment";
 
 export default function DetailRecurring() {
   const [clicked, setClicked] = useState(false);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { clientId } = useParams();
   const { globalDetailClient } = useContext(AppContext);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const history=useHistory()
   const [isType, setIsType] = useState('');
+  const [deleteId, setIsDeleteId] = useState('');
+
+  
+
+  const [filter, setFilter] = useState({
+    limit: 50,
+    page: 1,
+  });
+  const queryClient = useQueryClient();
+
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -315,21 +322,99 @@ export default function DetailRecurring() {
     showModal();
     hide()
   };
+
+  const handleModalTooltip = (e,id) => {
+    e.stopPropagation()
+ setIsDeleteId(id)
+        setIsType("delete");
+    showModal();
+    hide()
+  };
+
+
+  const handleAction=(e,type,record)=>{
+    e.stopPropagation()
+    switch (type) {
+      case 'edit':
+        history.push(`/recurring-template/${record.key}/edit`)
+        break;
+        case 'duplicate':
+        history.push(`/recurring-template/${record.key}/edit`)
+        break;
+        case 'payment':
+        history.push(`/recurring-template/${record.key}/edit`)
+        break;
+    
+      default:
+        history.push(`/invoices/recurring-templates`)
+    
+        break;
+    }}
+
   const hide = () => {
     setClicked(false);
   };
   const handleOk = () => {
+    if(selectedRowKeys.length === 0){
+    mutationDelete.mutate(deleteId)
+    }else{
+      mutationDelete.mutate(selectedRowKeys[0])
+    }
     setIsModalOpen(false);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const { data: dataInvoices, status } = useQuery(
+    ["invoices-listing", filter],
+    async (key) =>
+      axios
+        .get("invoices", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
+  // The selected recurring template has been deleted.
 
+  const mutationDelete = useMutation(
+    async (data) => {
+      return axios.delete(`invoices/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("invoices-listing");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `The selected recurring template has been deleted..`,
+          placement: "topLeft",
+        });
+      },
+      onError: (error) => {
+        switch (error?.response?.status) {        
+            case 500:
+              notification.error({
+                message: `Internal Server Error`,
+                placement: "topLeft",
+              });
+              break;
+        
+          default:
+            notification.error({
+              message: `An Error Occurred Please Try Again Later`,
+              placement: "topLeft",
+            });
+            break;
+        }
+      },
+    }
+  );
   const bulkList = (
     <div /* tw="border border-[#7f8c9f]" */>
       <Menu>
-      <Menu.Item key="edit" /* onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} */ disabled={selectedRowKeys.length > 1}>
+      <Menu.Item key="edit"  onClick={()=> history.push(`/recurring-template/${selectedRowKeys[0]}/edit`)}  disabled={selectedRowKeys.length > 1}>
           <div>
             <EditOutlined />
             <span>Edit</span>
@@ -341,7 +426,7 @@ export default function DetailRecurring() {
             <span>Archive</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="delete" onClick={handleModal}>
+        <Menu.Item key="delete" onClick={handleModal} disabled={selectedRowKeys.length > 1}>
           <div>
             <RestOutlined  />
             <span>Delete</span>
@@ -351,21 +436,23 @@ export default function DetailRecurring() {
     </div>
   );
 
-   const data = [
-        {
-          key: "1",
-     
-          invoice_number:"0989",
-          client:"Abc Inc",
-          last_issued:"28/11/2022",
-          frequency:"Every Month",
-          duration: "Infinit",
-          amount:2000,
-          status:"auto-sent"
-    
-        
-        }
-      ];
+  
+  const data =
+    status === "success" &&
+    dataInvoices?.data
+      ?.filter((item) => item.recurring !== null)
+      ?.map((item) => ({
+        key: item.id,
+        client: item.client.company_name,
+        invoice_number: item.code,
+        issued_at: item.issued_at,
+        due_date: item.due_date,
+        description: item.notes,
+        amount: item.total,
+        status: item.status,
+        frequency: item.recurring.type,
+        duration: item.recurring.delivery_option,
+      }));
 
 
       const columns = [
@@ -379,10 +466,14 @@ export default function DetailRecurring() {
         },
         {
           title: "Last Issued",
-          dataIndex: "last_issued",
-          key: "last_issued",
-          sorter: (a, b) => a.last_issued.length - b.last_issued.length,
-          
+          key: "issued_at",
+          dataIndex: "issued_at",
+          render: (text, record) => (
+            <span tw="text-primary">
+              {moment(record.issued_at).format("MM/DD/YYYY")}
+            </span>
+          ),
+          sorter: (a, b) => a.issued_at.length - b.issued_at.length,
         },
     
         {
@@ -411,13 +502,14 @@ export default function DetailRecurring() {
               >
                 <div tw="hover:bg-gray-100 hover:rounded-l-full  border-r border-gray-200 ">
                   <Tooltip placement="top" title="edit">
-                    <EditOutlined tw="p-2  " />
+                    <EditOutlined tw="p-2" onClick={(e)=>{
+                  handleAction(e,'edit',record)}} />
                   </Tooltip>
                 </div>             
               
                 <div tw="hover:bg-gray-100  hover:rounded-r-full ">
-                  <Tooltip placement="top" title="Delete">
-                    <RestOutlined tw="text-xs p-2" />
+                  <Tooltip placement="top" title="Delete" >
+                    <RestOutlined tw="text-xs p-2" onClick={(e)=>handleModalTooltip(e,record.key)} />
                   </Tooltip>
                 </div>
               </div>
@@ -430,85 +522,6 @@ export default function DetailRecurring() {
           align:'right'
         },
       ];
-  // const columns = [
-   
-  //   {
-  //     title: "Client / Invoice Number",
-  //     dataIndex: "invoice_number",
-  //     key: "invoice_number",
-  //     render: (text, record) => (
-  //       <div>
-  //         <span>{record.company_name}</span>{" "}
-  //         <p tw="text-xs">
-  //           {record.invoice_number} 
-  //         </p>{" "}
-  //       </div>
-  //     ),
-  //     sorter: (a, b) => a.company_name.length - b.company_name.length,
-  //   },
-  //   {
-  //     title: "Description",
-  //     dataIndex: "description",
-  //     key: "description",
-  //     sorter: (a, b) => a.description.length - b.description.length,
-
-  //   },
-
-  //   {
-  //     title: "Issued Date /Due Date",
-  //     key: "issued_due_date",
-  //     dataIndex: "issued_due_date",
-  //     render: (text, record) => (
-  //       <div>
-  //         <span>{record.date}</span>{" "}
-  //         <p tw="text-xs">
-  //           {record.due_date} 
-  //         </p>{" "}
-  //       </div>
-  //     ),
-  //     sorter: (a, b) => a.date.length - b.date.length,
-  //   },
-  //   {
-  //     title: "Amount /Status",
-  //     key: "amount",
-  //     dataIndex: "amount",
-  //     render: (text, record) => (
-  //       <div tw="grid">
-  //            <div
-  //           className="isVisible"
-  //           tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
-  //         >
-  //           <div tw="hover:bg-gray-100 hover:rounded-l-full ">
-  //             <Tooltip placement="top" title="edit">
-  //               <EditOutlined tw="p-2  " />
-  //             </Tooltip>
-  //           </div>
-
-  //           <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
-  //             <Tooltip placement="top" title="duplicate">
-  //               <CopyOutlined tw="p-2" />
-  //             </Tooltip>
-  //           </div>
-  //           <div tw="hover:bg-gray-100   border-r border-gray-200 ">
-  //             <Tooltip placement="top" title="add payment">
-  //               <DollarOutlined tw="p-2 " />
-  //             </Tooltip>
-  //           </div>
-  //           <div tw="hover:bg-gray-100  hover:rounded-r-full ">
-  //             <Tooltip placement="top" title="More">
-  //               <EllipsisOutlined tw="text-xs p-2" />
-  //             </Tooltip>
-  //           </div>
-  //         </div>
-  //         <span>{record.amount}</span>{" "}
-  //         <span tw="bg-orange-400 text-xs rounded p-1 ml-auto ">{record.status} </span>
-         
-  //       </div>
-  //     ),
-  //     sorter: (a, b) => a.amount - b.amount,
-  //     align:'right'
-  //   },
-  // ];
 
  
   const onSelectChange = (newSelectedRowKeys) => {
@@ -561,7 +574,7 @@ export default function DetailRecurring() {
                   Recurring Templates for {globalDetailClient?.company_name}
                 </span>
                 <PlusOutlined
-                  onClick={() => history.push("/invoices/new")}
+                  onClick={() => history.push("/recurring-template/new")}
                   tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold py-1.5 px-2 cursor-pointer "
                 />
               </>
@@ -576,15 +589,17 @@ export default function DetailRecurring() {
           width={500}
           closable={false}
         >
-          <span tw="text-lg">{`Are you sure you want to ${selectedRowKeys.length > 1 ? selectedRowKeys.length : isType} this?` }</span>
+          <span tw="text-lg">{`Are you sure you want to ${selectedRowKeys.length > 1 ? selectedRowKeys.length : isType} this recurring template?` }</span>
         </ModalConfirm>
           <div className="table-responsive">
             <TableCustom
-              // onRow={(record, rowIndex) => {
-              //   return {
-              //     onDoubleClick: (event) => showModal(),
-              //   };
-              // }}
+                 onRow={(record, rowIndex) => {
+                  return {
+                    onClick: (event) => {
+                      history.push(`/invoices/${record.key}/invoice-detail/recurring-template`);
+                    },
+                  };
+                }}
               rowSelection={rowSelection}
               columns={columns}
               dataSource={data}
