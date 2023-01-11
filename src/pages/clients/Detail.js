@@ -1,4 +1,4 @@
-import { Button, Menu, Modal, Popover, Tooltip } from "antd";
+import { Button, Menu, Modal, notification, Popover, Tooltip } from "antd";
 import React, { useContext, useState } from "react";
 
 import ClientInfo from "../../components/ClientsComponent/ClientInfo";
@@ -14,35 +14,72 @@ import {
 import tw from "twin.macro";
 import TableCustom from "../../components/Table";
 import FormAddContact from "./FormAddContact";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import AppContext from "../../components/context/AppContext";
+import { ModalConfirm } from "../../components/ModalConfirm.style";
 
 export default function Detail() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalConfirm, setIsModalConfirm] = useState(false);
+  const [contactId, setContactId] = useState('');
+  const [contactForm, setContactForm] = useState('');
+
+
+
   const { clientId } = useParams();
   const { globalDetailClient } = useContext(AppContext);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
+  const queryClient = useQueryClient();
 
-  const showModal = () => {
+  const showModal = (e,record) => {
+    e.stopPropagation();
+    setContactForm(record)
     setIsModalOpen(true);
-    setClicked(false)
+    setClicked(false);
+  };
+  const handleOk = (type) => {
+    if(type === "confirm"){
+      if(contactId){
+
+        mutation.mutate(contactId)
+      }else{
+        mutation.mutate(selectedRowKeys[0])
+
+      }
+      setIsModalConfirm(false)
+    }else{
+    setIsModalOpen(false);}
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleCancel = (type) => {
+    if(type === "confirm"){
+      setIsModalConfirm(false)
+    }else{
+    setIsModalOpen(false);}
   };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const { data: dataContacts, status } = useQuery(
+    ["contacts-listing"],
+    async (key) =>
+      axios
+        .get(`contacts/${clientId}`, {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
+  const handleModal = (e,key) => {
+    e.stopPropagation()
+    setContactId(key)
+    setIsModalConfirm(true);
+    setClicked(false);
   };
 
   const bulkList = (
     <div /* tw="border border-[#7f8c9f]" */>
       <Menu>
-        <Menu.Item key="delete">
+        <Menu.Item key="delete" onClick={()=>handleModal("")}>
           <div>
             <RestOutlined />
             <span>Delete</span>
@@ -52,17 +89,60 @@ export default function Detail() {
     </div>
   );
 
-  const data = [
-    {
-      key: "1",
-
-      name: "John Doe",
-      email: "28/11/2022",
-
-      phone_number_1: "089669235896",
-      phone_number_2: "08123456789",
+  const mutation = useMutation(
+    async (data) => {
+      return axios.delete(`contacts/${data}`).then((res) => res.data);
     },
-  ];
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("contacts-listing");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `Secondary contact(s) has been deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: (error) => {
+        switch (error?.response?.status) {
+          case 422:
+            notification.error({
+              message: `Invalid input`,
+              placement: "topLeft",
+            });
+            break;
+            case 500:
+              notification.error({
+                message: `Internal Server Error`,
+                placement: "topLeft",
+              });
+              break;
+        
+          default:
+            notification.error({
+              message: `An Error Occurred Please Try Again Later`,
+              placement: "topLeft",
+            });
+            break;
+        }
+      },
+    }
+  );
+
+  const data =
+    status === "success" &&
+    dataContacts?.clients?.data?.map((item) => ({
+      key: item.id,
+
+      name: item.first_name + " " + item.last_name,
+      first_name:item.first_name,
+      last_name:item.last_name,
+      email: item.email,
+
+      phone_number_1: item.phone_1,
+      phone_number_2: item.phone_2,
+    }));
 
   const columns = [
     {
@@ -91,19 +171,14 @@ export default function Detail() {
             tw="absolute bottom-14 right-0 flex invisible rounded-full bg-white shadow-sm border border-gray-200"
           >
             <div tw="hover:bg-gray-100 ">
-              <Tooltip placement="top" title="edit">
-                <EditOutlined tw="p-2" onClick={showModal} />
+              <Tooltip placement="top" title="edit" onClick={(e)=>showModal(e,record)} >
+                <EditOutlined tw="p-2" />
               </Tooltip>
             </div>
 
             <div tw="hover:bg-gray-100 border-l border-gray-200">
               <Tooltip placement="top" title="delete">
-                <RestOutlined
-                  tw="p-2"
-                  // onClick={() =>
-                  //   handleModal({ key: "delete", client: record.company_name })
-                  // }
-                />
+                <RestOutlined tw="p-2" onClick={(e)=>handleModal(e,record.key)} />
               </Tooltip>
             </div>
           </div>
@@ -136,7 +211,10 @@ export default function Detail() {
           <div tw="flex items-center ">
             {hasSelected ? (
               <>
-                <span tw="text-xl font-bold text-primary cursor-pointer" onClick={()=>setSelectedRowKeys([])}>
+                <span
+                  tw="text-xl font-bold text-primary cursor-pointer"
+                  onClick={() => setSelectedRowKeys([])}
+                >
                   Contacts for {globalDetailClient?.company_name}
                 </span>
                 <RightOutlined tw=" ml-2" />
@@ -175,17 +253,29 @@ export default function Detail() {
           <Modal
             footer={null}
             visible={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
+            onOk={()=>handleOk('modal')}
+            onCancel={()=>handleCancel('modal')}
             width={800}
           >
-            <FormAddContact handleOk={handleOk} />
+            <FormAddContact clientId={clientId} handleOk={handleOk} data={contactForm} />
           </Modal>
+          <ModalConfirm
+              title="Confirm"
+              visible={isModalConfirm}
+              onOk={()=>handleOk('confirm')}
+              onCancel={()=>handleCancel('confirm')}
+              width={500}
+              closable={false}
+            >
+              <span tw="text-lg">
+              Deleting contacts cannot be undone. Are you sure you want to delete {selectedRowKeys.length > 1 ? "these contacts" :"this contact" } ?
+              </span>
+            </ModalConfirm>
           <div className="table-responsive">
             <TableCustom
               onRow={(record, rowIndex) => {
                 return {
-                  onDoubleClick: (event) => showModal(),
+                  onClick: (e) => showModal(e,record),
                 };
               }}
               rowSelection={rowSelection}

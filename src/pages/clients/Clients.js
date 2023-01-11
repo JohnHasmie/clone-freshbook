@@ -72,6 +72,8 @@ export default function Clients() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [clientName, setClientName] = useState("");
+  const [deleteId, setIsDeleteId] = useState('');
+
 
   const onChange = (e) => {
     setSearchField({ ...searchField, [e.target.name]: e.target.value });
@@ -102,21 +104,38 @@ export default function Clients() {
     setIsModalOpen(true);
     setClicked(false);
   };
+  const handleModalTooltip = (e,id,client) => {
+    e.stopPropagation()
+    setClientName(client)
+ setIsDeleteId(id)
+        setIsType("delete");
+        setIsModalOpen(true);
+        setClicked(false);
+  };
+
+
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
   const handleOk = () => {
-    switch (isType) {
-      case "archive":
-        mutationArchive.mutate(selectedRowKeys[0]);
-        break;
-      case "delete":
-        mutation.mutate(selectedRowKeys[0]);
-        break;
-      default:
-        setIsType("");
-        break;
-    }
+    // switch (isType) {
+    //   case "archive":
+    //     mutationArchive.mutate(selectedRowKeys[0]);
+    //     break;
+    //   case "delete":
+    //     mutation.mutate(selectedRowKeys[0]);
+    //     break;
+    //   default:
+    //     setIsType("");
+    //     break;
+    // }
+
+    if(selectedRowKeys.length === 0){
+      mutation.mutate(deleteId)
+      }else{
+        mutation.mutate(selectedRowKeys[0])
+      }
 
     setIsModalOpen(false);
   };
@@ -199,16 +218,17 @@ export default function Clients() {
       return (
         item.company_name
           .toLowerCase()
-          .includes(searchField.company_name.toLowerCase()) ||
-        item.first_name
-          .toLowerCase()
-          .includes(
-            searchField.name
-              ? searchField.name.toLocaleLowerCase()
-              : searchField?.company_name.toLowerCase()
-          ) ||
-        item?.email.toLowerCase().includes(searchField.email.toLowerCase()) ||
-        localFilter(item, keywordSearch, typeSearch)
+          .includes(searchField.company_name.toLowerCase()) 
+        //   ||
+        // item.first_name
+        //   .toLowerCase()
+        //   .includes(
+        //     searchField.name
+        //       ? searchField.name.toLocaleLowerCase()
+        //       : searchField?.company_name.toLowerCase()
+        //   ) ||
+        // item?.email.toLowerCase().includes(searchField.email.toLowerCase()) ||
+        // localFilter(item, keywordSearch, typeSearch)
       );
     });
 
@@ -262,14 +282,16 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
       dataIndex: "total_outstanding",
       align: "right",
       render: (text, record) => (
-        <div>
+        <div tw="z-50">
           <div
             className="isVisible"
             tw="absolute bottom-14 right-0 flex invisible rounded-full bg-white shadow-sm border border-gray-200"
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
-                <EditOutlined tw="p-2" onClick={()=>history.push(`/clients/${record.key}/edit`)}/>
+                <EditOutlined tw="p-2" onClick={(e)=>{
+                  e.stopPropagation()
+                  history.push(`/clients/${record.key}/edit`)}}/>
                 
               </Tooltip>
             </div>
@@ -287,9 +309,8 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
               <Tooltip placement="top" title="delete">
                 <RestOutlined
                   tw="p-2"
-                  onClick={() =>
-                    handleModal({ key: "delete", client: record.company_name })
-                  }
+                  onClick={(e)=>handleModalTooltip(e,record.key,record.company_name)}
+             
                 />
               </Tooltip>
             </div>
@@ -409,7 +430,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
                         </div>
                         <div>
                           <MailOutlined tw="mr-1" />
-                          <span>{item.email}</span>
+                          <span>{truncate(item.email,25)}</span>
                         </div>
                         <div>
                           <PhoneOutlined tw="mr-1" />
@@ -519,7 +540,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
               <TableCustom
                 onRow={(record, rowIndex) => {
                   return {
-                    onDoubleClick: (event) => {
+                    onClick: (event) => {
                       history.push(`/clients/${record.key}/client-detail`);
                     },
                   };

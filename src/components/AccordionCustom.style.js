@@ -1,12 +1,15 @@
 import CollapsePanel from "antd/lib/collapse/CollapsePanel";
 import tw, { styled, css } from "twin.macro";
 
-export const AccordionCustomPanel = styled(CollapsePanel)(() => [
+export const AccordionCustomPanel = styled(CollapsePanel)(({bg}) => [
     tw``,
     css`
         && {
             .ant-collapse-header {
-                ${tw`bg-pink-300 md:pl-24`}
+                ${tw` md:pl-24`}
+            }
+            .ant-collapse-header {
+                background-color:${bg}
             }
             .ant-collapse-content-box {
                 ${tw`md:pl-24`}

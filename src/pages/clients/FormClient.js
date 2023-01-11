@@ -172,7 +172,6 @@ useEffect(() => {
     setIsForm({ ...isForm, [e.target.name]: e.target.value });
   };
 
-  console.log(isForm,"cek");
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">

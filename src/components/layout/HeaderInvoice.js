@@ -1,17 +1,18 @@
-import { useEffect } from "react";
+import { useEffect,useContext } from "react";
 import { Popover, Button } from "antd";
 import {
   DownOutlined,
   LeftOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import ButtonCustom from "../Button";
 import tw from "twin.macro";
 import ButtonMore from "../Reports/ButtonMore";
 
 import MoreAction from "../Reports/MoreAction";
 import InvoiceSetting from "../../pages/invoices/InvoiceSetting";
+import AppContext from "../context/AppContext";
 
 const bell = [
   <svg
@@ -55,11 +56,12 @@ function HeaderInvoice({
   handleFixedNavbar,
 }) {
   const history = useHistory();
-
+const {globalDetailInvoice}=useContext(AppContext)
+let { pathname } = useLocation();
 
   return (
     <div tw="md:ml-24">
-      <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
+   {globalDetailInvoice &&   <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
         <div tw="flex justify-between md:hidden">
           <div>{bell}</div>
           <ButtonCustom
@@ -80,10 +82,10 @@ function HeaderInvoice({
             <span tw="ml-1">Invoices</span>
           </button>
         </div>
-        <div tw="flex items-end">
-          <span tw="capitalize text-3xl font-bold">Invoice 00146</span>
+        <div tw="flex items-center">
+          <span tw="capitalize text-2xl font-bold">{pathname.includes('recurring')? 'Recurring Template' : 'Invoice'} {globalDetailInvoice?.code}</span>
           <Popover placement="bottom" content={InvoiceSetting} trigger="click">
-            <UnorderedListOutlined tw="ml-3 text-2xl" />
+            <UnorderedListOutlined tw="ml-3 text-xl" />
           </Popover>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
@@ -98,7 +100,7 @@ function HeaderInvoice({
             <span tw="text-lg">Edit</span>
           </Button>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

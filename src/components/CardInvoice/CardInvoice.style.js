@@ -1,7 +1,7 @@
 import { Button, Card } from "antd";
 import tw, { styled, css } from "twin.macro";
 
-export const StyledCardInvoice = styled(Card)(({ hidden }) => [
+export const StyledCardInvoice = styled(Card)(({ hidden,bg }) => [
   tw`rounded `,
   css`
     /* Add specifity so that we don't need to add ! rule to override */
@@ -25,7 +25,7 @@ export const StyledCardInvoice = styled(Card)(({ hidden }) => [
         border-bottom-left-radius: 0.25rem;
         border-top-width: 0px;
         --tw-bg-opacity: 1;
-        background-color: rgb(195, 230, 179);
+        background-color: ${bg};
         span {
           ${tw`text-black`}
         }

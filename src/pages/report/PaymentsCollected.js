@@ -4,12 +4,12 @@ import {
   Col,
   Divider,
   Form,
-  Input,
+
   Popover,
-  Radio,
+
   Row,
   Select,
-  Space,
+
   Typography,
 } from "antd";
 import React, { useState } from "react";
@@ -22,12 +22,31 @@ import Filter from "../../components/Reports/Filter";
 import MoreAction from "../../components/Reports/MoreAction";
 import SendEmail from "../../components/Reports/SendEmail";
 import ButtonCustom from "../../components/Button/index";
+import axios from "axios";
+import { useQuery } from "react-query";
+import moment from "moment";
+import { numberWithDot } from "../../components/Utils";
 
 export default function PaymentsCollected() {
   const { Title } = Typography;
   const [open, setOpen] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [clicked, setClicked] = useState(false);
+  const [filter, setFilter] = useState({
+  page:1,
+    currency:"USD"
+  });
+  const { data: dataPayment, status: statusPayment } = useQuery(
+    ["balance-sheet", filter],
+    async (key) =>
+      axios
+        .get("reports/payment-collection", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data)
+  );
+console.log(dataPayment,"dataPayment");
+
   const handleClickChange = (open) => {
     setClicked(open);
   };
@@ -201,7 +220,7 @@ export default function PaymentsCollected() {
           </button>
         </div>
         <div tw="flex items-center">
-          <span tw="capitalize text-4xl font-bold">Payments Collected</span>
+          <span tw="capitalize text-4xl font-bold text-black">Payments Collected</span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <Popover placement="bottom" content={MoreAction} trigger="click">
@@ -226,21 +245,46 @@ export default function PaymentsCollected() {
             <span tw="text-sm text-gray-600">Total Billed (USD)</span>
             <span tw="text-sm text-gray-600">As of November 17,2022</span>
           </div>
-          {isEmpty ? (
+          {statusPayment === "loading" && (
+                    <div
+                      role="status"
+                      tw="flex flex-col w-full h-full items-center justify-center"
+                    >
+                      <svg
+                        tw="inline mr-2 w-52 h-52 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                        viewBox="0 0 100 101"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentFill"
+                        />
+                      </svg>
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  )}
+          {statusPayment === "success" && dataPayment?.data?.data?.length === 0 ? (
             <div tw="flex justify-center text-gray-600">
               No payments found. Please adjust the range.
             </div>
           ) : (
-            <>
-              <div tw="overflow-x-auto ">
+           dataPayment?.data?.data?.map((item,i)=>(
+            <div key={i} tw="mb-5" >
+
+         <div tw="overflow-x-auto ">
                 <table>
                   <thead>
                     <tr>
                       <th tw="text-left py-4 ">
                         <span tw="rounded-full border border-orange-500 p-1 py-1.5  mr-0.5 ">
-                          MR
+                          {item.client.first_name[0]+item.client.last_name[0]}
                         </span>{" "}
-                        Sutton Rowland Inc
+                        {item.client.company_name}
                       </th>
                     </tr>
                   </thead>
@@ -260,13 +304,13 @@ export default function PaymentsCollected() {
                       </th>
 
                       <td tw="text-right ">
-                        Rp60,000.00{" "}
-                        <span tw="font-thin text-gray-400">IDR</span>{" "}
+                      {numberWithDot(item.invoice.total)}
+                        <span tw="font-thin text-gray-400 ml-1">IDR</span>{" "}
                       </td>
                     </tr>
                   </tbody>
                 </table>
-              </div>
+              </div> 
               <div tw="overflow-x-auto ">
                 <table>
                   <tbody>
@@ -282,21 +326,21 @@ export default function PaymentsCollected() {
                       <th tw="pb-1 pt-5 text-right">Amount</th>
                     </tr>
                     <tr tw="text-left text-sm border-b border-dotted  border-gray-200">
-                      <td tw="pb-1 pt-2">03/12/2022</td>
+                      <td tw="pb-1 pt-2">{moment(item.payment_at).format("MM/DD/YYYY")}</td>
                       <td tw="pb-1 pt-2 text-primary font-bold">
-                        Sutton Rowland Inc
+                      {item.client.first_name+item.client.last_name}
                       </td>
-                      <td tw="pb-1 pt-2">Transfer</td>
+                      <td tw="pb-1 pt-2">{item.payment}</td>
                       <td tw="pb-1 pt-2"></td>
                       <td tw="pb-1 pt-2">
                         <div tw="grid text-primary">
-                          <span>Invoice</span>
-                          <span>000007</span>
+                          <span>{item.invoice.code}</span>
+                         
                         </div>
                       </td>
                       <td tw="pb-1 pt-2 text-right">
                         <div tw="grid ">
-                          <span>Rp.30,000.00</span>
+                          <span>{numberWithDot(item.amount)}</span>
                           <span tw="text-gray-400">IDR</span>
                         </div>
                       </td>
@@ -304,7 +348,7 @@ export default function PaymentsCollected() {
                   </tbody>
                 </table>
               </div>
-            </>
+            </div>  ))  
           )}
           {/* <div tw="overflow-x-auto ">
             <table 

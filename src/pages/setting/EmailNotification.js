@@ -1,5 +1,7 @@
 import { Card, Checkbox, Col, Divider, Row, Switch, Typography } from "antd";
+import axios from "axios";
 import React, { useState } from "react";
+import { useQuery } from "react-query";
 import tw from "twin.macro";
 
 export default function EmailNotification() {
@@ -40,6 +42,16 @@ export default function EmailNotification() {
         break;
     }
   };
+
+  const { data, status } = useQuery(
+    ["email-notification"],
+    async (key) =>
+      axios
+        .get("invoices/11?limit=10&page=1", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data)
+  );
   return (
     <>
       <div className="layout-content"  tw="md:ml-24">

@@ -170,7 +170,7 @@ function Main({ children }) {
           <Content className="content-ant">{children}</Content>
         </LayoutSetting>
       ) : (
-        <Layout>
+        <Layout /* tw="!ml-52" */>
           {fixed ? (
             <Affix>
               <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>

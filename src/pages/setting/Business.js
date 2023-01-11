@@ -1,4 +1,4 @@
-import { Col, Form, Input, Row, Select, Typography } from "antd";
+import { Col, Form, Input, notification, Row, Select, Typography } from "antd";
 import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -86,9 +86,19 @@ export default function Business() {
     {
       onSuccess: (res) => {
         queryClient.invalidateQueries("settings");
-        console.log(res);
+        notification.success({
+          message: `Your Company Profile has been updated.`,
+          description:'This information will appear on your invoice',
+          placement: "topLeft",
+        });
+        
+
       },
       onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
         console.log(err.response.data.message);
       },
     }
@@ -111,11 +121,11 @@ export default function Business() {
         size={"large"}
         fields={[
           {
-            name: ["business_name"],
+            name: ["company_name"],
             value: setting?.data?.company_name,
           },
           {
-            name: ["business_phone"],
+            name: ["phone"],
             value: setting?.data?.phone,
           },
           {
@@ -127,11 +137,11 @@ export default function Business() {
             value: "",
           },
           {
-            name: ["addres_line_1"],
+            name: ["addres"],
             value: setting?.data?.address,
           },
           {
-            name: ["addres_line_2"],
+            name: ["addres_2"],
             value: "",
           },
           {
@@ -163,7 +173,7 @@ export default function Business() {
             value: setting?.data?.city,
           },
           {
-            name: ["zip_code"],
+            name: ["zip"],
             value: setting?.data?.zip,
           },
         ]}
@@ -174,14 +184,14 @@ export default function Business() {
               <Title level={3}>Business Details</Title>
             </Col>
             <Col xs={24} lg={24}>
-              <Form.Item label="Business Name" name="business_name">
-                <Input name="business_name" type="text" />
+              <Form.Item label="Business Name" name="company_name">
+                <Input name="company_name" type="text" />
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item label="Business Phone" name="business_phone">
+              <Form.Item label="Business Phone" name="phone">
                 <Input
-                  name="business_phone"
+                  name="phone"
                   type="text"
                   // defaultValue={name_business || ""}
                   // onChange={onChange}
@@ -194,13 +204,13 @@ export default function Business() {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Address Line 1" name="addres_line_1">
-                <Input name="addres_line_1" type="text" />
+              <Form.Item label="Address Line 1" name="address">
+                <Input name="address" type="text" />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Address Line 2" name="addres_line_2">
-                <Input name="addres_line_2" type="text" />
+              <Form.Item label="Address Line 2" name="addres_2">
+                <Input name="addres_2" type="text" />
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
@@ -209,8 +219,8 @@ export default function Business() {
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item label="ZIP Code" name="zip_code">
-                <Input name="zip_code" type="text" />
+              <Form.Item label="ZIP Code" name="zip">
+                <Input name="zip" type="text" />
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>

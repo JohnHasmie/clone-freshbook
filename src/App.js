@@ -41,7 +41,6 @@ import AppContext from "./components/context/AppContext";
 import ItemsArchived from "./pages/item-service/ItemsArchived";
 import ItemsDeleted from "./pages/item-service/ItemsDeleted";
 import Email from "./pages/clients/Email";
-import NewInvoice from "./pages/invoices/NewInvoice";
 import DetailInvoiceClient from "./pages/clients/DetailInvoice";
 import DetailRecurring from "./pages/clients/DetailRecurring";
 import RecurringInvoice from "./pages/invoices/Recurring";
@@ -62,8 +61,9 @@ import InvoicesArchived from "./pages/invoices/InvoicesArchived";
 import InvoicesDeleted from "./pages/invoices/InvoicesDeleted";
 import RecurringArchived from "./pages/invoices/RecurringArchived";
 import RecurringDeleted from "./pages/invoices/RecurringDeleted";
-import NewRecurringTemplate from "./pages/report/NewRecurringTemplate";
 import FormClient from "./pages/clients/FormClient";
+import FormRecurringTemplate from "./pages/invoices/FormRecurringTemplate";
+import FormInvoice from "./pages/invoices/FormInvoice";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +74,8 @@ function App() {
   const [user, setUser] = useState("");
   const [setting, setSetting] = useState("");
   const [globalDetailClient, setGlobalDetailClient] = useState("");
+  const [globalDetailInvoice, setGlobalDetailInvoice] = useState("");
+
 
 
 
@@ -125,6 +127,8 @@ function App() {
             setSetting:setSetting,
             setUser: setUser,
             setGlobalDetailClient:setGlobalDetailClient,
+            globalDetailInvoice:globalDetailInvoice,
+            setGlobalDetailInvoice:setGlobalDetailInvoice
           }}
         >
           <Switch>
@@ -171,15 +175,20 @@ function App() {
               path="/dashboard/reports/trial-balance"
               component={AccountTrialBalance}
             />
-            <Route exact path="/invoices/new" component={NewInvoice} />
+            <Route exact path="/invoices/new" component={FormInvoice} />
+            <Route
+                exact
+                path="/invoices/:invoiceId/edit"
+                component={FormInvoice}
+              />
             <Route exact path="/clients/new" component={FormClient} />
             <Route
                 exact
                 path="/clients/:clientId/edit"
                 component={FormClient}
               />
-            <Route exact path="/recurring-template/new" component={NewRecurringTemplate} />
-            <Route exact path="/recurring-template/:recurringId/edit" component={NewRecurringTemplate} />
+            <Route exact path="/recurring-template/new" component={FormInvoice} />
+            <Route exact path="/recurring-template/:invoiceId/edit" component={FormInvoice} />
         
 
             <Main>
@@ -223,6 +232,11 @@ function App() {
                 <Route
                 exact
                 path="/invoices/:invoiceId/invoice-detail"
+                component={DetailInvoice}
+              />
+                <Route
+                exact
+                path="/invoices/:invoiceId/invoice-detail/recurring-template"
                 component={DetailInvoice}
               />
 
@@ -280,6 +294,7 @@ function App() {
         {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </div>
+    
   );
 }
 
