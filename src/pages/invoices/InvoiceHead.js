@@ -28,9 +28,6 @@ const dummyClients = [{
     country: 'Indonesia',
 }]
 
-<<<<<<< HEAD
-const ListClients = ({ hide, setValue }) => {
-=======
 const ListClients = ({ hide,setIsClient }) => {
     const [filter, setFilter] = useState({
         limit: 10,
@@ -47,23 +44,15 @@ const ListClients = ({ hide,setIsClient }) => {
       );
 
      
->>>>>>> origin/usamah
     return (
         <ListClientsWrapper tw="overflow-y-auto h-72">
             {status === "success" &&
                 dataClients?.data?.map(client => {
                     return (
-<<<<<<< HEAD
-                        <ListClientItem onClick={() => {
-                            hide()
-                            setValue(client)
-                        }} key={client.email}>
-=======
                         <ListClientItem onClick={()=>{
                             setIsClient(client.id)
                             hide()
                         }} key={client.id}>
->>>>>>> origin/usamah
                             <CardClient
                                 title="Default size card"
                                 size="small"
@@ -115,19 +104,6 @@ useEffect(() => {
         <PopoverClickable
             placement="right"
             renderContent={ListClients}
-<<<<<<< HEAD
-            renderChildren={({ visible, value, hide, show }) => {
-                return (
-                    <PopupTrigger tw="grid gap-0" onClick={visible ? hide : show}>
-                        <span tw="text-gray-400">Billed To</span>
-                        <span tw="text-sm">{value.name}</span>
-                        <span tw="text-sm">{value.company}</span>
-                        <span tw="text-sm">{value.address1}</span>
-                        <span tw="text-sm">{value.address2}</span>
-                        <span tw="text-sm">{value.zipcode}</span>
-                        <span tw="text-sm">{value.country}</span>
-                    </PopupTrigger>
-=======
             setIsClient={setIsClient}
             renderChildren={({ visible, hide, show,setIsClient }) => {
                 return (
@@ -155,7 +131,6 @@ useEffect(() => {
                            <span tw="text-xs">{data?.client?.country}</span>
                        </PopupTrigger>}
                  </>
->>>>>>> origin/usamah
                 )
             }}
             defaultValue={{
