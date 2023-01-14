@@ -25,12 +25,15 @@ export default function ClientsArchived() {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    status:"archive"
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isType, setIsType] = useState('');
   const [clientName, setClientName] = useState("");
+  const [isClientId, setIsClientId] = useState("");
+
 
   const { data: dataClients, status } = useQuery(
     ["clients", filter],
@@ -47,12 +50,46 @@ export default function ClientsArchived() {
   const handleClickChange = (open) => {
     setClicked(open);
   };
+  const handleModalTooltip = (e, id, client, type) => {
+    e.stopPropagation();
+    setClientName(client);
+    setIsClientId(id);
+    if (type === "delete") {
+      setIsType("delete");
+    } else {
+      setIsType("unarchive");
+    }
+    setIsModalOpen(true);
+    setClicked(false);
+  };
 
+console.log(clientName,"Name");
   const handleOk = () => {
-      if(isType === "delete"){
-      mutation.mutate(selectedRowKeys[0]);}else{
-        mutationUnarchive.mutate(selectedRowKeys[0])
-      }
+    switch (isType) {
+      case "unarchive":
+        if (selectedRowKeys.length === 0) {
+          mutationUnarchive.mutate({ ids: [isClientId], status: "published" });
+        } else {
+          mutationUnarchive.mutate({ ids: selectedRowKeys, status: "published" });
+        }
+        break;
+      case "delete":
+        if (isClientId) {
+          mutation.mutate(isClientId);
+        } else {
+          if (selectedRowKeys.length > 1) {
+            console.log({ ids: selectedRowKeys });
+            mutationDeleteBatch.mutate({ data: { ids: selectedRowKeys } });
+          } else {
+            mutation.mutate(selectedRowKeys[0]);
+          }
+        }
+        break;
+      default:
+        setIsType("");
+        break;
+    }
+
     setIsModalOpen(false);
   };
   const handleCancel = () => {
@@ -150,7 +187,9 @@ export default function ClientsArchived() {
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
-                <EditOutlined tw="p-2" onClick={()=>history.push(`clients/${record.key}/edit`)}/>
+                <EditOutlined tw="p-2" onClick={(e)=>{
+                  e.stopPropagation()
+                  history.push(`/clients/${record.key}/edit`)}}/>
                 
               </Tooltip>
             </div>
@@ -158,8 +197,13 @@ export default function ClientsArchived() {
               <Tooltip placement="top" title="unarchive">
                 <UndoOutlined
                   tw="p-2"
-                  onClick={() =>
-                    handleModal({ key: "unarchive", client: record.company_name })
+                  onClick={(e) =>
+                    handleModalTooltip(
+                      e,
+                      record.key,
+                      record.company_name,
+                      "unarchive"
+                    )
                   }
                 />
               </Tooltip>
@@ -168,8 +212,13 @@ export default function ClientsArchived() {
               <Tooltip placement="top" title="delete">
                 <RestOutlined
                   tw="p-2"
-                  onClick={() =>
-                    handleModal({ key: "delete", client: record.company_name })
+                  onClick={(e) =>
+                    handleModalTooltip(
+                      e,
+                      record.key,
+                      record.company_name,
+                      "delete"
+                    )
                   }
                 />
               </Tooltip>
@@ -238,9 +287,37 @@ export default function ClientsArchived() {
     }
   );
 
+  const mutationDeleteBatch = useMutation(
+    async (data) => {
+      return axios.delete(`clients/batch`, data).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("clients");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `${
+            clientName
+              ? clientName
+              : `The selected ${selectedRowKeys.length} clients`
+          }has been succesfully deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+
   const mutationUnarchive = useMutation(
     async (data) => {
-      return axios.delete(`clients/${data}`).then((res) => res.data);
+      return axios.put(`clients/status`,data).then((res) => res.data);
     },
     {
       onSuccess: () => {

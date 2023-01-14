@@ -184,7 +184,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data &
                   handleAction(e,'duplicate',record)}} />
               </Tooltip>
             </div>
-            <div tw="hover:bg-gray-100   border-r border-gray-200 ">
+            <div tw="hover:bg-gray-100    ">
               <Tooltip placement="top" title="add payment">
                 <DollarOutlined tw="p-2 "
                 onClick={(e)=>{
@@ -192,11 +192,12 @@ const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data &
                 />
               </Tooltip>
             </div>
-            <div tw="hover:bg-gray-100  hover:rounded-r-full ">
+            {/* <div tw="hover:bg-gray-100  hover:rounded-r-full ">
               <Tooltip placement="top" title="More">
+                
                 <EllipsisOutlined tw="text-xs p-2" />
               </Tooltip>
-            </div>
+            </div> */}
           </div>
           <span>Rp{numberWithDot(record.amount)}</span>{" "}
           <span tw="text-xs rounded p-1 ml-auto" style={{background:translateBg(record.status)}}>{record.status} </span>
@@ -258,19 +259,19 @@ switch (type) {
           </div>
         </Menu.Item>
 
-        <Menu.Item key="send-email">
+        {/* <Menu.Item key="send-email">
           <div>
             <MailOutlined />
             <span>Send By Email</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="">
+        <Menu.Item key="mark-as-sent">
           <div>
             <SendOutlined />
             <span>Mark as Sent</span>
           </div>
-        </Menu.Item>
-        <Menu.Item key="mark-as-sent">
+        </Menu.Item> */}
+        <Menu.Item key="payment">
           <div>
             <DollarOutlined />
             <span>Add a Payment</span>

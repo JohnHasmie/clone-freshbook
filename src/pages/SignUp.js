@@ -213,6 +213,7 @@ export default class SignUp extends Component {
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
                 className="row-col"
+                size="large"
               >
                
                 <Form.Item

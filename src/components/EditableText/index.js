@@ -22,10 +22,10 @@ const EditableText = ({ children,linesProps,type,i }) => {
                     newLines[i][type]=str
                     newLines[i].id=lines.length
                     if(type === "rate" || "qty"){
-        newLines[i].total= parseInt(newLines[i].rate)*parseInt(newLines[i].qty)
-        String(newLines[i].total)
+        newLines[i].total= String(parseInt(newLines[i].rate)*parseInt(newLines[i].qty))
+        // String(newLines[i].total)
+        setLines(newLines)
 }
-                    setLines(newLines)
                 }
             }}
         >

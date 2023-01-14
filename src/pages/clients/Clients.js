@@ -13,6 +13,8 @@ import {
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
+import _ from "lodash"
+
 import {
   Button,
   Form,
@@ -22,7 +24,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext,useRef, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardClient from "../../components/CardClient";
@@ -38,17 +40,20 @@ import axios from "axios";
 import { numberWithDot, truncate } from "../../components/Utils";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 
-
-
 export default function Clients() {
   const { Title } = Typography;
   const history = useHistory();
   const [isAdvance, setIsAdvance] = useState(false);
-  const [form] = Form.useForm();
   const [isToggle, setIsToggle] = useState(true);
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    status:"published",
+    company_name:"",
+    email:"",
+    keyword:"",
+    contact_name:"",
+    type:"all"
   });
   const [searchField, setSearchField] = useState({
     company_name: "",
@@ -72,8 +77,7 @@ export default function Clients() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [clientName, setClientName] = useState("");
-  const [deleteId, setIsDeleteId] = useState('');
-
+  const [isClientId, setIsClientId] = useState("");
 
   const onChange = (e) => {
     setSearchField({ ...searchField, [e.target.name]: e.target.value });
@@ -92,50 +96,62 @@ export default function Clients() {
         break;
       case "delete":
         setIsType("delete");
+
         break;
       default:
         setIsType("");
         break;
     }
-    if (type.client) {
-      setClientName(type.client);
+
+    if (type.client && selectedRowKeys.length < 2) {
+      console.log("berjalan");
+      // setClientName(type.client);
     }
 
     setIsModalOpen(true);
     setClicked(false);
   };
-  const handleModalTooltip = (e,id,client) => {
-    e.stopPropagation()
-    setClientName(client)
- setIsDeleteId(id)
-        setIsType("delete");
-        setIsModalOpen(true);
-        setClicked(false);
+  const handleModalTooltip = (e, id, client, type) => {
+    e.stopPropagation();
+    setClientName(client);
+    setIsClientId(id);
+    if (type === "delete") {
+      setIsType("delete");
+    } else {
+      setIsType("archive");
+    }
+    setIsModalOpen(true);
+    setClicked(false);
   };
-
-
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
   const handleOk = () => {
-    // switch (isType) {
-    //   case "archive":
-    //     mutationArchive.mutate(selectedRowKeys[0]);
-    //     break;
-    //   case "delete":
-    //     mutation.mutate(selectedRowKeys[0]);
-    //     break;
-    //   default:
-    //     setIsType("");
-    //     break;
-    // }
-
-    if(selectedRowKeys.length === 0){
-      mutation.mutate(deleteId)
-      }else{
-        mutation.mutate(selectedRowKeys[0])
-      }
+    switch (isType) {
+      case "archive":
+        if (selectedRowKeys.length === 0) {
+          mutationArchive.mutate({ ids: [isClientId], status: "archive" });
+        } else {
+          mutationArchive.mutate({ ids: selectedRowKeys, status: "archive" });
+        }
+        break;
+      case "delete":
+        if (isClientId) {
+          mutation.mutate(isClientId);
+        } else {
+          if (selectedRowKeys.length > 1) {
+            console.log({ ids: selectedRowKeys });
+            mutationDeleteBatch.mutate({ data: { ids: selectedRowKeys } });
+          } else {
+            mutation.mutate(selectedRowKeys[0]);
+          }
+        }
+        break;
+      default:
+        setIsType("");
+        break;
+    }
 
     setIsModalOpen(false);
   };
@@ -154,11 +170,38 @@ export default function Clients() {
         .then((res) => res.data.data)
   );
 
-  
-
   const mutation = useMutation(
     async (data) => {
       return axios.delete(`clients/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("clients");
+        }, 500);
+        setSelectedRowKeys([]);
+        setIsClientId("");
+        notification.success({
+          message: `${
+            clientName
+              ? clientName
+              : `The selected ${selectedRowKeys.length} clients`
+          }has been succesfully deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+
+  const mutationDeleteBatch = useMutation(
+    async (data) => {
+      return axios.delete(`clients/batch`, data).then((res) => res.data);
     },
     {
       onSuccess: () => {
@@ -186,7 +229,7 @@ export default function Clients() {
 
   const mutationArchive = useMutation(
     async (data) => {
-      return axios.delete(`clients/${data}`).then((res) => res.data);
+      return axios.put(`clients/status`, data).then((res) => res.data);
     },
     {
       onSuccess: () => {
@@ -215,26 +258,14 @@ export default function Clients() {
   const filteredData =
     status === "success" &&
     dataClients?.data.filter((item) => {
-      return (
-        item.company_name
-          .toLowerCase()
-          .includes(searchField.company_name.toLowerCase()) 
-        //   ||
-        // item.first_name
-        //   .toLowerCase()
-        //   .includes(
-        //     searchField.name
-        //       ? searchField.name.toLocaleLowerCase()
-        //       : searchField?.company_name.toLowerCase()
-        //   ) ||
-        // item?.email.toLowerCase().includes(searchField.email.toLowerCase()) ||
-        // localFilter(item, keywordSearch, typeSearch)
-      );
+      return item.company_name
+        .toLowerCase()
+        .includes(searchField.company_name.toLowerCase());
     });
 
   const data =
     status === "success" &&
-    filteredData?.map((item) => ({
+    dataClients?.data?.map((item) => ({
       key: item.id,
       company_name: item.company_name,
       first_name: item.first_name,
@@ -243,8 +274,12 @@ export default function Clients() {
       credit: "",
       total_outstanding: 2000,
     }));
-const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {data && getTotal(data?.map(x=>x.total_outstanding))} </div>);
-
+  const defaultFooter = () => (
+    <div tw="text-right text-base">
+      Total Outstanding:{" "}
+      {data && getTotal(data?.map((x) => x.total_outstanding))}{" "}
+    </div>
+  );
 
   const columns = [
     {
@@ -289,18 +324,26 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
           >
             <div tw="hover:bg-gray-100 ">
               <Tooltip placement="top" title="edit">
-                <EditOutlined tw="p-2" onClick={(e)=>{
-                  e.stopPropagation()
-                  history.push(`/clients/${record.key}/edit`)}}/>
-                
+                <EditOutlined
+                  tw="p-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    history.push(`/clients/${record.key}/edit`);
+                  }}
+                />
               </Tooltip>
             </div>
             <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
               <Tooltip placement="top" title="archive">
                 <HddOutlined
                   tw="p-2"
-                  onClick={() =>
-                    handleModal({ key: "archive", client: record.company_name })
+                  onClick={(e) =>
+                    handleModalTooltip(
+                      e,
+                      record.key,
+                      record.company_name,
+                      "archive"
+                    )
                   }
                 />
               </Tooltip>
@@ -309,8 +352,14 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
               <Tooltip placement="top" title="delete">
                 <RestOutlined
                   tw="p-2"
-                  onClick={(e)=>handleModalTooltip(e,record.key,record.company_name)}
-             
+                  onClick={(e) =>
+                    handleModalTooltip(
+                      e,
+                      record.key,
+                      record.company_name,
+                      "delete"
+                    )
+                  }
                 />
               </Tooltip>
             </div>
@@ -324,6 +373,14 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
+  const setSearchValue = useRef(
+    _.debounce((value) => {
+      setFilter({
+        ...filter,
+        company_name: value,
+      })
+    }, 1000)
+  )
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -332,7 +389,11 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
   const bulkList = (
     <div tw="w-36">
       <Menu>
-        <Menu.Item key="edit" onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} disabled={selectedRowKeys.length > 1}>
+        <Menu.Item
+          key="edit"
+          onClick={() => history.push(`clients/${selectedRowKeys[0]}/edit`)}
+          disabled={selectedRowKeys.length > 1}
+        >
           <div>
             <EditOutlined />
             <span>Edit</span>
@@ -362,6 +423,8 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
       setClientName("");
     }
   }, [selectedRowKeys]);
+  const filledValues = Object.values(filter).filter(value => value);
+  console.log(filledValues,"length");
   return (
     <>
       <div className="layout-content">
@@ -390,9 +453,9 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
                       width: 250,
                     }}
                     onClick={() => history.push("/clients/new")}
-                    tw="cursor-pointer border-2 border-dashed border-grayDefault flex w-72 rounded-md  justify-center items-center"
+                    tw="cursor-pointer min-h-[150px] border-2 border-dashed border-grayDefault flex w-72 rounded-md  justify-center items-center"
                   >
-                    <div tw="flex flex-col">
+                    <div tw="flex flex-col ">
                       <PlusOutlined tw="text-3xl text-green-400" />
                       <span tw="text-lg  font-bold">New Client</span>
                     </div>
@@ -407,6 +470,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
                         size="small"
                         style={{
                           width: 240,
+                          height:150,
                           display: `${i > 3 && "none"}`,
                         }}
                       >
@@ -417,20 +481,20 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
                             tw="w-14 h-14 rounded-full mr-3"
                           />
                           <div tw="flex flex-col ">
-                            <h3 tw="font-bold">
+                            <h3 tw="font-bold whitespace-nowrap">
                               {truncate(
                                 item.first_name + " " + item.last_name,
                                 15
                               )}{" "}
                             </h3>
-                            <p tw="text-sm">
+                            <p tw="text-sm ">
                               {truncate(item.company_name, 18)}
                             </p>
                           </div>
                         </div>
                         <div>
                           <MailOutlined tw="mr-1" />
-                          <span>{truncate(item.email,25)}</span>
+                          <span >{truncate(item.email, 25)}</span>
                         </div>
                         <div>
                           <PhoneOutlined tw="mr-1" />
@@ -493,7 +557,10 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
               </div>
               <div tw="flex relative cursor-pointer">
                 <InputAdvanceSearch
-                  onChange={onChange}
+                  // onChange={onChange}
+                  onKeyUp={(event) => {
+                    setSearchValue.current(event.target.value)
+                  }}
                   name="company_name"
                   placeholder="Search"
                   prefix={<SearchOutlined />}
@@ -503,7 +570,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
                   tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36"
                 >
                   <UnorderedListOutlined />
-                  <span tw="text-xs ml-2">Advanced Search </span>
+                  <span tw="text-xs ml-2">{filledValues.length > 4 ? filledValues.length - 4 + "filter applied" : "Advanced Search"} </span>
                   <CaretDownOutlined tw="ml-1" />
                 </div>
               </div>
@@ -511,7 +578,8 @@ const defaultFooter = () => (<div tw="text-right text-base">Total Outstanding: {
             {isAdvance ? (
               <div tw="bg-gray-100 border-y-2 border-gray-400 p-3 mb-4">
                 <FormAdvanceSearch
-                  form={form}
+                filterProps={[filter, setFilter]} 
+           
                   setIsAdvance={setIsAdvance}
                   searchProps={[searchField, setSearchField]}
                   typeSearchProps={[typeSearch, setTypeSearch]}
@@ -606,5 +674,5 @@ export function getTotal(outstanding) {
   const sum = outstanding.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
-  return `Rp. ${numberWithDot(sum)} IDR`
+  return `Rp. ${numberWithDot(sum)} IDR`;
 }

@@ -6,7 +6,7 @@ import {
   UndoOutlined,
 } from "@ant-design/icons";
 import { Button,  Menu, notification, Popover, } from "antd";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect ,useRef} from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import TableCustom from "../../components/Table";
 import CardDetailInvoice from "../../components/CardDetailInvoice";
@@ -34,7 +34,7 @@ export default function Detail() {
   const [marginResponsive, setMarginResponsive] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-  const [filterPayment, setFilterPayment] = useState({
+  const [filteayment, setFilteayment] = useState({
     payment_method: 1,
     client_id:'',
     limit:10,
@@ -44,7 +44,7 @@ export default function Detail() {
   });
   const { invoiceId } = useParams();
   const {pathname}= useLocation()  
-  const {  setGlobalDetailInvoice } =
+  const {  setGlobalDetailInvoice,user,setting } =
     useContext(AppContext);
 
   const handleClickChange = (open) => {
@@ -53,6 +53,7 @@ export default function Detail() {
   const handleClickChangeList = (open) => {
     setClickedList(open);
   };
+  const ref=useRef()
   const hide = () => {
     setClicked(false);
   };
@@ -84,14 +85,14 @@ export default function Detail() {
   useEffect(() => {
     if (status === "success") {
       setGlobalDetailInvoice(detailInvoice);
-   setFilterPayment({...filterPayment,invoice_id:invoiceId,client_id:detailInvoice.client_id})
+   setFilteayment({...filteayment,invoice_id:invoiceId,client_id:detailInvoice.client_id})
 
     }
   }, [status]);
 
 
   const { data: listPayment, status:statusListPayment } = useQuery(
-    ["payment-listing", filterPayment],
+    ["payment-listing", filteayment],
     async (key) =>
       axios
         .get(`payments`, {
@@ -167,7 +168,7 @@ export default function Detail() {
             <span>Edit</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="refund" /* onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} */ disabled={selectedRowKeys.length > 1}>
+        <Menu.Item key="refund" /* onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} */ disabled>
           <div>
             <UndoOutlined />
             <span>Refund</span>
@@ -239,12 +240,14 @@ export default function Detail() {
       key: "amount",
       dataIndex: "amount",
       render: (text, record) => (
-       <span> Rp{numberWithDot(record.amount)}
+       <span> {numberWithDot(record.amount)}
         </span>
       ),
       sorter: (a, b) => a.amount - b.amount,
     },
   ];
+
+  console.log(detailInvoice,"Cek");
   return (
     <>
       <div className="layout-content">
@@ -287,7 +290,7 @@ export default function Detail() {
             )}
             {status === "success" && (
 
-              <CardDetailInvoice>
+              <CardDetailInvoice ref={ref}>
                 <div tw="grid gap-2 md:flex justify-between mb-10">
                   <img
                     src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"
@@ -295,38 +298,38 @@ export default function Detail() {
                     tw="w-52 h-52"
                   />
                      <div tw="flex justify-between ">
-               <div tw="flex flex-col items-end">
+               <div tw="flex flex-col items-end mr-5">
          
                  <span
             
-                 >name</span>
+                 >{setting?.data?.company_name}</span>
                  <span
               
-                 >phone</span>
+                 >{setting?.data?.phone}</span>
                </div>
                <div tw="flex flex-col items-end">
                  <span
                   
-                 >line_address_1</span>
-                 <span
+                 >{setting?.data?.address}</span>
+                 {/* <span
           
-                 >line_address_2</span>
+                 >line_address_2</span> */}
                  <div tw="flex">
                    <span
                   
-                   >City</span>
+                   >{setting?.data?.city}</span>
                    <span>,</span>
-                   <span
+                   {/* <span
                 
-                   >State</span>
+                   >State</span> */}
                  </div>
         
                  <span
                  
-                 >ZIP_code</span>
+                 >{setting?.data?.zip}</span>
         
-                <span>Indonesia</span>
-                 <div tw="flex">
+                <span>{setting?.data?.country}</span>
+                 {/* <div tw="flex">
                    <span
            
                    >TAX NAME</span>
@@ -334,7 +337,7 @@ export default function Detail() {
                    <span
                  
                    >TAX NUMBER</span>
-                 </div>
+                 </div> */}
                </div>
              </div>
                 </div>
@@ -378,9 +381,9 @@ export default function Detail() {
                </div>
              </div>
              <div tw="text-right">
-               <h3 tw="text-gray-400">Amount Due (IDR)</h3>
+               <h3 tw="text-gray-400">Amount Due </h3>
                <span tw="font-medium text-3xl ">
-                 total
+               {numberWithDot(detailInvoice?.total)}
                </span>
              </div>
            </div>
@@ -405,11 +408,11 @@ export default function Detail() {
                          {detail.description}
                         </span>
                       </th>
-                      <td>Rp{numberWithDot(detail.rate)}</td>
+                      <td>{numberWithDot(detail.rate)}</td>
                       <td></td>
                       <td>{detail.pivot.qty}</td>
 
-                      <td>Rp{numberWithDot(detail.pivot.total)}</td>
+                      <td>{numberWithDot(detail.pivot.total)}</td>
                     </tr> ))}
                   </tbody>
                 </table>
@@ -421,7 +424,7 @@ export default function Detail() {
                     <tbody>
                       <tr tw="text-right">
                         <td>Subtotal</td>
-                        <td>Rp{detailInvoice?.subtotal !== null && numberWithDot(detailInvoice?.subtotal)}</td>
+                        <td>{detailInvoice?.subtotal !== null && numberWithDot(detailInvoice?.subtotal)}</td>
                       </tr>
                       <tr tw="border-b  border-gray-300 text-right">
                         <td>Tax</td>
@@ -429,7 +432,7 @@ export default function Detail() {
                       </tr>
                       <tr tw="text-right ">
                         <td tw="pt-1">Total</td>
-                        <td>Rp{numberWithDot(detailInvoice?.total)}</td>
+                        <td>{numberWithDot(detailInvoice?.total)}</td>
                       </tr>
                       <tr tw="text-right">
                         <td>Amount Paid</td>
@@ -443,8 +446,8 @@ export default function Detail() {
                         </td>
 
                         <td tw=" grid gap-0 items-end ">
-                          <span tw="font-semibold ">Rp6,000.00</span>
-                          <span tw="text-gray-600 text-right">IDR</span>
+                          <span tw="font-semibold ">{numberWithDot(detailInvoice?.total)}</span>
+                          {/* <span tw="text-gray-600 text-right">IDR</span> */}
                         </td>
                       </tr>
                     </tfoot>

@@ -2,14 +2,14 @@ import { DownOutlined, LeftOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
+  DatePicker,
   Divider,
   Form,
   Popover,
   Row,
   Select,
-  Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState,useRef,useContext,useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
@@ -22,6 +22,10 @@ import { bell, toggler } from "../../components/Icons";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { getTotalGlobal, numberWithDot } from "../../components/Utils";
+import moment from "moment";
+import AppContext from "../../components/context/AppContext";
+
+const dateFormat = "DD/MM/YYYY";
 
 export default function AccountTrialBalance() {
   const [open, setOpen] = useState(false);
@@ -29,9 +33,15 @@ export default function AccountTrialBalance() {
   const handleClickChange = (open) => {
     setClicked(open);
   };
+  const ref=useRef()
+  const { setting } = useContext(AppContext);
+  const [newSetting, setNewSetting] = useState(
+    JSON.parse(localStorage.getItem("newSetting")) || { data: "" }
+  );
+  const [form] = Form.useForm();
   const [filter, setFilter] = useState({
-    start_at: "11/10/2022",
-    finish_at:"11/20/2023",
+    start_at: "",
+    finish_at:"",
     currency:"USD"
   });
   const hide = () => {
@@ -39,49 +49,102 @@ export default function AccountTrialBalance() {
   };
   let history = useHistory();
   const onFinish = (values) => {
-    console.log("Success:", values);
+    // console.log(values,"values")
+    setFilter({ ...filter, currency: values.currency === undefined ? "USD":values.currency });
+    setOpen(false);
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+  console.log(filter.currency,"cek")
   const FilterAccountTrialBalance = (
-    <div>
+    <div tw="mt-3">
       <div tw="flex justify-between mb-5">
         <span tw="text-2xl font-bold">Filters</span>
-
-        <span tw="text-xs text-primary">Reset All</span>
+        {/* <div tw="grid">
+            <span tw="text-xs text-primary uppercase">Balance date</span>
+        </div> */}
+        <span tw="text-xs text-primary cursor-pointer" onClick={()=>form.resetFields()}>
+          Reset All
+        </span>
       </div>
       <Form
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         layout="vertical"
         size={"large"}
+        form={form}
         tw="mt-5"
+        fields={[
+         {name:["start_at"],
+         value:filter.start_at
+
+         },
+         {name:["finish_at"],
+         value:filter.finish_at
+         },
+          {
+            name: ["currency"],
+            value: filter?.currency,
+          },
+        ]}
+        initialValues={{
+          
+        }}
       >
         <Row gutter={24}>
+          
+
           <Col span={24}>
-            <Form.Item label="DATE RANGE" name="time">
+            <Form.Item name="start-at">
+              <DatePicker
+                tw="w-full rounded-md"
+                onChange={(date, dateString) =>
+                  setFilter({ ...filter, start_at: dateString })
+                }
+                placeholder="Start"
+                // value={moment(filter.start_at, dateFormat)}
+                defaultValue={filter.start_at ? moment(new Date(filter.start_at), dateFormat) : ""}
+                format={dateFormat}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item name="end-at">
+              <DatePicker
+                tw="w-full rounded-md"
+                onChange={(date, dateString) =>
+                  setFilter({ ...filter, finish_at: dateString })
+                }
+                placeholder="End"
+                defaultValue={filter.finish_at ? moment(new Date(filter.finish_at), dateFormat):""}
+
+                format={dateFormat}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item label="Currency" name="currency">
               <Select
-                defaultValue="today"
                 options={[
                   {
-                    value: "today",
-                    label: "Today",
+                    value: "USD",
+                    label: "USD - US dollar",
                   },
                   {
-                    value: "end_last_month",
-                    label: "End of Last Month",
-                  },
-                  {
-                    value: "end_last_quarter",
-                    label: "End of Last Quarter",
+                    value: "GBP",
+                    label: "GBP - Pound Sterling",
                   },
                 ]}
               />
             </Form.Item>
           </Col>
-
+          {/* <Col span={24}>
+            <Form.Item name="date">
+              <Checkbox>Compare Dates</Checkbox>
+            </Form.Item>
+          </Col> */}
           <Divider />
           <Col span={12}>
             <Button tw="text-lg px-8" onClick={() => setOpen(false)}>
@@ -89,7 +152,12 @@ export default function AccountTrialBalance() {
             </Button>
           </Col>
           <Col span={12}>
-            <Button tw="text-lg text-white bg-success px-8">Apply</Button>
+            <Button 
+            onClick={() => form.submit()}
+            
+            tw="text-lg text-white bg-success px-8">
+              Apply
+            </Button>
           </Col>
         </Row>
       </Form>
@@ -104,7 +172,9 @@ export default function AccountTrialBalance() {
         })
         .then((res) => res.data)
   );
-  console.log(dataTrial,"data");
+  useEffect(() => {
+    setting && localStorage.setItem("newSetting", JSON.stringify(setting));
+  }, [setting]);
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -132,7 +202,7 @@ export default function AccountTrialBalance() {
           <span tw="capitalize text-4xl font-bold text-black">Trial Balance</span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={MoreAction} trigger="click">
+          <Popover placement="bottom" content={<MoreAction ref={ref} />} trigger="click">
             <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />
@@ -147,11 +217,17 @@ export default function AccountTrialBalance() {
       </div>
 
       <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
-        <CardReporting tw="md:col-span-9 mb-10 mt-10 md:mt-2">
+        <CardReporting ref={ref} tw="md:col-span-9 mb-10 mt-10 md:mt-2">
           <h1 tw="text-blueDefault">Trial Balance</h1>
           <div tw="grid">
-            <span tw="text-xs">SJ Marketing</span>
-            <span tw="text-xs">As of Nov 29, 2022</span>
+          <span tw="text-xs">
+              {" "}
+              {setting?.data?.company_name || newSetting?.data?.company_name}
+            </span>
+            <span tw="text-xs">
+              {" "}
+              As of {moment(new Date()).format("MMMM DD, YYYY")}
+            </span>
           </div>
           {statusTrial === "loading" && (
                     <div
@@ -273,13 +349,13 @@ export default function AccountTrialBalance() {
                 <td tw="text-left pt-3">
                   <div tw="grid">
                     <span tw="font-bold">{getTotalGlobal(Object.values(dataTrial?.data))}</span>
-                    <span tw="font-light text-sm">IDR</span>
+                    <span tw="font-light text-sm">{filter.currency}</span>
                   </div>
                 </td>
                 <td tw="text-right pt-3">
                   <div tw="grid">
                     <span tw="font-bold">{getTotalGlobal(Object.values(dataTrial?.data))}</span>
-                    <span tw="font-light text-sm">IDR</span>
+                    <span tw="font-light text-sm">{filter.currency}</span>
                   </div>
                 </td>
               </tr>

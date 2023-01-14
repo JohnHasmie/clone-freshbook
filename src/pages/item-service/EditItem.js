@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import CardPopup from "../../components/CardPopup";
 
-export default function EditItem({query,id,hide,data}) {
+export default function EditItem({query,id,hide,data,clientId}) {
   const queryClient = useQueryClient();
   const [form]=Form.useForm();
   const [isForm, setIsForm] = useState({
@@ -25,7 +25,6 @@ qty:data.current
 
    })
   }, [])
-  
   // const { data: detailItem, status } = useQuery(
   //   "item-detail",
   //   async (key) =>
@@ -53,11 +52,12 @@ qty:data.current
       },
     }
   );
+ 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    let newValues={...values,client_id:data.client_id}
+    let newValues={...values,client_id:clientId,rate:parseInt(values.rate)}
     mutation.mutate(newValues);
     hide()
 
@@ -68,7 +68,7 @@ qty:data.current
   };
   return (
     <>
-      <CardPopup title="New Item" tw="z-30">
+      <CardPopup title="Edit Item" tw="z-30">
         <Form
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
@@ -85,7 +85,7 @@ qty:data.current
             },
             {
               name: ["rate"],
-              value: /* status === "success" && detailItem.item.rate */ isForm.rate,
+              value: isForm.rate,
             },
             {
                 name: ["qty"],
@@ -103,7 +103,7 @@ qty:data.current
             <Input onChange={onChange} name="description" type="text" placeholder="Enter a description" />
           </Form.Item>
           <Form.Item label="Rate" name="rate" tw="px-2">
-            <Input onChange={onChange} name="rate"   type="number" placeholder="$0.00" />
+            <Input onChange={onChange} name="rate"    placeholder="0.00" />
           </Form.Item>
           <Form.Item label="stock" name="qty" tw="px-2">
             <Input onChange={onChange} name="qty" type="number"  />

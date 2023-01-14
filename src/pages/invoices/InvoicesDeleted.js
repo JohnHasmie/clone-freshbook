@@ -105,10 +105,10 @@ export default function InvoicesDeleted() {
               1-{data.length - 1} of {data.length - 1}{" "}
             </span>
           </div>
-
+{/* 
           <div>
             <PaginationFooter />
-          </div>
+          </div> */}
         </div>
       </div>
     </>

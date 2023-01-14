@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Divider, Popover, Menu } from "antd";
+import { Divider, Popover, Menu, notification } from "antd";
 import {
   DownOutlined,
   UserOutlined,
@@ -20,8 +20,9 @@ import {
 } from "../Reports/MoreAction";
 import NewItem from "../NewItem";
 import AppContext from "../context/AppContext";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import axios from "axios";
+import { ModalConfirm } from "../ModalConfirm.style";
 
 const toggler = [
   <svg
@@ -48,7 +49,11 @@ function Header({
 
   const [visible, setVisible] = useState(false);
   const [clicked, setClicked] = useState(false);
+  const [isType, setIsType] = useState(false);
+
   const {  globalDetailClient } = useContext(AppContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   const handleClickChange = (open) => {
     setClicked(open);
@@ -56,7 +61,6 @@ function Header({
   const hide = () => {
     setClicked(false);
   };
-
 
   // useEffect(() => window.scrollTo(0, 0));
   const { status: pdfStatus, refetch: pdfRefetch } = useQuery(
@@ -114,24 +118,18 @@ function Header({
   const createList = (
     <div>
       <Menu theme="light" mode="inline">
-        <Menu.Item>
-          <NavLink to="/global-settings">
+        <Menu.Item onClick={()=>history.push("/clients/new")}>
             <AppstoreOutlined />
             <span>Client</span>
-          </NavLink>
         </Menu.Item>
 
-        <Menu.Item>
-          <NavLink to="/invoices/new">
+        <Menu.Item onClick={()=>history.push("/invoices/new")}>
             <FileDoneOutlined />
             <span>Invoice</span>
-          </NavLink>
         </Menu.Item>
-        <Menu.Item>
-          <NavLink to="/invoices/new">
+        <Menu.Item onClick={()=>history.push("/recurring-template/new")}>
             <FileTextOutlined />
             <span>Recurring Template</span>
-          </NavLink>
         </Menu.Item>
       </Menu>
     </div>
@@ -186,7 +184,101 @@ function Header({
       ></path>
     </svg>,
   ];
+  const onSelectFile = (e) => {
+    const formData = new FormData();
+    formData.append("file", e.target.files[0]);
+    mutationUpload.mutate(formData);
+  };
+  const mutationUpload = useMutation(
+    async (data) => {
+      return axios
+        .post("items/import", data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => res.data);
+    },
 
+  );
+  const handleOk = () => {
+  
+const dataArchive={
+  ids:[globalDetailClient?.id],
+  status:"archive"
+}
+    if(isType === "archive"){
+      mutationArchive.mutate(dataArchive)
+      }
+      else{
+        mutation.mutate()
+      }
+
+    setIsModalOpen(false);
+  };
+  const mutationArchive = useMutation(
+    async (data) => {
+      return axios.put(`clients/status`,data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+   history.push('/clients')
+        notification.success({
+          message: `Client  has been successfully archived.`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const mutation = useMutation(
+    async (data) => {
+      return axios.delete(`clients/${globalDetailClient?.id}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        history.push('/clients')
+
+        notification.success({
+          message: `Client  has been successfully deleted.`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const handleModal = (type) => {
+    switch (type.key) {
+      case "archive":
+        setIsType("archive");
+        break;
+      case "delete":
+        setIsType("delete");
+        break;
+      default:
+        setIsType("");
+        break;
+    }
+    // if (type.client) {
+    //   setClientName(type.client);
+    // }
+
+    setIsModalOpen(true);
+    setClicked(false);
+  };
 
   return (
     <>
@@ -209,19 +301,13 @@ function Header({
             </span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-            <Popover placement="bottom" content={content} trigger="click">
+            {/* <Popover placement="bottom" content={content} trigger="click" tw="hidden">
               <ButtonInvite tw="!py-6 md:mr-5">
                 <span>Invite</span>
                 <DownOutlined />
-                {/* <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 512 512"
-              tw="fill-blue-500"
-            >
-              <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" />
-            </svg> */}
+         
               </ButtonInvite>
-            </Popover>
+            </Popover> */}
             <Popover placement="bottom" content={createList} trigger="click">
               <ButtonCustom tw="!py-6 bg-success text-white">
                 <span>Create New... </span>
@@ -267,10 +353,25 @@ function Header({
           <div tw="flex items-center">
             <span tw="capitalize text-4xl font-bold">{globalDetailClient?.company_name}</span>
           </div>
+          <ModalConfirm
+              title="Confirm"
+              visible={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+              width={500}
+              closable={false}
+            >
+              <span tw="text-lg">
+                {globalDetailClient?.company_name
+                  && `Are you sure you want to ${isType} ${globalDetailClient?.company_name}?`
+                  }
+              </span>
+            </ModalConfirm>
+
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <Popover
               placement="bottom"
-              content={<MoreActionClientsDetail globalDetailClient={globalDetailClient} history={history}/>}
+              content={<MoreActionClientsDetail globalDetailClient={globalDetailClient} history={history} handleModal={handleModal} />}
               trigger="click"
             >
               <ButtonInvite tw="!py-6 md:mr-5">
@@ -403,7 +504,23 @@ function Header({
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <ButtonInvite tw="!py-6 md:mr-2">
+            <label
+                  htmlFor="import-file"
+                  tw="cursor-pointer"
+      
+                >
+                  <input
+                    type="file"
+                    name="import-file"
+                    id="import-file"
+                    style={{ display: "none" }}
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                    // accept="image/jpeg, image/jpg, image/png"
+                    onChange={onSelectFile}
+                  />
+           
               <span>Import Items</span>
+                </label>
             </ButtonInvite>
             <Popover
               placement="bottomLeft"
@@ -440,14 +557,14 @@ function Header({
               {subName.replace("/", "")}
             </span>
           </div>
-          <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
+          {/* <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <Popover placement="bottom" content={content} trigger="click">
               <ButtonInvite tw=" md:mr-5">
                 <span>Invite</span>
                 <DownOutlined />
               </ButtonInvite>
             </Popover>
-          </div>
+          </div> */}
 
           <Divider tw="md:col-span-2" />
         </div>

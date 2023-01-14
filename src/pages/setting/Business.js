@@ -111,6 +111,8 @@ export default function Business() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
+  console.log(setting?.data?.address);
   return (
     <>
       <Form
@@ -204,8 +206,8 @@ export default function Business() {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Address Line 1" name="address">
-                <Input name="address" type="text" />
+              <Form.Item label="Address Line 1" name="addres" rules={[{ required: true , message:"Address Required"}]}>
+                <Input name="addres" type="text" />
               </Form.Item>
             </Col>
             <Col span={24}>
