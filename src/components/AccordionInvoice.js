@@ -1,6 +1,8 @@
-import { Button, Collapse, Form, Input } from "antd";
+import { Button, Collapse, Form, Input, notification } from "antd";
 import CollapsePanel from "antd/lib/collapse/CollapsePanel";
+import axios from "axios";
 import React, { useState, useContext } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import tw from "twin.macro";
 import { AccordionCustomPanel } from "./AccordionCustom.style";
 import AppContext from "./context/AppContext";
@@ -13,6 +15,40 @@ export default function AccordionInvoice() {
   const [message, setMessage] = useState("");
   const { globalDetailInvoice } = useContext(AppContext);
   console.log(globalDetailInvoice?.status,"cek");
+  const onFinish=(values)=>{
+    console.log("cek atas",message);
+    mutation.mutate({invoice_id:globalDetailInvoice?.id,
+    body:message
+    })
+  }
+  const queryClient = useQueryClient();
+console.log(globalDetailInvoice);
+  const { data: dataComment, status: statusComment } = useQuery(
+    "comment-listing",
+    () => axios.get(`invoices/${globalDetailInvoice?.id}/comments?limit=11`).then((res) => res.data?.data)
+  );
+console.log(dataComment,"data Commment");
+  const mutation = useMutation(
+    async (data) => {
+      return axios.post("invoices/comments", data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries("comment-listing");
+        notification.success({
+          message: `Comment has been added`,
+          placement: "topLeft",
+        });
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        console.log(err.response.data.message);
+      },
+    }
+  );
   return (
     <Collapse tw="md:ml-5 mb-10 " defaultActiveKey={[]} onChange={onChange}>
          {globalDetailInvoice === "" && (
@@ -36,9 +72,11 @@ export default function AccordionInvoice() {
         </div>
       )}
   { globalDetailInvoice &&  <AccordionCustomPanel bg={translateBg(globalDetailInvoice?.status)} header={globalDetailInvoice?.status } key="status">
-        <Form>
+        <Form
+        onFinish={onFinish}
+        >
           <ul style={{ paddingInlineStart: "30px" }}>
-            <li>You created this invoice</li>
+           {statusComment === "success" && dataComment?.data?.map((item,i)=>(<li key={i}>{item.body}</li>))}
           </ul>
           <Form.Item tw="flex" name="message">
             <span tw="rounded-full p-2 border border-green-200 text-lg font-bold">
@@ -53,7 +91,7 @@ export default function AccordionInvoice() {
               placeholder="Send a message"
             />
             {message ? (
-              <Button tw="bg-success text-white text-lg ">Send</Button>
+              <Button htmlType="submit" tw="bg-success text-white text-lg ">Send</Button>
             ) : (
               <></>
             )}

@@ -7,7 +7,7 @@ import {
   Popover,
   Typography,
 } from "antd";
-import React, { useState, useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import tw from "twin.macro";
 
@@ -37,7 +37,7 @@ import AppContext from "../../components/context/AppContext";
 export default function FormInvoice() {
   const [open, setOpen] = useState(false);
   const [isTitle, setIsTitle] = useState("Invoice");
-  const {setting}= useContext(AppContext)
+  const { setting } = useContext(AppContext);
 
   const { pathname } = useLocation();
   const { invoiceId } = useParams();
@@ -78,7 +78,6 @@ export default function FormInvoice() {
     () => axios.get("settings").then((res) => res.data?.data)
   );
 
-
   const [uploadLoading, setUploadLoading] = useState(false);
 
   const [filter, setFilter] = useState({
@@ -105,8 +104,13 @@ export default function FormInvoice() {
   }, [pathname]);
 
   useEffect(() => {
-    settingStatus && setIsForm({...isForm,company_name:settingData?.setting?.company_name,phone:settingData?.setting?.phone})
-  }, [settingStatus])
+    settingStatus &&
+      setIsForm({
+        ...isForm,
+        company_name: settingData?.setting?.company_name,
+        phone: settingData?.setting?.phone,
+      });
+  }, [settingStatus]);
 
   useEffect(() => {
     if (status === "success") {
@@ -176,11 +180,27 @@ export default function FormInvoice() {
         history.push("/invoices");
       },
       onError: (err) => {
-        notification.error({
-          message: `An Error Occurred Please Try Again Later`,
-          placement: "topLeft",
-        });
-        console.log(err.response.data.message);
+        switch (err?.response?.status) {
+          case 422:
+            notification.error({
+              message: `Fields required input`,
+              placement: "topLeft",
+            });
+            break;
+          case 500:
+            notification.error({
+              message: `Internal Server Error`,
+              placement: "topLeft",
+            });
+            break;
+
+          default:
+            notification.error({
+              message: `An Error Occurred Please Try Again Later`,
+              placement: "topLeft",
+            });
+            break;
+        }
       },
     }
   );
@@ -193,7 +213,7 @@ export default function FormInvoice() {
 
       attachments: fileListAttach,
     };
-    if (pathname.includes('edit')) {
+    if (pathname.includes("edit")) {
       mutationUpdate.mutate(newData);
     } else {
       mutation.mutate(newData);
@@ -258,13 +278,7 @@ export default function FormInvoice() {
     imgWindow?.document.write(image.outerHTML);
   };
 
-  const [fileListAttach, setFileListAttach] = useState([
-    {
-      name: "Screenshot from 2023-01-13 19-31-20.png",
-      size: 69608,
-      url: "http://api.your-web.solutions/storage/file/69a19bd12ab9a47005dc126849215c44.png",
-    },
-  ]);
+  const [fileListAttach, setFileListAttach] = useState([]);
   const actionUpload = async (options) => {
     const formData = new FormData();
     formData.append("file", options.file);
@@ -303,11 +317,10 @@ export default function FormInvoice() {
   const uploadButton = (
     <div>
       {uploadLoading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
+      <div style={{ marginTop: 8 }}>Add an attachment</div>
     </div>
   );
   const token = JSON.parse(localStorage.getItem("auth-data"));
-  console.log(lines);
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
@@ -379,7 +392,7 @@ export default function FormInvoice() {
                 {fileList.length < 1 && "+ Upload"}
               </UploadCustom>
               <div tw="flex justify-between ">
-                <div tw="flex flex-col items-end">
+                <div tw="flex flex-col items-end ">
                   <span
                     contentEditable
                     suppressContentEditableWarning
@@ -388,10 +401,13 @@ export default function FormInvoice() {
                     tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
                     onInput={(e) =>
                       handleInput({
-                        target: { value: e.target.innerHTML, name: "company_name" },
+                        target: {
+                          value: e.target.innerHTML,
+                          name: "company_name",
+                        },
                       })
                     }
-                    html={isForm.name}
+                    dangerouslySetInnerHTML={{ __html: isForm.company_name }}
                   ></span>
                   <span
                     contentEditable
@@ -404,10 +420,10 @@ export default function FormInvoice() {
                         target: { value: e.target.innerHTML, name: "phone" },
                       })
                     }
-                    html={isForm.phone}
+                    dangerouslySetInnerHTML={{ __html: isForm.phone }}
                   ></span>
                 </div>
-                <div tw="flex flex-col items-end">
+                {/* <div tw="flex flex-col items-end">
                   <span
                     contentEditable
                     suppressContentEditableWarning
@@ -536,35 +552,58 @@ export default function FormInvoice() {
                       html={isForm.tax_number}
                     ></span>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
             <div tw="grid grid-cols-4 gap-5 mb-16">
               <InvoiceHead clientProps={[isClient, setIsClient]} />
               <div tw="space-y-5 ">
                 <div>
-                  <h4 tw="text-gray-400">Date of Issue</h4>
+                  <Form.Item
+                    label="Date of Issue"
+                    name="issued_at"
+                    rules={[
+                      { required: true, message: "Please select a date!" },
+                    ]}
+                  >
+                    {/* <h4 tw="text-gray-400">Date of Issue</h4> */}
 
-                  <DatePickerCustom
-                    bordered={false}
-                    onChange={(date, dateString) =>
-                      setIsForm({ ...isForm, issued_at: dateString })
-                    }
-                    value={isForm.issued_at && moment(new Date(isForm.issued_at), dateFormat)}
-                    format={dateFormat}
-                  />
+                    <DatePickerCustom
+                      bordered={false}
+                      onChange={(date, dateString) =>
+                        setIsForm({ ...isForm, issued_at: dateString })
+                      }
+                      value={
+                        isForm.issued_at &&
+                        moment(new Date(isForm.issued_at), dateFormat)
+                      }
+                      format={dateFormat}
+                    />
+                  </Form.Item>
                 </div>
 
                 <div>
-                  <h4 tw="text-gray-400">Due Date</h4>
-                  <DatePickerCustom
-                    bordered={false}
-                    onChange={(date, dateString) =>
-                      setIsForm({ ...isForm, due_date: dateString })
-                    }
-                    value={isForm.due_date && moment(new Date(isForm.due_date), dateFormat)}
-                    format={dateFormat}
-                  />
+                <Form.Item
+                    label="Due Date"
+                    name="due_date"
+                    rules={[
+                      { required: true, message: "Please select a date!" },
+                    ]}
+                  >
+                    {/* <h4 tw="text-gray-400">Date of Issue</h4> */}
+
+                    <DatePickerCustom
+                      bordered={false}
+                      onChange={(date, dateString) =>
+                        setIsForm({ ...isForm, due_date: dateString })
+                      }
+                      value={
+                        isForm.due_date &&
+                        moment(new Date(isForm.due_date), dateFormat)
+                      }
+                      format={dateFormat}
+                    />
+                  </Form.Item>
                 </div>
               </div>
               <div tw="space-y-5 ">
@@ -717,7 +756,9 @@ export default function FormInvoice() {
             </UploadCustom>
           </Card>
         </div>
-        <Filter Filtering={RecurringSettings} setOpen={setOpen} open={true} />
+ 
+          <Filter Filtering={RecurringSettings} setOpen={setOpen} open={true} />
+
       </Form>
     </div>
   );

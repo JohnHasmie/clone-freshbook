@@ -169,7 +169,7 @@ const Items = () => {
 
   const mutation = useMutation(
     async (data) => {
-      return axios.delete(`items/${clientId}/${data}`).then((res) => res.data);
+      return axios.delete(`items/${data}`).then((res) => res.data);
     },
     {
       onSuccess: () => {

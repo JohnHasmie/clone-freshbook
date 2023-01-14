@@ -112,7 +112,6 @@ export default function Business() {
     console.log("Failed:", errorInfo);
   };
 
-  console.log(setting?.data?.address);
   return (
     <>
       <Form

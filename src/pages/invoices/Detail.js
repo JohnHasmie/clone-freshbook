@@ -5,7 +5,7 @@ import {
   RestOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { Button,  Menu, notification, Popover, } from "antd";
+import { Button,  Card,  Menu, notification, Popover, } from "antd";
 import React, { useState, useContext, useEffect ,useRef} from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import TableCustom from "../../components/Table";
@@ -247,11 +247,10 @@ export default function Detail() {
     },
   ];
 
-  console.log(detailInvoice,"Cek");
   return (
     <>
       <div className="layout-content">
-        <div tw="grid grid-cols-1 md:grid-cols-12 justify-items-center max-w-screen-lg" style={{ marginBottom: marginResponsive }}>
+        <div tw="grid grid-cols-1 md:grid-cols-12 justify-items-center max-w-screen-sm" style={{ marginBottom: marginResponsive }}>
           <div tw="md:col-span-12 mb-10 ">
             {/* <p>
               {" "}
@@ -289,7 +288,7 @@ export default function Detail() {
               </div>
             )}
             {status === "success" && (
-
+<>
               <CardDetailInvoice ref={ref}>
                 <div tw="grid gap-2 md:flex justify-between mb-10">
                   <img
@@ -454,9 +453,22 @@ export default function Detail() {
                   </table>
                 </div>
               </CardDetailInvoice>
+              <Card tw="border-gray-200 rounded-lg p-5 mt-5">
+          {detailInvoice?.attachments?.length !== null &&    detailInvoice?.attachments?.map((item,i)=>(
+
+           <img
+           key={i}
+                src={item.url}
+                tw="rounded-lg w-48 h-48"
+                alt={item.name}
+                /> ))}
+                </Card>
+
+</>
+
             )}
        { !pathname.includes('recurring') && <>
-             <div tw="mt-20">
+             <div tw="mt-20 w-auto">
                <div tw="flex items-center ">
                  <span tw="text-xl font-bold text-black">
                    All Payment for Invoices {detailInvoice?.code}{" "}

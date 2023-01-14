@@ -321,6 +321,7 @@
 // }
 
 import {
+  CalendarOutlined,
   CaretDownOutlined,
   CloseOutlined,
   CopyOutlined,
@@ -346,6 +347,7 @@ import {
   Divider,
   Form,
   Menu,
+  notification,
   Popover,
   Tooltip,
   Typography,
@@ -360,12 +362,13 @@ import { FormAdvanceSearchInvoice } from "../clients/FormAdvanceSearch";
 import InvoiceTabs from "./InvoicesTabs";
 import TabHome from "../clients/TabHome";
 import PaginationFooter from "../../components/layout/PaginationFooter";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { numberWithDot, translateBg } from "../../components/Utils";
 import moment from "moment";
 import ListCardInvoice from "./ListCardInvoice";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import FilterDate from "./FilterDate";
 
 export default function Invoices() {
   const { Title } = Typography;
@@ -375,11 +378,18 @@ export default function Invoices() {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    type:"recurring",
+    mode:"published",
+    start_date: "",
+    end_date: "",
+    date_type: "last_invoice",
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isType, setIsType] = useState("");
+  const [isInvoiceId, setIsInvoiceId] = useState("");
+  const queryClient = useQueryClient();
 
   const handleModal = (type) => {
     switch (type.key) {
@@ -401,20 +411,81 @@ export default function Invoices() {
     setIsModalOpen(false);
   };
   const handleOk = () => {
-    // switch (isType) {
-    //   case "archive":
-    //     mutationArchive.mutate(selectedRowKeys[0]);
-    //     break;
-    //   case "delete":
-    //     mutation.mutate(selectedRowKeys[0]);
-    //     break;
-    //   default:
-    //     setIsType("");
-    //     break;
-    // }
+    switch (isType) {
+      case "archive":
+        if (selectedRowKeys.length === 0) {
+          mutationArchive.mutate({ ids: [isInvoiceId], mode: "archive" });
+        } else {
+          mutationArchive.mutate({ ids: selectedRowKeys, mode: "archive" });
+        }
+        break;
+      case "delete":
+        if (isInvoiceId) {
+          mutation.mutate(isInvoiceId);
+        } else {
+          mutation.mutate(selectedRowKeys[0]);
+        }
+        break;
+      default:
+        setIsType("");
+        break;
+    }
 
     setIsModalOpen(false);
   };
+  const mutationArchive = useMutation(
+    async (data) => {
+      return axios.put(`invoices/view`, data).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("recurring-listing");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `The selected ${
+            selectedRowKeys.length > 1 ? selectedRowKeys.length : ""
+          } invoices
+          has been succesfully archived`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const mutation = useMutation(
+    async (data) => {
+      return axios.delete(`invoices/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("recurring-listing");
+        }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `The selected ${
+            selectedRowKeys.length > 1 && selectedRowKeys.length
+          } invoices
+          has been succesfully deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
   const [searchField, setSearchField] = useState({
     company_name: "",
     name: "",
@@ -442,7 +513,7 @@ export default function Invoices() {
   };
 
   const { data: dataInvoices, status } = useQuery(
-    ["invoices-listing", filter],
+    ["recurring-listing", filter],
     async (key) =>
       axios
         .get("invoices", {
@@ -563,6 +634,11 @@ export default function Invoices() {
       case "payment":
         history.push(`/invoices/${record.key}/edit`);
         break;
+        case "delete":
+          setIsInvoiceId(record.key)
+          handleModal({ key: "undelete" })
+
+          break;
 
       default:
         history.push(`/invoices`);
@@ -572,6 +648,9 @@ export default function Invoices() {
   };
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const hide = () => {
+    setClicked(false);
   };
   const rowSelection = {
     selectedRowKeys,
@@ -633,9 +712,9 @@ export default function Invoices() {
                     onClick={() => history.push("/recurring-template/new")}
                     tw="cursor-pointer border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
                   >
-                    <div tw="flex flex-col">
+                    <div tw="flex flex-col items-center">
                       <PlusOutlined tw="text-xl text-green-400" />
-                      <span tw="text-base  font-bold">
+                      <span tw="text-base text-center  font-bold">
                         New Recurring Template
                       </span>
                     </div>
@@ -703,18 +782,25 @@ export default function Invoices() {
                 )}
               </div>
               <div tw="flex relative cursor-pointer">
-                <InputAdvanceSearch prefix={<SearchOutlined />} />
+                <InputAdvanceSearch onChange={(e)=>setSearchField({...searchField,company_name:e.target.value})} prefix={<SearchOutlined />} />
                 <div
                   onClick={() => setIsAdvance(!isAdvance)}
                   tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center px-1"
                 >
-                  <UnorderedListOutlined />
-                  <span tw="text-xs ml-2">Advanced Search </span>
+                     <Popover
+              placement="bottomLeft"
+              content={<FilterDate hide={hide} filterProps={[filter,setFilter]} />}
+              trigger="click"
+              visible={clicked}
+              onVisibleChange={handleClickChange}
+            >
+                  <CalendarOutlined/>
                   <CaretDownOutlined tw="ml-1" />
+                  </Popover>
                 </div>
               </div>
             </div>
-            {isAdvance ? (
+            {/* {isAdvance ? (
               <div tw="bg-gray-100 border-y-2 border-gray-400 p-3 mb-4">
                 <FormAdvanceSearchInvoice
                   form={form}
@@ -723,7 +809,7 @@ export default function Invoices() {
               </div>
             ) : (
               <></>
-            )}
+            )} */}
             <ModalConfirm
               title="Confirm"
               visible={isModalOpen}
@@ -735,12 +821,12 @@ export default function Invoices() {
               <span tw="text-lg">
                 {isType === "archive"
                   ? `Are you sure you want to archive ${
-                      selectedRowKeys.length === 1
+                      selectedRowKeys.length < 2
                         ? "this"
                         : selectedRowKeys.length
                     } recurring template? Archived templates are still active - they just don't appear in your regular list.`
                   : `Are you sure you want to delete ${
-                      selectedRowKeys.length === 1
+                      selectedRowKeys.length < 2
                         ? "this"
                         : selectedRowKeys.length
                     } recurring template?`}
@@ -770,14 +856,14 @@ export default function Invoices() {
               </div>
               <div tw="flex flex-col items-center">
                 <button
-                  onClick={() => history.push("/invoices/archived")}
+                  onClick={() => history.push("/invoices/recurring-templates/archived")}
                   tw="cursor-pointer border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-400 "
                 >
                   View Archived Recurring Templates
                 </button>
                 <p tw="text-xs text-gray-500">
                   or{" "}
-                  <Link tw="underline text-gray-500" to="/invoices/deleted">
+                  <Link tw="underline text-gray-500" to="/invoices/recurring-templates/deleted">
                     deleted
                   </Link>
                 </p>

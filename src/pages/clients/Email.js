@@ -320,6 +320,8 @@ export default function Email() {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    status:"send",
+    mode:"published"
   });
   const [searchField, setSearchField] = useState({
     company_name: "",
@@ -401,6 +403,18 @@ export default function Email() {
         })
         .then((res) => res.data.data)
   );
+  const { data: dataSentEmail, status:statuSentEmail } = useQuery(
+    ["sent-email-listing", filter],
+    async (key) =>
+      axios
+        .get("invoices", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
+
+
+  console.log(dataSentEmail,"data");
 
   
 

@@ -104,8 +104,7 @@ export default function Clients() {
     }
 
     if (type.client && selectedRowKeys.length < 2) {
-      console.log("berjalan");
-      // setClientName(type.client);
+      setClientName(type.client);
     }
 
     setIsModalOpen(true);
