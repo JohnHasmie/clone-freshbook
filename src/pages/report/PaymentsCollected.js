@@ -35,7 +35,7 @@ export default function PaymentsCollected() {
   });
   const [form] = Form.useForm();
 
-  const ref = useRef();
+  const myRef = useRef(null);
   const { data: dataPayment, status: statusPayment } = useQuery(
     ["balance-sheet", filter],
     async (key) =>
@@ -253,7 +253,6 @@ export default function PaymentsCollected() {
     //   </Form>
     // </div>
   );
-  console.log(dataPayment?.data?.data?.map(item=>item?.amount))
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -285,7 +284,7 @@ export default function PaymentsCollected() {
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <Popover
             placement="bottom"
-            content={<MoreAction ref={ref} />}
+            content={<MoreAction myRef={myRef} />}
             trigger="click"
           >
             <ButtonMore tw="w-full">
@@ -308,7 +307,9 @@ export default function PaymentsCollected() {
       </div>
 
       <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
-        <CardReporting ref={ref} tw="md:col-span-9 mb-10 mt-10 md:mt-2">
+        <div ref={myRef} tw="md:col-span-9 mb-10 mt-10 md:mt-2">
+
+        <CardReporting >
           <h1 tw="text-blueDefault">Payments Collected</h1>
           <div tw="my-3 flex flex-col">
             <span tw="text-sm text-gray-600">Oasis Land</span>
@@ -378,13 +379,14 @@ export default function PaymentsCollected() {
 
                       <td tw="text-right ">
                         {
-                          dataPayment?.data?.data?.length > 1 &&
+                          dataPayment?.data?.data?.length > 0 &&
                           getTotalGlobal(
                             dataPayment?.data?.data?.map((item) => {
                               const splitAmount = item?.amount?.split(".");
                               return parseInt(splitAmount[0]);
                             })
-                          )}
+                          )
+                          }
                         <span tw="font-thin text-gray-400 ml-1">
                           {filter.currency}
                         </span>{" "}
@@ -474,6 +476,8 @@ export default function PaymentsCollected() {
             </table>
           </div> */}
         </CardReporting>
+        </div>
+
         <Filter
           Filtering={FilterRevenueByClient}
           setOpen={setOpen}

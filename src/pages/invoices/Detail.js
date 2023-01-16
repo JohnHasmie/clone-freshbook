@@ -44,16 +44,17 @@ export default function Detail() {
   });
   const { invoiceId } = useParams();
   const {pathname}= useLocation()  
-  const {  setGlobalDetailInvoice,user,setting } =
+  const {  setGlobalDetailInvoice,user,setting,refInvoice } =
     useContext(AppContext);
 
   const handleClickChange = (open) => {
     setClicked(open);
   };
+  console.log(refInvoice,"ref");
   const handleClickChangeList = (open) => {
     setClickedList(open);
   };
-  const ref=useRef()
+ 
   const hide = () => {
     setClicked(false);
   };
@@ -289,7 +290,7 @@ export default function Detail() {
             )}
             {status === "success" && (
 <>
-              <CardDetailInvoice ref={ref}>
+              <CardDetailInvoice ref={refInvoice}>
                 <div tw="grid gap-2 md:flex justify-between mb-10">
                   <img
                     src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"

@@ -19,7 +19,7 @@ import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
 import Business from "./pages/setting/Business";
 import EmailNotification from "./pages/setting/EmailNotification";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import axios from "axios";
 import useAuth, { unsetClientCredential } from "./hooks/useAuth";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -65,6 +65,7 @@ import FormClient from "./pages/clients/FormClient";
 import FormRecurringTemplate from "./pages/invoices/FormRecurringTemplate";
 import FormInvoice from "./pages/invoices/FormInvoice";
 import AccountAgingPrint from "./pages/report/AccountAgingPrint";
+import AccountBalancePrint from "./pages/report/AccountBalancePrint";
 
 const queryClient = new QueryClient();
 
@@ -77,7 +78,7 @@ function App() {
   const [globalDetailClient, setGlobalDetailClient] = useState("");
   const [globalDetailInvoice, setGlobalDetailInvoice] = useState("");
   const [globalOutstanding, setGlobalOutstanding] = useState("");
-
+const refInvoice=useRef(null)
 
 
 
@@ -124,6 +125,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AppContext.Provider
           value={{
+            refInvoice:refInvoice,
             user: user,
             setting:setting,
             globalDetailClient:globalDetailClient,
@@ -179,6 +181,11 @@ function App() {
               exact
               path="/dashboard/reports/balance"
               component={AccountBalance}
+            />
+               <Route
+              exact
+              path="/dashboard/reports/balance/print"
+              component={AccountBalancePrint}
             />
             <Route
               exact

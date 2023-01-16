@@ -20,7 +20,7 @@ import {
 } from "../Reports/MoreAction";
 import NewItem from "../NewItem";
 import AppContext from "../context/AppContext";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { ModalConfirm } from "../ModalConfirm.style";
 
@@ -53,6 +53,8 @@ function Header({
 
   const {  globalDetailClient } = useContext(AppContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+
 
 
   const handleClickChange = (open) => {
@@ -188,6 +190,7 @@ function Header({
     const formData = new FormData();
     formData.append("file", e.target.files[0]);
     mutationUpload.mutate(formData);
+    
   };
   const mutationUpload = useMutation(
     async (data) => {
@@ -199,6 +202,33 @@ function Header({
         })
         .then((res) => res.data);
     },
+    {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries("items-by-client");
+        notification.success({
+          message: `The selected items has been imported.
+          `,
+          placement: "topLeft",
+        });
+      },
+      onError: (err) => {
+        switch (err?.response?.status) {
+          case 500:
+            notification.error({
+              message: `Internal Server Error`,
+              placement: "topLeft",
+            });
+            break;
+
+          default:
+            notification.error({
+              message: `An Error Occurred Please Try Again Later`,
+              placement: "topLeft",
+            });
+            break;
+        }
+      },
+    }
 
   );
   const handleOk = () => {
@@ -515,7 +545,6 @@ const dataArchive={
                     id="import-file"
                     style={{ display: "none" }}
                     accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                    // accept="image/jpeg, image/jpg, image/png"
                     onChange={onSelectFile}
                   />
            

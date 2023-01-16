@@ -1,16 +1,21 @@
 import {
   Button,
   Card,
+  Col,
+  DatePicker,
+  Divider,
   Form,
-  List,
+  Input,
   notification,
   Popover,
+  Radio,
+  Row,
+  Select,
   Typography,
 } from "antd";
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import tw from "twin.macro";
-
 import { bell, toggler } from "../../components/Icons";
 import ButtonCustom from "../../components/Button/index";
 import { SettingButton } from "./NewInvoice.style";
@@ -33,9 +38,14 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import AppContext from "../../components/context/AppContext";
+import InvoicesSetting from "./InvoicesSetting";
+import CreateRecurring from "./CreateRecurring";
+import { DividerCustom } from "../clients/AdvanceSearch.style";
 
 export default function FormInvoice() {
   const [open, setOpen] = useState(false);
+  const [isRecurring, setIsRecurring] = useState(false);
+
   const [isTitle, setIsTitle] = useState("Invoice");
   const { setting } = useContext(AppContext);
 
@@ -44,6 +54,8 @@ export default function FormInvoice() {
 
   const [clicked, setClicked] = useState(false);
   const [lines, setLines] = useState([]);
+  const [toggleInvoiceNumber, setToggleInvoiceNumber] = useState("");
+
 
   const handleClickChange = (open) => {
     setClicked(open);
@@ -77,6 +89,12 @@ export default function FormInvoice() {
     "settings",
     () => axios.get("settings").then((res) => res.data?.data)
   );
+  const [formRecurring, setFormRecurring] = useState({
+    recurring_type: "weekly",
+    recurring_next_issue_date: new Date(),
+    date_type: 0,
+    delivery_option:"send_invoice"
+  });
 
   const [uploadLoading, setUploadLoading] = useState(false);
 
@@ -85,7 +103,7 @@ export default function FormInvoice() {
   });
   const [isClient, setIsClient] = useState("");
   const [form] = Form.useForm();
-  const dateFormat = "DD/MM/YYYY";
+  const dateFormat = "MMMM DD,YYYY";
   const queryClient = useQueryClient();
 
   const { data: detailInvoice, status } = useQuery(
@@ -139,6 +157,14 @@ export default function FormInvoice() {
       setIsClient(detailInvoice.client_id);
     }
   }, [status]);
+
+  useEffect(() => {
+   if(formRecurring.date_type === null){ 
+   setToggleInvoiceNumber(true) }
+   if(formRecurring.date_type === 0){ 
+    setToggleInvoiceNumber(false) }
+  }, [formRecurring])
+  
 
   const handleInput = (e) => {
     setIsForm({ ...isForm, [e.target.name]: e.target.value });
@@ -206,46 +232,196 @@ export default function FormInvoice() {
   );
   const onFinish = (values) => {
     form.submit();
-    const newData = {
-      ...isForm,
-      items: lines,
-      client_id: isClient,
 
-      attachments: fileListAttach,
-    };
+    let newData=""
+    if(isRecurring){
+       newData = {
+        ...isForm,
+        // items: lines,
+        items: [
+          {
+              "id": 1,
+              "qty": 2
+          },
+          {
+              "id": 3,
+              "qty": 2
+          }
+      ],
+        client_id: isClient,
+  ...formRecurring,
+        attachments: fileListAttach,
+      };
+    }else{
+      newData = {
+        ...isForm,
+        // items: lines,
+        items: [
+          {
+              "id": 1,
+              "qty": 2
+          },
+          {
+              "id": 3,
+              "qty": 2
+          }
+      ],
+        client_id: isClient,
+        attachments: fileListAttach,
+      };
+    }
+   
     if (pathname.includes("edit")) {
       mutationUpdate.mutate(newData);
     } else {
       mutation.mutate(newData);
     }
-    console.log("Success submitted:", newData);
   };
+  const onFinishRecurring=()=>{
+    setOpen(false)
+  }
 
+  // const RecurringSettings = (
+  //   <div>
+  //     <div tw="flex justify-between ">
+  //       <Title level={3}>Settings</Title>
+  //     </div>
+  //     <List
+  //       itemLayout="horizontal"
+  //       dataSource={[
+  //         {
+  //           title: "Make Recurring",
+  //           desc: "Bill your clients automatically",
+  //         },
+  //       ]}
+  //       renderItem={(item) => (
+  //         <List.Item>
+  //           <SettingButton>
+  //             <strong>{item.title}</strong>
+  //             <span>{item.desc}</span>
+  //           </SettingButton>
+  //         </List.Item>
+  //       )}
+  //     />
+  //   </div>
+  // );
   const RecurringSettings = (
-    <div>
+    <div tw="mt-3">
       <div tw="flex justify-between ">
-        <Title level={3}>Settings</Title>
+        <Title level={3}>Recurring Schedule
+</Title>
+       
       </div>
-      <List
-        itemLayout="horizontal"
-        dataSource={[
+      <Form
+        onFinish={onFinishRecurring}
+        layout="vertical"
+        size={"large"}
+        tw="mt-5"
+        fields={[
           {
-            title: "Make Recurring",
-            desc: "Bill your clients automatically",
+            name: ["recurring_type"],
+            value: formRecurring?.recurring_type,
           },
+          {
+            name:["recurring_next_issue_date"],
+            value: moment(new Date(formRecurring.recurring_next_issue_date), dateFormat)
+          }
         ]}
-        renderItem={(item) => (
-          <List.Item>
-            <SettingButton>
-              <strong>{item.title}</strong>
-              <span>{item.desc}</span>
-            </SettingButton>
-          </List.Item>
-        )}
-      />
-    </div>
-  );
+      >
+        <Row gutter={24}>
+          <Col span={24}>
+            <Form.Item label="How Often?" name="recurring_type">
+              <Select
+              value={formRecurring.recurring_type}
+              onChange={(e) => setFormRecurring({ ...formRecurring, recurring_type: e})}
 
+                options={[
+                  {
+                    value: "weekly",
+                    label: "Weekly",
+                  },
+                  {
+                    value: "monthly",
+                    label: "Monthly",
+                  },
+                  {
+                    value: "yearly",
+                    label: "Yearly",
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+          <Divider tw="!mt-0" />
+          <Col span={24}>
+          <Form.Item label="Next Issue Date" name="recurring_next_issue_date" >
+              <DatePicker
+                onChange={(date, dateString) =>
+                  setFormRecurring({ ...formRecurring, recurring_next_issue_date: dateString })
+                }
+                // value={
+                //   formRecurring.recurring_next_issue_date &&
+                //   moment(new Date(formRecurring.recurring_next_issue_date), dateFormat)
+                // }
+                format={dateFormat}
+              />
+            </Form.Item>
+          </Col>
+          <Divider tw="!mt-0" />
+          <Col span={24}>
+          <span>Number of Invoices</span>
+          <Radio.Group
+              tw="grid gap-3 mt-2 mb-2"
+              onChange={(e) => setFormRecurring({ ...formRecurring, date_type: e.target.value })}
+              value={formRecurring.date_type}
+            >
+              <Radio value={0}>Last Invoiced</Radio>
+              <Radio value={null}>Issued Date</Radio>
+              {toggleInvoiceNumber ? 
+              <div tw=" grid border-l border-l-gray-400 pl-2 ml-2">
+<span tw="text-xs text-gray-400">Invoices Remaining</span>
+              <Input  type="number" value={formRecurring.date_type} tw="w-20" onChange={(e) => setFormRecurring({ ...formRecurring, date_type: e.target.value })}/>
+              </div>
+              :
+              <></>
+              }
+            </Radio.Group>
+          </Col>
+          <Divider tw="!mt-0" />
+          <Col span={24}>
+          <span>Delivery Options
+</span>
+          <Radio.Group
+              tw="grid gap-3 mt-2"
+              onChange={(e) => setFormRecurring({ ...formRecurring, delivery_option: e.target.value })}
+              value={formRecurring.delivery_option}
+            >
+              <Radio value={"send_invoice"}>Send invoices automatically</Radio>
+              <Radio value={"draft_invoice"}>Create Draft invoices and send manually</Radio>
+            
+            </Radio.Group>
+          </Col>
+          <Divider />
+          <Col span={12}>
+            <Button tw="text-lg px-8" onClick={() => {
+              setIsRecurring(false)
+              setOpen(false)}}>
+              Close
+            </Button>
+          </Col>
+          <Col span={12}>
+            <Button
+             htmlType="submit"
+              tw="text-lg text-white bg-success px-8"
+            >
+              Apply
+            </Button>
+          </Col>
+        </Row>
+      </Form>
+    </div>
+
+  );
   const [fileList, setFileList] = useState([]);
   function beforeUpload(file) {
     const isJpgOrPng =
@@ -321,6 +497,8 @@ export default function FormInvoice() {
     </div>
   );
   const token = JSON.parse(localStorage.getItem("auth-data"));
+
+  
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
@@ -351,7 +529,7 @@ export default function FormInvoice() {
           >
             <span tw="text-lg">Save...</span>
           </Button>
-          {!pathname.includes("recurring") && (
+          {!isRecurring && (
             <Popover
               placement="bottom"
               content={<SendEmail hide={hide} />}
@@ -366,15 +544,14 @@ export default function FormInvoice() {
           )}
         </div>
       </div>
-
+<div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2">
       <Form
         size="default"
         layout={"vertical"}
         form={form}
         // onFinish={onFinish}
-        tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2"
+        tw="md:col-span-9 space-y-5 mb-10 mt-10 md:mt-2"
       >
-        <div tw="md:col-span-9 space-y-5 mb-10 mt-10 md:mt-2">
           <CardDetailInvoice>
             <div tw="grid gap-y-2 md:flex justify-between mb-10">
               {/* <img
@@ -755,11 +932,13 @@ export default function FormInvoice() {
               {fileListAttach?.length < 5 && uploadButton}
             </UploadCustom>
           </Card>
-        </div>
  
-          <Filter Filtering={RecurringSettings} setOpen={setOpen} open={true} />
 
       </Form>
+          <CreateRecurring Filtering={RecurringSettings} setOpen={setOpen} setIsRecurring={setIsRecurring} open={open} />
+        {/* <InvoicesSetting open={open} setOpen={setOpen} /> */}
+
+      </div>
     </div>
   );
 }
