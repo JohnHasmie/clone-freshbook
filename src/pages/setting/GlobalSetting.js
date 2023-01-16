@@ -1,4 +1,4 @@
-import { Col, Form, Input, Row, Select, Typography } from "antd";
+import { Col, Form, Input, notification, Row, Select, Typography } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -50,10 +50,28 @@ export default function GlobalSetting() {
     {
       onSuccess: (res) => {
         queryClient.invalidateQueries("profile");
-        console.log(res);
+        notification.success({
+          message: `Changes to your profile are now saved.
+          `,
+          placement: "topLeft",
+        });
       },
       onError: (err) => {
-        console.log(err.response.data.message);
+        switch (err?.response?.status) {        
+          case 500:
+            notification.error({
+              message: `Internal Server Error`,
+              placement: "topLeft",
+            });
+            break;
+      
+        default:
+          notification.error({
+            message: `An Error Occurred Please Try Again Later`,
+            placement: "topLeft",
+          });
+          break;
+      }
       },
     }
   );
@@ -92,19 +110,10 @@ export default function GlobalSetting() {
         })
         .then((res) => res.data);
     },
-    {
-      onSuccess: (res) => {
-        queryClient.invalidateQueries("profile");
-        console.log(res);
-      },
-      onError: (err) => {
-        console.log(err);
-      },
-    }
+
   );
 
   const onSelectFile = (e) => {
-    console.log(e.target.files[0], "cek gambar");
     const formData = new FormData();
     formData.append("avatar", e.target.files[0]);
     mutationUpload.mutate(formData);
@@ -117,7 +126,7 @@ export default function GlobalSetting() {
     setIsForm({ ...isForm, password: "password12345" });
     setShowPassword(false);
   };
-console.log("status:",user?.status);
+
   return (
     <div className="layout-content">
       {user?.status === undefined  &&   <div role="status" tw="flex flex-col items-center justify-center">
@@ -194,17 +203,24 @@ console.log("status:",user?.status);
                 <Title level={3}>Account Details</Title>
               </Col>
               <Col span={24}>
-                {/* <img
-                  src={user?.data?.avatar + "+" + user?.data?.last_name}
-                  className="profile-photo"
-                  tw="w-20 h-20"
-                  alt="profile"
-                /> */}
-                <div
+              { user?.data?.first_name !== null  && user?.data?.last_name !==null ? 
+           <div
             tw="rounded-full w-[70px] bg-gray-300 text-black px-2 py-3.5 text-4xl font-medium"
             >
               {user?.data?.first_name[0] +user?.data?.last_name[0] }
             </div>
+          :  
+          <div
+          tw="rounded-full w-[70px] bg-gray-300 text-black px-2 py-3.5 text-4xl font-medium"
+          >
+            UK
+          </div>
+          }
+                {/* <div
+            tw="rounded-full w-[70px] bg-gray-300 text-black px-2 py-3.5 text-4xl font-medium"
+            >
+              {user?.data?.first_name[0] +user?.data?.last_name[0] }
+            </div> */}
 
                 <label
                   htmlFor="photo"
@@ -415,11 +431,8 @@ console.log("status:",user?.status);
                   </Col>
                 </>
               )}
-              <Col span={24} style={{ marginTop: "50px" }}>
+              <Col span={24} style={{ marginTop: "50px" }} >
                 <Title level={3}>Preferences</Title>
-              </Col>
-
-              <Col span={24}>
                 <Form.Item label="Time Zone" name="time_zone">
                   <Select
                     style={{
@@ -443,6 +456,8 @@ console.log("status:",user?.status);
                   />
                 </Form.Item>
               </Col>
+
+             
             </Row>
           </div>
           <ButtonSubmit htmlType="submit" />

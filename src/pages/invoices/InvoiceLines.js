@@ -15,7 +15,7 @@ const InvoiceLines = ({linesProps}) => {
                 description: 'Item description',
                 rate:0,
                 qty: 1,
-                total: 0,
+                total: "0",
             }
         ])
     }

@@ -1,17 +1,13 @@
 import {
   Button,
   Card,
-
   Form,
-  
   List,
   notification,
   Popover,
-  
   Typography,
-
 } from "antd";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import tw from "twin.macro";
 
@@ -35,13 +31,16 @@ import {
 } from "../report/ReportCustom.style";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import AppContext from "../../components/context/AppContext";
 
 export default function FormInvoice() {
   const [open, setOpen] = useState(false);
   const [isTitle, setIsTitle] = useState("Invoice");
+  const { setting } = useContext(AppContext);
 
   const { pathname } = useLocation();
-  const {invoiceId}=useParams()
+  const { invoiceId } = useParams();
 
   const [clicked, setClicked] = useState(false);
   const [lines, setLines] = useState([]);
@@ -55,7 +54,7 @@ export default function FormInvoice() {
   const { Title } = Typography;
   let history = useHistory();
   const [isForm, setIsForm] = useState({
-    name: "",
+    company_name: "",
     phone: "",
     address: "",
     address_2: "",
@@ -63,16 +62,24 @@ export default function FormInvoice() {
     city: "",
     state: "",
     zip: "",
-    country: "Indonesia",
-    tax_name: "VAT NUMBER",
+    country: "",
+    tax_name: "",
     tax_number: "",
     code: "",
     reference: "",
-    issued_at: new Date(),
-    due_date: new Date(),
+    issued_at: "",
+    due_date: "",
     notes: "",
     terms: "",
   });
+
+  const { data: settingData, status: settingStatus } = useQuery(
+    "settings",
+    () => axios.get("settings").then((res) => res.data?.data)
+  );
+
+  const [uploadLoading, setUploadLoading] = useState(false);
+
   const [filter, setFilter] = useState({
     limit_comment: 1,
   });
@@ -80,7 +87,6 @@ export default function FormInvoice() {
   const [form] = Form.useForm();
   const dateFormat = "DD/MM/YYYY";
   const queryClient = useQueryClient();
-
 
   const { data: detailInvoice, status } = useQuery(
     ["invoice-detail", filter],
@@ -91,37 +97,48 @@ export default function FormInvoice() {
         })
         .then((res) => res.data.data)
   );
-useEffect(() => {
-  if(pathname.includes('recurring')){
-    setIsTitle("Recurring")
-  }
-}, [pathname])
-
+  useEffect(() => {
+    if (pathname.includes("recurring")) {
+      setIsTitle("Recurring");
+    }
+  }, [pathname]);
 
   useEffect(() => {
-  if(status === "success"){
-  setIsForm({...isForm,
-  code:detailInvoice.code,
-  notes:detailInvoice.notes,
-  terms:detailInvoice.terms,
-  issued_at:detailInvoice.issued_at,
-  due_date:detailInvoice.due_date,
-  reference:detailInvoice.references,
-  })
-  if(detailInvoice?.items_detail !== null){
-    const newLines= detailInvoice?.items_detail?.map(x=>{
-      return { 
-        name: x.name,
-                description: x.description,
-                rate:x.rate,
-                qty: x.pivot.qty,
-                total: x.pivot.total,
-                id:x.id
+    settingStatus &&
+      setIsForm({
+        ...isForm,
+        company_name: settingData?.setting?.company_name,
+        phone: settingData?.setting?.phone,
+      });
+  }, [settingStatus]);
+
+  useEffect(() => {
+    if (status === "success") {
+      setIsForm({
+        ...isForm,
+        code: detailInvoice.code,
+        notes: detailInvoice.notes,
+        terms: detailInvoice.terms,
+        issued_at: detailInvoice.issued_at,
+        due_date: detailInvoice.due_date,
+        reference: detailInvoice.references,
+      });
+      if (detailInvoice?.items_detail !== null) {
+        const newLines = detailInvoice?.items_detail?.map((x) => {
+          return {
+            name: x.name,
+            description: x.description,
+            rate: x.rate,
+            qty: x.pivot.qty,
+            total: x.pivot.total,
+            id: x.id,
+          };
+        });
+        setLines(newLines);
       }
-    })
-  setLines(newLines)}
-  setIsClient(detailInvoice.client_id)}
-  }, [status])
+      setIsClient(detailInvoice.client_id);
+    }
+  }, [status]);
 
   const handleInput = (e) => {
     setIsForm({ ...isForm, [e.target.name]: e.target.value });
@@ -163,38 +180,44 @@ useEffect(() => {
         history.push("/invoices");
       },
       onError: (err) => {
-        notification.error({
-          message: `An Error Occurred Please Try Again Later`,
-          placement: "topLeft",
-        });
-        console.log(err.response.data.message);
+        switch (err?.response?.status) {
+          case 422:
+            notification.error({
+              message: `Fields required input`,
+              placement: "topLeft",
+            });
+            break;
+          case 500:
+            notification.error({
+              message: `Internal Server Error`,
+              placement: "topLeft",
+            });
+            break;
+
+          default:
+            notification.error({
+              message: `An Error Occurred Please Try Again Later`,
+              placement: "topLeft",
+            });
+            break;
+        }
       },
     }
   );
   const onFinish = (values) => {
-  form.submit()
+    form.submit();
     const newData = {
       ...isForm,
       items: lines,
       client_id: isClient,
 
-      attachments: [
-        {
-          name: "download.png",
-          size: 3764,
-          url: "http://cleanbook.test/storage/file/94ae97b91fdb448cfbca702edcda717a.png",
-        },
-        {
-          name: "download.png",
-          size: 3764,
-          url: "http://cleanbook.test/storage/file/94ae97b91fdb448cfbca702edcda717a.png",
-        },
-      ],
+      attachments: fileListAttach,
     };
-    if(invoiceId){
-      mutationUpdate.mutate(newData)
-    }else{
-    mutation.mutate(newData);}
+    if (pathname.includes("edit")) {
+      mutationUpdate.mutate(newData);
+    } else {
+      mutation.mutate(newData);
+    }
     console.log("Success submitted:", newData);
   };
 
@@ -224,6 +247,19 @@ useEffect(() => {
   );
 
   const [fileList, setFileList] = useState([]);
+  function beforeUpload(file) {
+    const isJpgOrPng =
+      file.type === "image/jpeg" ||
+      file.type === "image/png" ||
+      file.type === "image/jpg";
+    if (!isJpgOrPng) {
+      notification.error({
+        message: `You can only upload image format jpeg, png, jpg`,
+        placement: "topLeft",
+      });
+    }
+    return isJpgOrPng;
+  }
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -242,17 +278,27 @@ useEffect(() => {
     imgWindow?.document.write(image.outerHTML);
   };
 
-  const [fileListAttach, setFileListAttach] = useState([
-    {
-      uid: "-1",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-  ]);
-  const onChangeAttach = ({ fileList: newFileList }) => {
-    setFileListAttach(newFileList);
+  const [fileListAttach, setFileListAttach] = useState([]);
+  const actionUpload = async (options) => {
+    const formData = new FormData();
+    formData.append("file", options.file);
+    const newFileListAttach = [...fileListAttach];
+    return axios
+      .post(options.action, formData)
+      .then((res) => {
+        newFileListAttach.push(res?.data?.data);
+        setFileListAttach(newFileListAttach);
+        // options.onSuccess(res?.data?.payload?.path, options.file)
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+
+  // const onChangeAttach = ({ fileList: newFileList }) => {
+  //   console.log(newFileList,"news");
+  //   setFileListAttach(newFileList);
+  // };
   const onPreviewAttach = async (file) => {
     let src = file.url;
     if (!src) {
@@ -267,6 +313,14 @@ useEffect(() => {
     const imgWindow = window.open(src);
     imgWindow?.document.write(image.outerHTML);
   };
+
+  const uploadButton = (
+    <div>
+      {uploadLoading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Add an attachment</div>
+    </div>
+  );
+  const token = JSON.parse(localStorage.getItem("auth-data"));
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
@@ -319,7 +373,6 @@ useEffect(() => {
         form={form}
         // onFinish={onFinish}
         tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2"
-     
       >
         <div tw="md:col-span-9 space-y-5 mb-10 mt-10 md:mt-2">
           <CardDetailInvoice>
@@ -339,7 +392,7 @@ useEffect(() => {
                 {fileList.length < 1 && "+ Upload"}
               </UploadCustom>
               <div tw="flex justify-between ">
-                <div tw="flex flex-col items-end">
+                <div tw="flex flex-col items-end ">
                   <span
                     contentEditable
                     suppressContentEditableWarning
@@ -348,10 +401,13 @@ useEffect(() => {
                     tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
                     onInput={(e) =>
                       handleInput({
-                        target: { value: e.target.innerHTML, name: "name" },
+                        target: {
+                          value: e.target.innerHTML,
+                          name: "company_name",
+                        },
                       })
                     }
-                    html={isForm.name}
+                    dangerouslySetInnerHTML={{ __html: isForm.company_name }}
                   ></span>
                   <span
                     contentEditable
@@ -364,10 +420,10 @@ useEffect(() => {
                         target: { value: e.target.innerHTML, name: "phone" },
                       })
                     }
-                    html={isForm.phone}
+                    dangerouslySetInnerHTML={{ __html: isForm.phone }}
                   ></span>
                 </div>
-                <div tw="flex flex-col items-end">
+                {/* <div tw="flex flex-col items-end">
                   <span
                     contentEditable
                     suppressContentEditableWarning
@@ -496,35 +552,58 @@ useEffect(() => {
                       html={isForm.tax_number}
                     ></span>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
             <div tw="grid grid-cols-4 gap-5 mb-16">
               <InvoiceHead clientProps={[isClient, setIsClient]} />
               <div tw="space-y-5 ">
                 <div>
-                  <h4 tw="text-gray-400">Date of Issue</h4>
+                  <Form.Item
+                    label="Date of Issue"
+                    name="issued_at"
+                    rules={[
+                      { required: true, message: "Please select a date!" },
+                    ]}
+                  >
+                    {/* <h4 tw="text-gray-400">Date of Issue</h4> */}
 
-                  <DatePickerCustom
-                    bordered={false}
-                    onChange={(date, dateString) =>
-                      setIsForm({ ...isForm, issued_at: dateString })
-                    }
-                    value={moment(isForm.issued_at, dateFormat)}
-                    format={dateFormat}
-                  />
+                    <DatePickerCustom
+                      bordered={false}
+                      onChange={(date, dateString) =>
+                        setIsForm({ ...isForm, issued_at: dateString })
+                      }
+                      value={
+                        isForm.issued_at &&
+                        moment(new Date(isForm.issued_at), dateFormat)
+                      }
+                      format={dateFormat}
+                    />
+                  </Form.Item>
                 </div>
 
                 <div>
-                  <h4 tw="text-gray-400">Due Date</h4>
-                  <DatePickerCustom
-                    bordered={false}
-                    onChange={(date, dateString) =>
-                      setIsForm({ ...isForm, due_date: dateString })
-                    }
-                    value={moment(isForm.due_date, dateFormat)}
-                    format={dateFormat}
-                  />
+                <Form.Item
+                    label="Due Date"
+                    name="due_date"
+                    rules={[
+                      { required: true, message: "Please select a date!" },
+                    ]}
+                  >
+                    {/* <h4 tw="text-gray-400">Date of Issue</h4> */}
+
+                    <DatePickerCustom
+                      bordered={false}
+                      onChange={(date, dateString) =>
+                        setIsForm({ ...isForm, due_date: dateString })
+                      }
+                      value={
+                        isForm.due_date &&
+                        moment(new Date(isForm.due_date), dateFormat)
+                      }
+                      format={dateFormat}
+                    />
+                  </Form.Item>
                 </div>
               </div>
               <div tw="space-y-5 ">
@@ -555,10 +634,15 @@ useEffect(() => {
                 </div>
               </div>
               <div tw="text-right">
-                <h3 tw="text-gray-400">Amount Due (IDR)</h3>
+                <h3 tw="text-gray-400">Amount Due</h3>
                 <span tw="font-medium text-3xl ">
-                  {lines.length > 0 && getTotal(lines?.map((x) => { const splitAmount=x.total.split(".")
-  return parseInt(splitAmount[0])}))}
+                  {lines.length > 0 &&
+                    getTotal(
+                      lines?.map((x) => {
+                        const splitAmount = x.total.split(".");
+                        return parseInt(splitAmount[0]);
+                      })
+                    )}
                 </span>
               </div>
             </div>
@@ -571,8 +655,16 @@ useEffect(() => {
                 <tbody>
                   <tr tw="text-right">
                     <td>Subtotal</td>
-                    <td> {lines.length > 0 && getTotal(lines?.map((x) => { const splitAmount=x.total.split(".")
-  return parseInt(splitAmount[0])}))}</td>
+                    <td>
+                      {" "}
+                      {lines.length > 0 &&
+                        getTotal(
+                          lines?.map((x) => {
+                            const splitAmount = x.total.split(".");
+                            return parseInt(splitAmount[0]);
+                          })
+                        )}
+                    </td>
                   </tr>
                   <tr tw="border-b  border-gray-300 text-right">
                     <td>Tax</td>
@@ -580,8 +672,16 @@ useEffect(() => {
                   </tr>
                   <tr tw="text-right ">
                     <td tw="pt-1">Total</td>
-                    <td>  {lines.length > 0 && getTotal(lines?.map((x) => { const splitAmount=x.total.split(".")
-  return parseInt(splitAmount[0])}))} </td>
+                    <td>
+                      {" "}
+                      {lines.length > 0 &&
+                        getTotal(
+                          lines?.map((x) => {
+                            const splitAmount = x.total.split(".");
+                            return parseInt(splitAmount[0]);
+                          })
+                        )}{" "}
+                    </td>
                   </tr>
                   <tr tw="text-right">
                     <td>Amount Paid</td>
@@ -594,8 +694,13 @@ useEffect(() => {
 
                     <td tw=" grid gap-0 items-end ">
                       <span tw="font-semibold ">
-                   {lines.length > 0 && getTotal(lines?.map((x) => { const splitAmount=x.total.split(".")
-  return parseInt(splitAmount[0])}))}
+                        {lines.length > 0 &&
+                          getTotal(
+                            lines?.map((x) => {
+                              const splitAmount = x.total.split(".");
+                              return parseInt(splitAmount[0]);
+                            })
+                          )}
                       </span>
                       <span tw="text-gray-600 text-right">USD</span>
                     </td>
@@ -634,17 +739,26 @@ useEffect(() => {
           </CardDetailInvoice>
           <Card tw="border-gray-200 rounded-lg">
             <UploadCustom
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              name="file"
+              headers={{
+                Authorization: `Bearer ${token?.token}`,
+                "Content-Type": "multipart/form-data",
+              }}
+              action="upload"
+              customRequest={actionUpload}
+              beforeUpload={beforeUpload}
               listType="picture-card"
               fileList={fileListAttach}
-              onChange={onChangeAttach}
+              // onChange={onChangeAttach}
               onPreview={onPreviewAttach}
             >
-              {fileListAttach?.length < 5 && "+ Add an attachment"}
+              {fileListAttach?.length < 5 && uploadButton}
             </UploadCustom>
           </Card>
         </div>
-        <Filter Filtering={RecurringSettings} setOpen={setOpen} open={true} />
+ 
+          <Filter Filtering={RecurringSettings} setOpen={setOpen} open={true} />
+
       </Form>
     </div>
   );
@@ -655,9 +769,9 @@ export function getTotal(v) {
   }, 0);
   return `Rp${numberWithDot(sum)}`;
 }
-function totalIteration(data){
-  data?.map(x=>{
-    const splitAmount=x.amount.split(".")
-    return parseInt(splitAmount[0])
-  })
+function totalIteration(data) {
+  data?.map((x) => {
+    const splitAmount = x.amount.split(".");
+    return parseInt(splitAmount[0]);
+  });
 }

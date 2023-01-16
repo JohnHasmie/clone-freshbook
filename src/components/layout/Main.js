@@ -32,6 +32,8 @@ function Main({ children }) {
   const handleSidenavColor = (color) => setSidenavColor(color);
   const handleFixedNavbar = (type) => setFixed(type);
   let { pathname } = useLocation();
+  let { invoiceId } = useParams();
+
   pathname = pathname.replace("/", "");
 
   useEffect(() => {

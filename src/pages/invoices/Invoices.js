@@ -19,9 +19,10 @@ import {
   VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
 import {
-  Button, 
+  Button,
   Form,
   Menu,
+  notification,
   Popover,
   Tooltip,
   Typography,
@@ -36,23 +37,59 @@ import { FormAdvanceSearchInvoice } from "../clients/FormAdvanceSearch";
 import InvoiceTabs from "./InvoicesTabs";
 import TabHome from "../clients/TabHome";
 import PaginationFooter from "../../components/layout/PaginationFooter";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { numberWithDot, translateBg } from "../../components/Utils";
 import moment from "moment";
 import ListCardInvoice from "./ListCardInvoice";
+import { ModalConfirm } from "../../components/ModalConfirm.style";
 
 export default function Invoices() {
-  const { Title} = Typography;
+  const { Title } = Typography;
   const [isAdvance, setIsAdvance] = useState(false);
+  const [isType, setIsType] = useState("");
+  const [isInvoiceId, setIsInvoiceId] = useState("");
+  const queryClient = useQueryClient();
+
   const [form] = Form.useForm();
   const history = useHistory();
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    mode: "published",
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleModal = (type) => {
+    switch (type.key) {
+      case "archive":
+        setIsType("archive");
+        break;
+      case "delete":
+        setIsType("delete");
+
+        break;
+      default:
+        setIsType("");
+        break;
+    }
+    const handleModalTooltip = (e, id, client, type) => {
+      e.stopPropagation();
+      // setClientName(client);
+      setIsInvoiceId(id);
+      if (type === "delete") {
+        setIsType("delete");
+      } else {
+        setIsType("archive");
+      }
+      setIsModalOpen(true);
+      setClicked(false);
+    };
+
+    setIsModalOpen(true);
+    setClicked(false);
+  };
 
   const [searchField, setSearchField] = useState({
     company_name: "",
@@ -65,22 +102,19 @@ export default function Invoices() {
     credit_number: "",
     credit_amount: "",
   });
- 
 
   const [isToggle, setIsToggle] = useState(true);
   const handleClickChange = (open) => {
     setClicked(open);
   };
 
-
-
   const [isHover, setIsHover] = useState(false);
 
   const handleMouseEnter = () => {
-     setIsHover(true);
+    setIsHover(true);
   };
   const handleMouseLeave = () => {
-     setIsHover(false);
+    setIsHover(false);
   };
 
   const { data: dataInvoices, status } = useQuery(
@@ -95,35 +129,38 @@ export default function Invoices() {
   const filteredData =
     status === "success" &&
     dataInvoices?.data.filter((item) => {
-      return (
-        item?.client?.company_name
-          .toLowerCase()
-          .includes(searchField?.company_name.toLowerCase()) 
-      );
+      return item?.client?.company_name
+        .toLowerCase()
+        .includes(searchField?.company_name.toLowerCase());
     });
 
-    const data =
+  const data =
     status === "success" &&
     filteredData?.map((item) => ({
       key: item.id,
       company_name: item.client.company_name,
-      invoice_number:item.code,
-      date: item.issued_at ,
-      due_date:item.due_date,
+      invoice_number: item.code,
+      date: item.issued_at,
+      due_date: item.due_date,
       description: item.notes,
-      amount:item.total,
-      status:item.status
+      amount: item.total,
+      status: item.status,
     }));
 
-const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data && getTotal(data?.map(x=>{
-  const splitAmount=x.amount.split(".")
-  return parseInt(splitAmount[0])
-}))} </div>);
-
- 
+  const defaultFooter = () => (
+    <div tw="text-right text-base">
+      Grand Total:{" "}
+      {data &&
+        getTotal(
+          data?.map((x) => {
+            const splitAmount = x.amount.split(".");
+            return parseInt(splitAmount[0]);
+          })
+        )}{" "}
+    </div>
+  );
 
   const columns = [
-   
     {
       title: "Client / Invoice Number",
       dataIndex: "invoice_number",
@@ -131,9 +168,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data &
       render: (text, record) => (
         <div>
           <span>{record.company_name}</span>{" "}
-          <p tw="text-xs">
-            {record.invoice_number} 
-          </p>{" "}
+          <p tw="text-xs">{record.invoice_number}</p>{" "}
         </div>
       ),
       sorter: (a, b) => a.company_name.length - b.company_name.length,
@@ -143,8 +178,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data &
       dataIndex: "description",
       key: "description",
       sorter: (a, b) => a.description.length - b.description.length,
-      width:'30%'
-
+      width: "30%",
     },
 
     {
@@ -155,7 +189,7 @@ const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data &
         <div>
           <span>{moment(record.date).format("MM/DD/YYYY")}</span>{" "}
           <p tw="text-xs">
-            {`Due ${moment(record.due_date).endOf('month').from(record.date)} `} 
+            {`Due ${moment(record.due_date).endOf("month").from(record.date)} `}
           </p>{" "}
         </div>
       ),
@@ -167,65 +201,159 @@ const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data &
       dataIndex: "amount",
       render: (text, record) => (
         <div tw="grid">
-             <div
+          <div
             className="isVisible"
             tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
           >
             <div tw="hover:bg-gray-100 hover:rounded-l-full ">
               <Tooltip placement="top" title="edit">
-                <EditOutlined tw="p-2" onClick={(e)=>{
-                  handleAction(e,'edit',record)}} />
+                <EditOutlined
+                  tw="p-2"
+                  onClick={(e) => {
+                    handleAction(e, "edit", record);
+                  }}
+                />
               </Tooltip>
             </div>
 
             <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
               <Tooltip placement="top" title="duplicate">
-                <CopyOutlined tw="p-2" onClick={(e)=>{
-                  handleAction(e,'duplicate',record)}} />
-              </Tooltip>
-            </div>
-            <div tw="hover:bg-gray-100   border-r border-gray-200 ">
-              <Tooltip placement="top" title="add payment">
-                <DollarOutlined tw="p-2 "
-                onClick={(e)=>{
-                  handleAction(e,'payment',record)}}
+                <CopyOutlined
+                  tw="p-2"
+                  onClick={(e) => {
+                    handleAction(e, "duplicate", record);
+                  }}
                 />
               </Tooltip>
             </div>
-            <div tw="hover:bg-gray-100  hover:rounded-r-full ">
-              <Tooltip placement="top" title="More">
-                <EllipsisOutlined tw="text-xs p-2" />
+            <div tw="hover:bg-gray-100    ">
+              <Tooltip placement="top" title="add payment">
+                <DollarOutlined
+                  tw="p-2 "
+                  onClick={(e) => {
+                    handleAction(e, "payment", record);
+                  }}
+                />
               </Tooltip>
             </div>
+            {/* <div tw="hover:bg-gray-100  hover:rounded-r-full ">
+              <Tooltip placement="top" title="More">
+                
+                <EllipsisOutlined tw="text-xs p-2" />
+              </Tooltip>
+            </div> */}
           </div>
           <span>Rp{numberWithDot(record.amount)}</span>{" "}
-          <span tw="text-xs rounded p-1 ml-auto" style={{background:translateBg(record.status)}}>{record.status} </span>
-         
+          <span
+            tw="text-xs rounded p-1 ml-auto"
+            style={{ background: translateBg(record.status) }}
+          >
+            {record.status}{" "}
+          </span>
         </div>
       ),
       sorter: (a, b) => a.amount - b.amount,
-      align:'right'
+      align: "right",
     },
   ];
-  const handleAction=(e,type,record)=>{
-e.stopPropagation()
-switch (type) {
-  case 'edit':
-    history.push(`/invoices/${record.key}/edit`)
-    break;
-    case 'duplicate':
-    history.push(`/invoices/${record.key}/edit`)
-    break;
-    case 'payment':
-    history.push(`/invoices/${record.key}/edit`)
-    break;
+  const handleAction = (e, type, record) => {
+    e.stopPropagation();
+    switch (type) {
+      case "edit":
+        history.push(`/invoices/${record.key}/edit`);
+        break;
+      case "duplicate":
+        history.push(`/invoices/${record.key}/edit`);
+        break;
+      case "payment":
+        history.push(`/invoices/${record.key}/edit`);
+        break;
 
-  default:
-    history.push(`/invoices`)
+      default:
+        history.push(`/invoices`);
 
-    break;
-}
-  }
+        break;
+    }
+  };
+  const handleOk = () => {
+    switch (isType) {
+      case "archive":
+        if (selectedRowKeys.length === 0) {
+          mutationArchive.mutate({ ids: [isInvoiceId], mode: "archive" });
+        } else {
+          mutationArchive.mutate({ ids: selectedRowKeys, mode: "archive" });
+        }
+        break;
+      case "delete":
+        if (isInvoiceId) {
+          mutation.mutate(isInvoiceId);
+        } else {
+          mutation.mutate(selectedRowKeys[0]);
+        }
+        break;
+      default:
+        setIsType("");
+        break;
+    }
+
+    setIsModalOpen(false);
+  };
+  const mutation = useMutation(
+    async (data) => {
+      return axios.delete(`invoices/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("invoices-listing");
+        }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `The selected ${
+            selectedRowKeys.length > 1 && selectedRowKeys.length
+          } invoices
+          has been succesfully deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const mutationArchive = useMutation(
+    async (data) => {
+      return axios.put(`invoices/view`, data).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("invoices-listing");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `The selected ${
+            selectedRowKeys.length > 1 && selectedRowKeys.length
+          } invoices
+          has been succesfully archived`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
@@ -237,7 +365,11 @@ switch (type) {
   const bulkList = (
     <div tw="w-36">
       <Menu>
-        <Menu.Item key="edit">
+        <Menu.Item
+          key="edit"
+          onClick={() => history.push(`/invoices/${selectedRowKeys[0]}/edit`)}
+          disabled={selectedRowKeys.length > 1}
+        >
           <div>
             <EditOutlined />
             <span>Edit</span>
@@ -258,19 +390,19 @@ switch (type) {
           </div>
         </Menu.Item>
 
-        <Menu.Item key="send-email">
+        {/* <Menu.Item key="send-email">
           <div>
             <MailOutlined />
             <span>Send By Email</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="">
+        <Menu.Item key="mark-as-sent">
           <div>
             <SendOutlined />
             <span>Mark as Sent</span>
           </div>
-        </Menu.Item>
-        <Menu.Item key="mark-as-sent">
+        </Menu.Item> */}
+        <Menu.Item key="payment">
           <div>
             <DollarOutlined />
             <span>Add a Payment</span>
@@ -282,13 +414,16 @@ switch (type) {
             <span>Download PDF</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="archive">
+        <Menu.Item key="archive" onClick={handleModal}>
           <div>
             <HddOutlined />
             <span>Archive</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="delete">
+        <Menu.Item key="delete" onClick={handleModal}
+          disabled={selectedRowKeys.length > 1}
+        
+        >
           <div>
             <RestOutlined />
             <span>Delete</span>
@@ -303,43 +438,54 @@ switch (type) {
       <div className="layout-content">
         <div tw="max-w-screen-lg">
           <TabHome />
-          {isToggle?<div tw="hidden md:block mt-20">
-
-             <div tw=" flex justify-between"  onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}>
-            <Title level={4}>Recently Active</Title>
-            <span tw=" font-bold text-lg cursor-pointer" onClick={()=>setIsToggle(false)} style={{ visibility: isHover ? 'visible' : 'hidden',}}>Remove <CloseOutlined tw="ml-1" /></span>
-          </div>
-            <div tw="flex" style={{opacity:isHover?'0.5':'1'}}>
-          {dataInvoices?.data.length < 4 && (
+          {isToggle ? (
+            <div tw="hidden md:block mt-20">
               <div
-                onClick={() => history.push("/invoices/new")}
-                tw="cursor-pointer border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
+                tw=" flex justify-between"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
               >
-                <div tw="flex flex-col">
-                  <PlusOutlined tw="text-xl text-green-400" />
-                  <span tw="text-base  font-bold">New Invoice</span>
-                </div>
+                <Title level={4}>Recently Active</Title>
+                <span
+                  tw=" font-bold text-lg cursor-pointer"
+                  onClick={() => setIsToggle(false)}
+                  style={{ visibility: isHover ? "visible" : "hidden" }}
+                >
+                  Remove <CloseOutlined tw="ml-1" />
+                </span>
               </div>
-              )}
-              <ListCardInvoice invoiceProps={[dataInvoices,status]}/>
-   
+              <div tw="flex" style={{ opacity: isHover ? "0.5" : "1" }}>
+                {dataInvoices?.data.length < 4 && (
+                  <div
+                    onClick={() => history.push("/invoices/new")}
+                    tw="cursor-pointer border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
+                  >
+                    <div tw="flex flex-col">
+                      <PlusOutlined tw="text-xl text-green-400" />
+                      <span tw="text-base  font-bold">New Invoice</span>
+                    </div>
+                  </div>
+                )}
+                <ListCardInvoice invoiceProps={[dataInvoices, status]} />
+              </div>
             </div>
-          </div>:
-          <div tw=" hidden opacity-0 hover:opacity-100  md:block relative mt-20">
-          <div tw="inline-block">
-          <Tooltip placement="top" title="Show recent cards">
-            <PlusCircleFilled tw="text-2xl z-30 text-gray-400"  onClick={()=>setIsToggle(true)} />
-            </Tooltip>
-            <hr tw="bg-gray-400 absolute top-1 z-0 left-5 w-full translate-y-2/4	 "/>
-          </div> 
-         </div>
-         
-        }
+          ) : (
+            <div tw=" hidden opacity-0 hover:opacity-100  md:block relative mt-20">
+              <div tw="inline-block">
+                <Tooltip placement="top" title="Show recent cards">
+                  <PlusCircleFilled
+                    tw="text-2xl z-30 text-gray-400"
+                    onClick={() => setIsToggle(true)}
+                  />
+                </Tooltip>
+                <hr tw="bg-gray-400 absolute top-1 z-0 left-5 w-full translate-y-2/4	 " />
+              </div>
+            </div>
+          )}
           <div tw="md:mt-20">
             <InvoiceTabs />
             <div tw="grid md:flex justify-between mb-6">
-            <div tw="flex items-center">
+              <div tw="flex items-center">
                 {hasSelected ? (
                   <>
                     <span
@@ -371,11 +517,11 @@ switch (type) {
                   </>
                 ) : (
                   <>
-                  <span tw="text-xl font-bold text-black">All Invoices</span>
-                  <PlusOutlined
-                  onClick={()=>history.push('/invoices/new')}
-                  tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold py-1.5 px-2 cursor-pointer "
-                  />
+                    <span tw="text-xl font-bold text-black">All Invoices</span>
+                    <PlusOutlined
+                      onClick={() => history.push("/invoices/new")}
+                      tw="ml-2 text-white bg-success text-xl flex items-center rounded-md font-bold py-1.5 px-2 cursor-pointer "
+                    />
                   </>
                 )}
               </div>
@@ -401,8 +547,22 @@ switch (type) {
             ) : (
               <></>
             )}
+            <ModalConfirm
+              title="Confirm"
+              visible={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+              width={500}
+              closable={false}
+            >
+              <span tw="text-lg">{`Are you sure you want to ${isType} ${
+                selectedRowKeys.length > 1
+                  ? selectedRowKeys.length + " invoice "
+                  : "this"
+              } ?`}</span>
+            </ModalConfirm>
             <div className="table-responsive">
-            <TableCustom
+              <TableCustom
                 onRow={(record, rowIndex) => {
                   return {
                     onClick: (event) => {
@@ -440,7 +600,7 @@ switch (type) {
               </div>
               <div>
                 <span tw="text-gray-500">Items per page: </span>
-                <PaginationFooter filterProps={[filter,setFilter]}/>
+                <PaginationFooter filterProps={[filter, setFilter]} />
               </div>
             </div>
           </div>
@@ -453,5 +613,5 @@ export function getTotal(outstanding) {
   const sum = outstanding.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
-  return `Rp. ${numberWithDot(sum)} IDR`
+  return `Rp. ${numberWithDot(sum)} IDR`;
 }

@@ -161,12 +161,16 @@ export default function ClientsDeleted() {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    show:"deleted"
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isType, setIsType] = useState("");
   const [clientName, setClientName] = useState("");
+  const [clientId, setClientId] = useState("");
+
+
 
   const { data: dataClients, status } = useQuery(
     ["clients", filter],
@@ -186,7 +190,10 @@ export default function ClientsDeleted() {
 
   const handleOk = () => {
     if (isType === "undelete") {
-      mutation.mutate(selectedRowKeys[0]);
+      if(selectedRowKeys.length > 0){
+      mutation.mutate(selectedRowKeys[0])}else{
+        mutation.mutate(clientId)
+      }
     } 
     setIsModalOpen(false);
   };
@@ -299,7 +306,7 @@ export default function ClientsDeleted() {
 
   const mutation = useMutation(
     async (data) => {
-      return axios.delete(`clients/${data}`).then((res) => res.data);
+      return axios.post(`clients/restore/${data}`).then((res) => res.data);
     },
     {
       onSuccess: () => {
@@ -397,6 +404,7 @@ export default function ClientsDeleted() {
             onRow={(record, rowIndex) => {
               return {
                 onClick: (event) => {
+                  setClientId(record.key)
                   handleModal({ key: "undelete", client: record.company_name })
                 },
               };

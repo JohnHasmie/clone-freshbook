@@ -3,7 +3,6 @@ import { numberWithDot } from "../Utils";
 // import barChart from "./configs/barChart";
 
 function BarChart({data,cek}) {
-  console.log(data,cek,"cek");
 
   const barChart = {  
     series: [{

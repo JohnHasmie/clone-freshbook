@@ -22,6 +22,7 @@ export default function ItemsArchived() {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    show:"archive"
   });
   const queryClient = useQueryClient();
 
@@ -29,6 +30,7 @@ export default function ItemsArchived() {
   const [clicked, setClicked] = useState(false);
   const [clickedRow, setClickedRow] = useState(false);
   const [isType, setIsType] = useState('');
+  const [clientId, setClientId] = useState("");
 
   
   const [clickedId, setClickedId] = useState("");
@@ -50,6 +52,9 @@ export default function ItemsArchived() {
 
   const onSelectChange = (newSelectedRowKeys, x, y) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    console.log(x,"x");
+    setClientId(x[0].client_id)
+
   };
   const rowSelection = {
     selectedRowKeys,
@@ -97,9 +102,14 @@ export default function ItemsArchived() {
     </div>
   );
   const handleOk = () => {
+    const dataArchive={
+      ids:selectedRowKeys,
+      client_id:clientId,
+      status:"published"
+    }
     if(isType === "delete"){
     mutation.mutate(selectedRowKeys[0]);}else{
-      mutationUnarchive.mutate(selectedRowKeys[0])
+      mutationUnarchive.mutate(dataArchive)
     }
     setIsModalOpen(false);
   };
@@ -110,7 +120,7 @@ export default function ItemsArchived() {
     ["items-archived", filter],
     async (key) =>
       axios
-        .get("items/1", {
+        .get("items", {
           params: key.queryKey[1],
         })
         .then((res) => res.data)
@@ -119,24 +129,25 @@ export default function ItemsArchived() {
   // function for get items archived, waiting data from backend
   const data =
     status === "success" &&
-    dataItems?.data?.data.filter(x=>x.deleted_at !== null).map((item, i) => ({
+    dataItems?.data?.data?.map((item, i) => ({
       key: item.id,
       i: i,
       name: item.name,
       desc: item.description,
       current: item.qty,
-      rate: numberWithDot(item.rate),
+      rate: item.rate,
+      client_id:item.client_id
     }));
 
     // function for unarchive, waiting from backend
     const mutationUnarchive = useMutation(
       async (data) => {
-        return axios.delete(`items/1/${data}`).then((res) => res.data);
+        return axios.put(`items/status`,data).then((res) => res.data);
       },
       {
         onSuccess: () => {
           setTimeout(() => {
-            queryClient.invalidateQueries("items-by-client");
+            queryClient.invalidateQueries("items-archived");
           }, 500);
           setSelectedRowKeys([]);
           notification.success({
@@ -155,12 +166,12 @@ export default function ItemsArchived() {
 
   const mutation = useMutation(
     async (data) => {
-      return axios.delete(`items/1/${data}`).then((res) => res.data);
+      return axios.delete(`items/${clientId}/${data}`).then((res) => res.data);
     },
     {
       onSuccess: () => {
         setTimeout(() => {
-          queryClient.invalidateQueries("items-by-client");
+          queryClient.invalidateQueries("items-archived");
         }, 500);
         setSelectedRowKeys([]);
         notification.success({
@@ -180,7 +191,7 @@ export default function ItemsArchived() {
 
   const columns = [
     {
-      title: "Name/Description",
+      title: "Name / Description",
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
@@ -196,10 +207,16 @@ export default function ItemsArchived() {
       key: "current",
       render: (text, record) => (
         <>
-          <Popover
+      <Popover
             placement="bottom"
             content={
-              <EditItem   query="items-archived" id={record.key} hide={hideClickRow} data={record} />
+              <EditItem
+                query="items-archived"
+                id={record.key}
+                hide={hideClickRow}
+                data={record}
+                clientId={record.client_id}
+              />
             }
             trigger="click"
             visible={clickedRow && clickedId === record.key}
@@ -213,23 +230,28 @@ export default function ItemsArchived() {
     },
 
     {
-      title: "Rate/Taxes",
+      title: "Rate",
       key: "rate",
       dataIndex: "rate",
-      sorter: (a, b) => a.rate - b.rate,
+      render: (text, record) => (
+        <div>
+         {numberWithDot(record.rate)}
+        </div>
+      ),
+      sorter: (a, b) => a.rate.length - b.rate.length,
     },
   ];
-  useEffect(() => {
-    if (dataItems?.data?.data.length < 3 && clickedRow) {
-      setMarginResponsive("400px");
-    } else if (checkIndex === dataItems?.data?.data.length - 1) {
-      setMarginResponsive("400px");
-    } else {
-      if (!clickedRow) {
-        setMarginResponsive("");
-      }
-    }
-  }, [dataItems?.data?.data, checkIndex, clickedRow]);
+  // useEffect(() => {
+  //   if (dataItems?.data?.data.length < 3 && clickedRow) {
+  //     setMarginResponsive("400px");
+  //   } else if (checkIndex === dataItems?.data?.data.length - 1) {
+  //     setMarginResponsive("400px");
+  //   } else {
+  //     if (!clickedRow) {
+  //       setMarginResponsive("");
+  //     }
+  //   }
+  // }, [dataItems?.data?.data, checkIndex, clickedRow]);
 
 
   return (
@@ -288,16 +310,17 @@ export default function ItemsArchived() {
         </ModalConfirm>
         <div className="table-responsive">
           <Table
-            onRow={(record, rowIndex) => {
-              return {
-             
-                onDoubleClick: (event) => {
-                  setClickedRow(!clickedRow);
-                  setClickedId(record.key);
-                  setCheckIndex(record.i);
-                },
-              };
-            }}
+         onRow={(record, rowIndex) => {
+          return {
+       
+            onDoubleClick: (event) => {
+              setClickedRow(!clickedRow);
+              setClickedId(record.key);
+              setMarginResponsive("400px")
+            
+            },
+          };
+        }}
             rowSelection={rowSelection}
             columns={columns}
             dataSource={data}

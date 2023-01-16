@@ -64,6 +64,7 @@ import RecurringDeleted from "./pages/invoices/RecurringDeleted";
 import FormClient from "./pages/clients/FormClient";
 import FormRecurringTemplate from "./pages/invoices/FormRecurringTemplate";
 import FormInvoice from "./pages/invoices/FormInvoice";
+import AccountAgingPrint from "./pages/report/AccountAgingPrint";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,8 @@ function App() {
   const [setting, setSetting] = useState("");
   const [globalDetailClient, setGlobalDetailClient] = useState("");
   const [globalDetailInvoice, setGlobalDetailInvoice] = useState("");
+  const [globalOutstanding, setGlobalOutstanding] = useState("");
+
 
 
 
@@ -128,7 +131,9 @@ function App() {
             setUser: setUser,
             setGlobalDetailClient:setGlobalDetailClient,
             globalDetailInvoice:globalDetailInvoice,
-            setGlobalDetailInvoice:setGlobalDetailInvoice
+            setGlobalDetailInvoice:setGlobalDetailInvoice,
+            globalOutstanding:globalOutstanding,
+            setGlobalOutstanding:setGlobalOutstanding
           }}
         >
           <Switch>
@@ -139,6 +144,11 @@ function App() {
               exact
               path="/dashboard/reports/account-aging"
               component={AccountAging}
+            />
+             <Route
+              exact
+              path="/dashboard/reports/account-aging/print"
+              component={AccountAgingPrint}
             />
             <Route
               exact

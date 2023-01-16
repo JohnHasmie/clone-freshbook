@@ -60,5 +60,5 @@ export function getTotalGlobal(outstanding) {
   const sum = outstanding.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
-  return `Rp. ${numberWithDot(sum)} IDR`
+  return `${numberWithDot(sum)}`
 }

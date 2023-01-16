@@ -30,6 +30,8 @@ const Items = () => {
   const [clickedRow, setClickedRow] = useState(false);
 
   const [clickedId, setClickedId] = useState("");
+  const [clientId, setClientId] = useState("");
+
   const [marginResponsive, setMarginResponsive] = useState("");
 
   const [searchField, setSearchField] = useState("");
@@ -41,11 +43,15 @@ const Items = () => {
   const showModal = () => {
     setIsModalOpen(true);
   };
-
   const handleOk = () => {
+    const dataArchive={
+      ids:selectedRowKeys,
+      client_id:clientId,
+      status:"archive"
+    }
     if(isType === "delete"){
     mutation.mutate(selectedRowKeys[0]);}else{
-      mutationArchive.mutate(selectedRowKeys[0])
+      mutationArchive.mutate(dataArchive)
     }
     setIsModalOpen(false);
   };
@@ -55,7 +61,7 @@ const Items = () => {
 
   const columns = [
     {
-      title: "Name/Description",
+      title: "Name / Description",
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
@@ -79,6 +85,7 @@ const Items = () => {
                 id={record.key}
                 hide={hideClickRow}
                 data={record}
+                clientId={record.client_id}
               />
             }
             trigger="click"
@@ -93,10 +100,15 @@ const Items = () => {
     },
 
     {
-      title: "Rate/Taxes",
+      title: "Rate",
       key: "rate",
       dataIndex: "rate",
-      sorter: (a, b) => a.rate - b.rate,
+      render: (text, record) => (
+        <div>
+         {numberWithDot(record.rate)}
+        </div>
+      ),
+      sorter: (a, b) => a.rate.length - b.rate.length,
     },
   ];
 
@@ -127,13 +139,13 @@ const Items = () => {
       name: item.name,
       desc: item.description,
       current: item.qty,
-      rate: numberWithDot(item.rate),
+      rate: item.rate,
       client_id:item.client_id
     }));
    // function for archive, waiting from backend
    const mutationArchive = useMutation(
     async (data) => {
-      return axios.delete(`items/1/${data}`).then((res) => res.data);
+      return axios.put(`items/status`,data).then((res) => res.data);
     },
     {
       onSuccess: () => {
@@ -157,7 +169,7 @@ const Items = () => {
 
   const mutation = useMutation(
     async (data) => {
-      return axios.delete(`items/1/${data}`).then((res) => res.data);
+      return axios.delete(`items/${data}`).then((res) => res.data);
     },
     {
       onSuccess: () => {
@@ -189,6 +201,7 @@ const Items = () => {
 
   const onSelectChange = (newSelectedRowKeys, x, y) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    setClientId(x[0].client_id)
   };
   const rowSelection = {
     selectedRowKeys,
@@ -329,7 +342,7 @@ const Items = () => {
               onClick={() => history.push("/items/archived")}
               tw="cursor-pointer border border-gray-200 px-3 py-1 text-sm rounded bg-transparent hover:bg-gray-400 "
             >
-              View Archived Service
+              View Archived Items
             </button>
             <p tw="text-xs text-gray-500">
               or{" "}

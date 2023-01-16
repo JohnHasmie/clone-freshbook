@@ -1,11 +1,11 @@
-import { useEffect,useContext } from "react";
+import {  useContext } from "react";
 import { Popover, Button } from "antd";
 import {
   DownOutlined,
   LeftOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation,useParams } from "react-router-dom";
 import ButtonCustom from "../Button";
 import tw from "twin.macro";
 import ButtonMore from "../Reports/ButtonMore";
@@ -96,8 +96,8 @@ let { pathname } = useLocation();
             </ButtonMore>
           </Popover>
 
-          <Button tw="!py-6 md:ml-2 bg-success text-white flex justify-center items-center ">
-            <span tw="text-lg">Edit</span>
+          <Button tw=" md:ml-2 bg-success text-white flex justify-center items-center ">
+            <span tw="text-lg" onClick={()=>history.push(`/invoices/${globalDetailInvoice.id}/edit`)}>Edit</span>
           </Button>
         </div>
       </div>}

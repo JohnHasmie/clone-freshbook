@@ -1,5 +1,5 @@
 import { Button, Form, Input, notification } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import CardPopup from "./CardPopup";
 import tw from "twin.macro";
 import { useMutation, useQueryClient } from "react-query";
@@ -32,7 +32,7 @@ export default function NewItem({hide}) {
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    let newValues={...values,client_id:1,qty:1}
+    let newValues={...values,client_id:1}
     mutation.mutate(newValues);
     form.resetFields();
     
@@ -47,7 +47,7 @@ export default function NewItem({hide}) {
           onFinishFailed={onFinishFailed}
           layout="vertical"
           form={form}
-          // className="row-col"
+          size="large"
         >
           <div tw="grid grid-cols-3">
 
@@ -59,7 +59,10 @@ export default function NewItem({hide}) {
             <Input type="text" placeholder="Enter a description" />
           </Form.Item>
           <Form.Item label="Rate" name="rate" tw="px-2">
-            <Input type="number" placeholder="$0.00" />
+            <Input type="number" placeholder="0.00" />
+          </Form.Item>
+          <Form.Item label="stock" name="qty" tw="px-2">
+            <Input  name="qty" type="number"  />
           </Form.Item>
           </div>
 

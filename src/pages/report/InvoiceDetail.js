@@ -12,7 +12,7 @@ import {
   Space,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
@@ -29,6 +29,7 @@ export default function InvoiceDetail() {
   const handleClickChange = (open) => {
     setClicked(open);
   };
+  const ref=useRef()
   const hide = () => {
     setClicked(false);
   };
@@ -208,7 +209,7 @@ export default function InvoiceDetail() {
             <span tw="capitalize text-4xl font-bold">Invoice Detail</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={MoreAction} trigger="click">
+          <Popover placement="bottom" content={<MoreAction ref={ref}/>} trigger="click">
             <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />
@@ -223,7 +224,7 @@ export default function InvoiceDetail() {
 
         </div>
         <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
-        <CardReporting tw="md:col-span-9 mb-10 mt-10 md:mt-2">
+        <CardReporting ref={ref} tw="md:col-span-9 mb-10 mt-10 md:mt-2">
           <h1 tw="text-blueDefault">Invoice Detail</h1>
           <div tw="my-3 flex flex-col">
             <span tw="text-sm text-gray-600">Oasis Land</span>

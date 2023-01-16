@@ -1,23 +1,46 @@
 import {
   CopyOutlined,
+  DollarOutlined,
+  DownOutlined,
   EditOutlined,
   EllipsisOutlined,
   HddOutlined,
+  MailOutlined,
+  PrinterOutlined,
   RestOutlined,
   RightOutlined,
+  SendOutlined,
+  VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
-import { Checkbox, Tooltip, Typography } from "antd";
-import React, { useState } from "react";
+import { Button, Checkbox, Menu, Popover, Tooltip, Typography } from "antd";
+import axios from "axios";
+import moment from "moment";
+import React, { useState,useContext } from "react";
+import { useQuery } from "react-query";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
+import AppContext from "../../components/context/AppContext";
 
 import TableCustom from "../../components/Table/index";
+import { getTotalGlobal, numberWithDot, translateBg } from "../../components/Utils";
 import TabHome from "../clients/TabHome";
 
 
 export default function InvoicesOutstanding() {
   const history = useHistory();
   const [checked, setChecked] = useState([]);
+  const { globalOutstanding } = useContext(AppContext);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [filter, setFilter] = useState({
+    limit: 10,
+    page: 1,
+  });
+  const [clicked, setClicked] = useState(false);
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+
+
   const handleCheck = (v) => {
     const newChecked = [...checked];
     const findById = newChecked.find((x) => x === v);
@@ -29,67 +52,28 @@ export default function InvoicesOutstanding() {
     }
     setChecked(newChecked);
   };
-  const data = [
-    {
-      key: "1",
-      checkbox: (
-        <Checkbox
-          className="font-normal"
-          value={1}
-          checked={checked.includes("1")}
-          onChange={(e) => handleCheck(e.target.value)}
-        />
-      ),
-      client_invoice_number: (
-        <div>
-          <h3>Company Name</h3>
-          <p>00148</p>
-        </div>
-      ),
-      description: <span tw="flex items-start">PSD to HTML</span>,
-
-      date: (
-        <div>
-          <h3>25/10/2022</h3>
-          <p>Due in 4 days</p>
-        </div>
-      ),
-      amount: (
-        <div tw="text-right relative">
-          <div
-            className="isVisible"
-            tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
-          >
-            <div tw="hover:bg-gray-100 ">
-              <Tooltip placement="top" title="edit">
-                <EditOutlined tw="px-2 py-1  " />
-              </Tooltip>
-            </div>
-            <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
-              <Tooltip placement="top" title="duplicate">
-                <CopyOutlined tw="px-2 py-1" />
-              </Tooltip>
-            </div>
-
-          
-              <div tw="hover:bg-gray-100   border-r border-gray-200 ">
-                <Tooltip placement="top" title="archive">
-                  <HddOutlined tw="px-2 py-1 " />
-                </Tooltip>
-              </div>
-         
-            <div tw="hover:bg-gray-100   ">
-              <Tooltip placement="top" title="More">
-                <EllipsisOutlined tw="text-xs px-2 py-1" />
-              </Tooltip>
-            </div>
-          </div>
-          <h3>$6,000.000 USD</h3>
-          <span tw="bg-green-400 rounded p-1">paid</span>
-        </div>
-      ),
-    },
-  ];
+  const { data: dataInvoices, status } = useQuery(
+    ["invoices-listing", filter],
+    async (key) =>
+      axios
+        .get("invoices", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
+  
+  const data =
+    status === "success" &&
+    dataInvoices?.data?.map((item) => ({
+      key: item.id,
+      company_name: item.client.company_name,
+      invoice_number:item.code,
+      date: item.issued_at ,
+      due_date:item.due_date,
+      description: item.notes,
+      amount:item.total,
+      status:item.status
+    }));
 
   const handleCheckAll = () => {
     const all = data?.map((item) => item.key);
@@ -99,42 +83,188 @@ export default function InvoicesOutstanding() {
       setChecked(all);
     }
   };
-
+  const defaultFooter = () => (<div tw="text-right text-base">Grand Total: {data && getTotalGlobal(data?.map(x=>{
+    const splitAmount=x.amount.split(".")
+    return parseInt(splitAmount[0])
+  }))} </div>);
+  const handleAction=(e,type,record)=>{
+    e.stopPropagation()
+    switch (type) {
+      case 'edit':
+        history.push(`/invoices/${record.key}/edit`)
+        break;
+        case 'duplicate':
+        history.push(`/invoices/${record.key}/edit`)
+        break;
+        case 'payment':
+        history.push(`/invoices/${record.key}/edit`)
+        break;
+    
+      default:
+        history.push(`/invoices`)
+    
+        break;
+    }
+      }
+      const onSelectChange = (newSelectedRowKeys) => {
+        setSelectedRowKeys(newSelectedRowKeys);
+      };
+      const rowSelection = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+      };
+      const hasSelected = selectedRowKeys.length > 0;
   const columns = [
+   
     {
-      title: (
-        <Checkbox
-          checked={data.length !== 0 && data?.length === checked.length}  disabled={data.length === 0}
-          className="font-normal"
-          onChange={handleCheckAll}
-        />
+      title: "Client / Invoice Number",
+      dataIndex: "invoice_number",
+      key: "invoice_number",
+      render: (text, record) => (
+        <div>
+          <span>{record.company_name}</span>{" "}
+          <p tw="text-xs">
+            {record.invoice_number} 
+          </p>{" "}
+        </div>
       ),
-      dataIndex: "checkbox",
-      key: "checkbox",
-    },
-    {
-      title: "Client/Invoice Number",
-      dataIndex: "client_invoice_number",
-      key: "client_invoice_number",
+      sorter: (a, b) => a.company_name.length - b.company_name.length,
     },
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      sorter: (a, b) => a.description.length - b.description.length,
+      width:'30%'
+
     },
 
     {
-      title: "Issued Date/Due Date",
-      key: "date",
-      dataIndex: "date",
+      title: "Issued Date / Due Date",
+      key: "issued_due_date",
+      dataIndex: "issued_due_date",
+      render: (text, record) => (
+        <div>
+          <span>{moment(record.date).format("MM/DD/YYYY")}</span>{" "}
+          <p tw="text-xs">
+            {`Due ${moment(record.due_date).endOf('month').from(record.date)} `} 
+          </p>{" "}
+        </div>
+      ),
+      sorter: (a, b) => a.date.length - b.date.length,
     },
-
     {
       title: "Amount / Status",
       key: "amount",
       dataIndex: "amount",
+      render: (text, record) => (
+        <div tw="grid">
+             <div
+            className="isVisible"
+            tw="absolute bottom-16 right-6 flex invisible rounded-full bg-white shadow-sm border border-gray-200  "
+          >
+            <div tw="hover:bg-gray-100 hover:rounded-l-full ">
+              <Tooltip placement="top" title="edit">
+                <EditOutlined tw="p-2" onClick={(e)=>{
+                  handleAction(e,'edit',record)}} />
+              </Tooltip>
+            </div>
+
+            <div tw="hover:bg-gray-100  border-l border-r border-gray-200 ">
+              <Tooltip placement="top" title="duplicate">
+                <CopyOutlined tw="p-2" onClick={(e)=>{
+                  handleAction(e,'duplicate',record)}} />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100   border-r border-gray-200 ">
+              <Tooltip placement="top" title="add payment">
+                <DollarOutlined tw="p-2 "
+                onClick={(e)=>{
+                  handleAction(e,'payment',record)}}
+                />
+              </Tooltip>
+            </div>
+            <div tw="hover:bg-gray-100  hover:rounded-r-full ">
+              <Tooltip placement="top" title="More">
+                <EllipsisOutlined tw="text-xs p-2" />
+              </Tooltip>
+            </div>
+          </div>
+          <span>Rp{numberWithDot(record.amount)}</span>{" "}
+          <span tw="text-xs rounded p-1 ml-auto" style={{background:translateBg(record.status)}}>{record.status} </span>
+         
+        </div>
+      ),
+      sorter: (a, b) => a.amount - b.amount,
+      align:'right'
     },
   ];
+  
+  const bulkList = (
+    <div tw="w-36">
+      <Menu>
+        <Menu.Item key="edit">
+          <div>
+            <EditOutlined />
+            <span>Edit</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item key="duplicate">
+          <div>
+            <CopyOutlined />
+            <span>Duplicate</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item key="print">
+          <div>
+            <PrinterOutlined />
+            <span>Print</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item key="send-email">
+          <div>
+            <MailOutlined />
+            <span>Send By Email</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item key="">
+          <div>
+            <SendOutlined />
+            <span>Mark as Sent</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item key="mark-as-sent">
+          <div>
+            <DollarOutlined />
+            <span>Add a Payment</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item key="download-pdf">
+          <div>
+            <VerticalAlignBottomOutlined />
+            <span>Download PDF</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item key="archive">
+          <div>
+            <HddOutlined />
+            <span>Archive</span>
+          </div>
+        </Menu.Item>
+        <Menu.Item key="delete">
+          <div>
+            <RestOutlined />
+            <span>Delete</span>
+          </div>
+        </Menu.Item>
+      </Menu>
+    </div>
+  );
+
+
 
   return (
     <>
@@ -142,24 +272,66 @@ export default function InvoicesOutstanding() {
         <div tw="max-w-screen-lg mb-20">
           <TabHome />
           <div tw="mt-20">
-            <div tw="flex items-center mb-4">
-              <span
-                onClick={() => history.push("/clients")}
-                tw="cursor-pointer text-xl font-bold text-black text-primary"
-              >
-                All Clients
-              </span>
-              <RightOutlined tw=" ml-2" />
-              <span tw="text-xl font-bold text-black ml-2">
-                Clients with Outstanding Invoices
-              </span>
-            </div>
+          <div tw="flex items-center">
+                {hasSelected ? (
+                  <>
+                    <span
+                      onClick={() => history.push(`/invoices`)}
+                      tw="text-xl font-bold text-primary cursor-pointer"
+                    >
+                      All Invoices
+                    </span>
+
+                    <RightOutlined tw=" ml-2" />
+                    <span tw="text-xl font-bold text-black ml-2">Outstanding</span>
+                    <span tw="align-middle bg-gray-300 text-black rounded-full px-2  mx-2">
+                      {selectedRowKeys.length}
+                    </span>
+                    <Popover
+                      placement="bottom"
+                      content={bulkList}
+                      trigger="click"
+                      visible={clicked}
+                      onVisibleChange={handleClickChange}
+                    >
+                      <div className="flex items-center justify-center">
+                        <Button>
+                          <span tw="mr-2">Bulk Actions</span>
+                          <DownOutlined />
+                        </Button>
+                      </div>
+                    </Popover>
+                  </>
+                ) : (
+                  <>
+                  <span
+                      onClick={() => history.push(`/invoices`)}
+                      tw="text-xl font-bold text-primary cursor-pointer"
+                    >
+                      All Invoices
+                    </span>
+
+                    <RightOutlined tw=" ml-2" />
+                    <span tw="text-xl font-bold text-black ml-2">Outstanding</span>
+               
+                  </>
+                )}
+              </div>
 
             <div className="table-responsive">
-              <TableCustom
+            <TableCustom
+                onRow={(record, rowIndex) => {
+                  return {
+                    onClick: (event) => {
+                      history.push(`/invoices/${record.key}/invoice-detail`);
+                    },
+                  };
+                }}
+                rowSelection={rowSelection}
                 columns={columns}
                 dataSource={data}
                 pagination={false}
+                footer={defaultFooter}
                 className="ant-border-space"
               />
             </div>

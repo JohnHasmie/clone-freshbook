@@ -23,12 +23,15 @@ export default function ItemsDeleted() {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    show:"deleted"
   });
   const queryClient = useQueryClient();
 
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [isType, setIsType] = useState("");
+  const [isItemId, setIsItemId] = useState("");
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -40,7 +43,7 @@ export default function ItemsDeleted() {
     if (type === "undelete") {
       setIsType("undelete");
     } else {
-      setIsType("undelete");
+      setIsType("delete");
     }
     showModal();
     hide();
@@ -75,8 +78,8 @@ export default function ItemsDeleted() {
     </div>
   );
   const handleOk = () => {
-    if (isType === "delete") {
-      mutation.mutate(selectedRowKeys[0]);
+    if (selectedRowKeys.length === 0 ) {
+      mutationUndelete.mutate(isItemId);
     } else {
       mutationUndelete.mutate(selectedRowKeys[0]);
     }
@@ -89,7 +92,7 @@ export default function ItemsDeleted() {
     ["items-deleted", filter],
     async (key) =>
       axios
-        .get("items/1", {
+        .get("items", {
           params: key.queryKey[1],
         })
         .then((res) => res.data)
@@ -98,29 +101,29 @@ export default function ItemsDeleted() {
   // function for get items deleted, waiting data from backend
   const data =
     status === "success" &&
-    dataItems?.data?.data.filter(x=>x.deleted_at !== null)
-      .map((item, i) => ({
+    dataItems?.data?.data?.map((item, i) => ({
         key: item.id,
         i: i,
         name: item.name,
         desc: item.description,
         current: item.qty,
         rate: numberWithDot(item.rate),
+        client_id:item.client_id
       }));
 
   // function for undelete, waiting from backend
   const mutationUndelete = useMutation(
     async (data) => {
-      return axios.delete(`items/1/${data}`).then((res) => res.data);
+      return axios.post(`items/restore/${data}`).then((res) => res.data);
     },
     {
       onSuccess: () => {
         setTimeout(() => {
-          queryClient.invalidateQueries("items-by-client");
+          queryClient.invalidateQueries("items-deleted");
         }, 500);
         setSelectedRowKeys([]);
         notification.success({
-          message: `The selected items has been unarchived`,
+          message: `The selected items has been undelete`,
           placement: "topLeft",
         });
       },
@@ -240,7 +243,7 @@ export default function ItemsDeleted() {
           <span tw="text-lg">
             {isType === "delete"
               ? "This is deleted and can't be viewed or edited. Would you like to undelete it?"
-              : `Are you sure you want to undelete ${selectedRowKeys.length} items?`}
+              : `Are you sure you want to undelete ${selectedRowKeys.length === 0 ? 'this' : selectedRowKeys.length} items?`}
           </span>
         </ModalConfirm>
         <div className="table-responsive">
@@ -248,7 +251,8 @@ export default function ItemsDeleted() {
             onRow={(record, rowIndex) => {
               return {
                 onClick: (event) => {
-                  setIsType("delete");
+                  setIsType("undelete");
+                  setIsItemId(record.key)
                   showModal();
                   hide();
                 },

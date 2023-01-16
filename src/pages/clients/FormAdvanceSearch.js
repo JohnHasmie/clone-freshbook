@@ -8,72 +8,68 @@ import { InputKeyword, SelectKeyword } from "./AdvanceSearch.style";
 import { Option } from "antd/lib/mentions";
 
 export default function FormAdvanceSearch({
-  form,
   setIsAdvance,
   searchProps,
   typeSearchProps,
   dataClients,
   keywordSearchProps,
+  filterProps,
 }) {
   const [localSearch, setLocalSearch] = useState({
     company_name: "",
-    name: "",
+    contact_name: "",
     email: "",
-    phone: "",
-    address: "",
-    note: "",
-    total_outstanding: "",
-    credit_number: "",
-    credit_amount: "",
+    keyword: "",
+    type: "",
   });
+  const [form] = Form.useForm();
+
   const [localKeyword, setLocalKeyword] = useState("");
   const [searchField, setSearchField] = searchProps;
+  const [filter, setFilter] = filterProps;
+
   const [typeSearch, setTypeSearch] = typeSearchProps;
   const [keywordSearch, setKeywordSearch] = keywordSearchProps;
 
   const onChange = (e) => {
     setLocalSearch({ ...localSearch, [e.target.name]: e.target.value });
   };
+
   const onChangeKeyword = (e) => {
-    if(!typeSearch){
-    setTypeSearch("all")}
+    if (!typeSearch) {
+      setTypeSearch("all");
+    }
     setLocalKeyword(e.target.value);
   };
 
   const onFinish = (values) => {
-    setSearchField({ ...searchField, ...localSearch, status: true });
-    setKeywordSearch(localKeyword);
+    console.log("values", values);
+    setFilter({...filter,company_name:values.company_name,email:values.email,contact_name:values.contact_name,keyword:values.keyword});
+    // setSearchField({ ...searchField, ...localSearch, status: true });
+    // setKeywordSearch(localKeyword);
     setIsAdvance(false);
   };
   const onReset = () => {
-    // form.resetFields();
-    setLocalSearch({
-      company_name: "",
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      note: "",
-      total_outstanding: "",
-      credit_number: "",
-      credit_amount: "",
-    });
-    setLocalKeyword("");
+    form.resetFields();
+    // setLocalSearch({
+    //   company_name: "",
+    //   contact_name: "",
+    //   email: "",
+    //   keyword: "",
+    //   type: "",
+    // });
+    // setLocalKeyword("");
   };
   const backButton = () => {
-    form.resetFields();
-    setLocalSearch({
-      company_name: "",
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      note: "",
-      total_outstanding: "",
-      credit_number: "",
-      credit_amount: "",
-    });
-    setLocalKeyword("");
+    // form.resetFields();
+    // setLocalSearch({
+    //   company_name: "",
+    //  contact_name: "",
+    //   email: "",
+    //   keyword:"",
+    //   type:""
+
+    // });
 
     setIsAdvance(false);
   };
@@ -81,18 +77,12 @@ export default function FormAdvanceSearch({
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
-  useEffect(() => {
-    if (searchField.status) {
-      console.log("berjalan");
-      setLocalSearch({ ...searchField });
-    }
-  }, [searchField]);
-  useEffect(() => {
-    if (keywordSearch) {
-      setLocalKeyword(keywordSearch);
-    }
-  }, [keywordSearch]);
-console.log(localSearch,"local");
+
+  // useEffect(() => {
+  //   if (keywordSearch) {
+  //     setLocalKeyword(keywordSearch);
+  //   }
+  // }, [keywordSearch]);
   return (
     <Form
       onFinish={onFinish}
@@ -103,30 +93,40 @@ console.log(localSearch,"local");
       fields={[
         {
           name: ["company_name"],
-          value: localSearch.company_name,
+          value: filter?.company_name,
         },
         {
-          name: ["name"],
-          value: localSearch.name,
+          name: ["contact_name"],
+          value: filter?.contact_name,
         },
         {
           name: ["email"],
-          value: localSearch.email,
+          value: filter.email,
         },
+        {
+          name: ["keyword"],
+          value: filter.keyword,
+        },
+        {
+          name: ["type"],
+          value: filter.type,
+        }
+
       ]}
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
           <Form.Item label="Organization" name="company_name">
             <AutoComplete
-              onChange={(e) =>
-                onChange({
-                  target: { value: e, name: "company_name" },
-                })
-              }
+              // onChange={(e) =>
+              //   onChange({
+              //     target: { value: e, name: "company_name" },
+              //   })
+              // }
+              // value={"Mills and Sanders Plc"}
               placeholder="Search for an organization"
               filterOption={true}
-              options={dataClients?.data?.map((x) => ({
+              dataSource={dataClients?.data?.map((x) => ({
                 label: x.company_name,
                 value: x.company_name,
               }))}
@@ -135,18 +135,19 @@ console.log(localSearch,"local");
         </div>
 
         <div>
-          <Form.Item label="Contact Name" name="name">
+          <Form.Item label="Contact Name" name="contact_name">
             <AutoComplete
               placeholder="Search for a contact name"
               filterOption={true}
-              onChange={(e) =>
-                onChange({
-                  target: { value: e, name: "name" },
-                })
-              }
+              // value={localSearch.contact_name}
+              // onChange={(e) =>
+              //   onChange({
+              //     target: { value: e, name: "contact_name" },
+              //   })
+              // }
               options={dataClients?.data?.map((x) => ({
                 label: `${x.first_name} ${x.last_name}`,
-                value: x.first_name,
+                value: x.first_name + " " + x.last_name,
               }))}
             />
           </Form.Item>
@@ -154,11 +155,13 @@ console.log(localSearch,"local");
         <div>
           <Form.Item label="Email" name="email">
             <AutoComplete
-              onChange={(e) =>
-                onChange({
-                  target: { value: e, name: "email" },
-                })
-              }
+              // value={localSearch.email}
+
+              // onChange={(e) =>
+              //   onChange({
+              //     target: { value: e, name: "email" },
+              //   })
+              // }
               placeholder="Search for a contact email"
               filterOption={true}
               options={dataClients?.data?.map((x) => ({
@@ -168,53 +171,43 @@ console.log(localSearch,"local");
             />
           </Form.Item>
         </div>
-        <div tw="col-span-2 ">
-          <Form.Item label="Keyword Search" name="keyword">
-            <div tw="flex relative">
-              <InputKeyword
-                type="text"
-                onChange={onChangeKeyword}
-                value={localKeyword}
-                placeholder="Keyword or Number"
-              />
-              <SelectKeyword
-                tw="inline-flex "
-                value={typeSearch}
-                onChange={(e) => {
-                  setTypeSearch(e);
-                }}
-                options={[
-                  {
-                    value: "all",
-                    label: "All Fields",
-                  },
-                  {
-                    value: "phone",
-                    label: "Phone Number",
-                  },
-                  {
-                    value: "address",
-                    label: "Address",
-                  },
-                  {
-                    value: "note",
-                    label: "Internal Note",
-                  },
-                  {
-                    value: "total_outstanding",
-                    label: "Total Outstanding",
-                  },
-                  {
-                    value: "credit_number",
-                    label: "Credit Number",
-                  },
-                  {
-                    value: "credit_amount",
-                    label: "Credit Amount",
-                  },
-                ]}
-              />
-            </div>
+        <div tw="col-span-2 flex items-end ">
+          <Form.Item tw="flex w-96" label="Keyword Search" name="keyword">
+            <InputKeyword
+              type="text"
+              name="keyword"
+              // value={localSearch.keyword}
+              // onChange={onChange}
+              placeholder="Keyword or Number"
+            />
+          </Form.Item>
+          <Form.Item tw="inline-flex w-48"  name="type">
+            <SelectKeyword
+              // value={localSearch.type}
+              // onChange={(e) =>
+              //   onChange({
+              //     target: { value: e, name: "type" },
+              //   })
+              // }
+              options={[
+                {
+                  value: "all",
+                  label: "All Fields",
+                },
+                {
+                  value: "phone",
+                  label: "Phone Number",
+                },
+                {
+                  value: "address",
+                  label: "Address",
+                },
+                {
+                  value: "note",
+                  label: "Internal Note",
+                },
+              ]}
+            />
           </Form.Item>
         </div>
       </div>
@@ -229,7 +222,10 @@ console.log(localSearch,"local");
             </ButtonMore>
           </div>
           <div>
-            <Button htmlType="submit" tw="text-lg text-white bg-success px-8">
+            <Button
+              onClick={() => form.submit()}
+              tw="text-lg text-white bg-success px-8"
+            >
               Apply
             </Button>
           </div>
@@ -377,7 +373,6 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
     console.log("Success:", values);
   };
   const handleReset = () => {
-    console.log(form, "Form");
     form.resetFields();
   };
 
@@ -390,6 +385,7 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
       onFinishFailed={onFinishFailed}
       layout="vertical"
       size={"large"}
+      form={form}
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
@@ -499,7 +495,10 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
             </ButtonMore>
           </div>
           <div>
-            <Button htmlType="submit" tw="text-lg text-white bg-success px-8">
+            <Button
+              onClick={() => form.submit()}
+              tw="text-lg text-white bg-success px-8"
+            >
               Apply
             </Button>
           </div>
