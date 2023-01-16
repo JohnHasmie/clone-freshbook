@@ -21,6 +21,13 @@ function Home() {
   });
   const [filterPayment, setFilterPayment] = useState({
     currency: "USD",
+    start_at:"",
+    finish_at:""
+  });
+  const [filterRecurring, setFilterRecurring] = useState({
+    currency: "USD",
+    start_at:"",
+    finish_at:""
   });
   const [clicked, setClicked] = useState(false);
 
@@ -61,7 +68,7 @@ function Home() {
   );
 
   const { data: dataTotalProfit, status: statusTotalProfit } = useQuery(
-    ["total-profit-listing"],
+    ["total-profit-listing",filterRecurring],
     async (key) =>
       axios
         .get("reports/total-profit", {
@@ -342,7 +349,7 @@ function Home() {
 </Row> */}
         <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }}>
           <Col span={24} className="mb-24">
-            <div tw="grid gap-y-2 md:flex justify-between mb-5">
+            <div tw="grid gap-y-2 md:flex justify-between ">
               <div tw="flex items-baseline">
                 <span tw="text-xl font-bold text-black">
                   Monthly Recurring Revenue
@@ -350,11 +357,11 @@ function Home() {
                 <Popover
                   tw="ml-5  flex items-center justify-center "
                   placement="bottom"
-                  content={FilterRecurring}
+                  content={<FilterRecurring filterRecurringProps={[filterRecurring, setFilterRecurring] } />}
                   trigger="click"
                 >
                   <span tw="cursor-pointer mr-2 text-base ">
-                    for Dec 1, 2021 to Nov 30, 2022 (IDR)
+                  <UnorderedListOutlined tw="ml-3 text-base flex items-end" />
                   </span>
                   <DownOutlined />
                 </Popover>
@@ -376,6 +383,7 @@ function Home() {
               style={{
                 width: "300",
                 borderColor: "#cdd4d9",
+                marginTop:"2rem"
               }}
             >
                 {statusTotalProfit === "loading" && (
@@ -401,18 +409,18 @@ function Home() {
                       <span className="sr-only">Loading...</span>
                     </div>
                   )}
-             {statusTotalProfit === "success" && <LineChart dataTotalProfit={dataTotalProfit} />}
+             {statusTotalProfit === "success" && <LineChart dataTotalProfit={dataTotalProfit} filterRecurring={filterRecurring} />}
             </Card>
           </Col>
         </Row>
 
-        <Row gutter={[24, 0]} style={{ marginBottom: "2rem" }} >
+        <Row gutter={[24, 0]} style={{ marginBottom: "2rem",marginTop:'5rem' }} >
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="flex justify-start items-center mb-5">
               <span tw="text-xl font-bold text-black">Revenue Streams</span>
               <Popover
                 placement="bottom"
-                content={FilterRevenue}
+                content={<FilterRevenue filterRevenueProps={[filterPayment, setFilterPayment] } />}
                 trigger="click"
               >
                 <UnorderedListOutlined tw="ml-3 text-base flex items-end" />
@@ -452,8 +460,8 @@ function Home() {
                     </div>
                   )}
               
-             {statusPayment === "success" && <DonutsRevenue dataPayment={dataPayment} />}
-              {/* <div
+             {statusPayment === "success" && <DonutsRevenue dataPayment={dataPayment} filterPayment={filterPayment} />}
+              {/* <div 
                 className="h-full col-content p-20"
                 style={{ display: "flex", justifyContent: "space-between" }}
               >

@@ -138,11 +138,11 @@ export default function Business() {
             value: "",
           },
           {
-            name: ["addres"],
+            name: ["address"],
             value: setting?.data?.address,
           },
           {
-            name: ["addres_2"],
+            name: ["address_2"],
             value: "",
           },
           {
@@ -206,12 +206,12 @@ export default function Business() {
             </Col>
             <Col span={24}>
               <Form.Item label="Address Line 1" name="addres" rules={[{ required: true , message:"Address Required"}]}>
-                <Input name="addres" type="text" />
+                <Input name="address" type="text" />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Address Line 2" name="addres_2">
-                <Input name="addres_2" type="text" />
+              <Form.Item label="Address Line 2" name="address_2">
+                <Input name="address_2" type="text" />
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>

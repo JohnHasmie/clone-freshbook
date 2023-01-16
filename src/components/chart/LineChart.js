@@ -5,7 +5,7 @@ import { MinusOutlined } from "@ant-design/icons";
 import tw from "twin.macro";
 import { getTotalGlobal, numberWithDot } from "../Utils";
 
-function LineChart({dataTotalProfit}) {
+function LineChart({dataTotalProfit,filterRecurring}) {
   const { Title, Paragraph } = Typography;
 
   const numbers = [];
@@ -101,7 +101,7 @@ function LineChart({dataTotalProfit}) {
     <>
       <div tw="flex justify-end">
         <div tw="grid justify-items-end">
-          <div tw="font-bold text-primary text-lg md:text-3xl">{dataTotalProfit?.income && numberWithDot(getTotalGlobal(dataTotalProfit?.income?.map((item)=>{
+          <div tw="font-bold text-primary text-lg md:text-3xl">{filterRecurring?.currency == "GBP" ? '£' : "$"}{dataTotalProfit?.income && numberWithDot(getTotalGlobal(dataTotalProfit?.income?.map((item)=>{
             const splitAmount=item?.profit?.split(".")
             return parseInt(splitAmount[0]);
           })))}</div>

@@ -9,7 +9,7 @@ import {
   Select,
   Typography,
 } from "antd";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,useEffect,useContext } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
@@ -23,6 +23,7 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import moment from "moment";
 import { getTotalGlobal, numberWithDot } from "../../components/Utils";
+import AppContext from "../../components/context/AppContext";
 
 export default function PaymentsCollected() {
   const { Title } = Typography;
@@ -34,6 +35,9 @@ export default function PaymentsCollected() {
     currency: "USD",
   });
   const [form] = Form.useForm();
+  const [newSetting, setNewSetting] = useState(JSON.parse(localStorage.getItem("newSetting")) || {data:""});
+
+  const { setting } = useContext(AppContext);
 
   const myRef = useRef(null);
   const { data: dataPayment, status: statusPayment } = useQuery(
@@ -253,6 +257,10 @@ export default function PaymentsCollected() {
     //   </Form>
     // </div>
   );
+  useEffect(() => {
+    setting &&
+      localStorage.setItem("newSetting",JSON.stringify(setting))
+  }, [setting]);
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -312,9 +320,9 @@ export default function PaymentsCollected() {
         <CardReporting >
           <h1 tw="text-blueDefault">Payments Collected</h1>
           <div tw="my-3 flex flex-col">
-            <span tw="text-sm text-gray-600">Oasis Land</span>
-            <span tw="text-sm text-gray-600">Total Billed (USD)</span>
-            <span tw="text-sm text-gray-600">As of November 17,2022</span>
+            <span tw="text-sm text-gray-600">        {setting?.data?.company_name || newSetting?.data?.company_name}</span>
+            <span tw="text-sm text-gray-600">Total Billed </span>
+            <span tw="text-sm text-gray-600"> As of {moment(new Date()).format("MMMM DD, YYYY")}</span>
           </div>
           {statusPayment === "loading" && (
             <div

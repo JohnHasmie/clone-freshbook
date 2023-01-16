@@ -609,7 +609,7 @@ export default function Invoices() {
               </Tooltip>
             </div>
           </div>
-          <span>Rp{numberWithDot(record.amount)}</span>{" "}
+          <span>{numberWithDot(record.amount)}</span>{" "}
           <span
             tw="text-xs rounded p-1 ml-auto"
             style={{ background: translateBg(record.status) }}
