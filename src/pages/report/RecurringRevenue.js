@@ -1,6 +1,6 @@
 import { DownOutlined, LeftOutlined } from "@ant-design/icons";
 import { Button, Col, Divider, Form, Popover, Row, Select, Typography } from "antd";
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
@@ -14,6 +14,7 @@ export default function RecurringRevenue() {
   const { Title } = Typography;
   const [open, setOpen] = useState(false);
   const [clicked, setClicked] = useState(false);
+  const myRef=useRef()
   const handleClickChange = (open) => {
     setClicked(open);
   };
@@ -134,7 +135,7 @@ export default function RecurringRevenue() {
             <span tw="capitalize text-4xl font-bold">Recurring Revenue Annual</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={MoreAction} trigger="click">
+          <Popover placement="bottom" content={<MoreAction myRef={myRef} />} trigger="click">
             <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />
@@ -150,170 +151,172 @@ export default function RecurringRevenue() {
         </div>
       
       <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
-        <CardReporting tw="md:col-span-9 mb-10 mt-10 md:mt-2">
-          <h1 tw="text-blueDefault">Recurring Revenue Annual</h1>
-          <div tw="my-3 flex flex-col">
-            <span tw="text-sm text-gray-600">Oasis Land</span>
-            <span tw="text-sm text-gray-600">
-              Recurring Revenue Annual - Billed (USD)
-            </span>
-            <span tw="text-sm text-gray-600">
-              For Dec 1, 2021 - Nov 30, 2022
-            </span>
-          </div>
-          <div tw="overflow-x-auto ">
-            <table style={{ minWidth: "1000px" }}>
-              <thead>
-                <tr>
-                  <th tw="text-left py-4 ">All Client</th>
-                </tr>
-              </thead>
-              <tbody tw="overflow-scroll">
-                <tr tw="text-left text-xs font-bold  border-b border-gray-200">
-                  <th tw="py-1">Revenue Stream</th>
-                  <td>Jan</td>
-                  <td>Feb</td>
-                  <td>Mar</td>
-                  <td>Apr</td>
-                  <td>May</td>
-                  <td>Jun</td>
-                  <td>Jul</td>
-                  <td>Aug</td>
-                  <td>Sept</td>
-                  <td>Oct</td>
-                  <td>Dec</td>
-                  <td>Nov</td>
-                </tr>
-                <tr tw="text-left text-xs border-b border-dotted border-gray-200">
-                  <th tw="py-1">Recurring</th>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$6,000.00 </td>
-                  <td>$6,000.00 </td>
-                  <td>$6,000.00 </td>
-                </tr>
-                <tr tw="text-left text-xs border-b border-dotted  border-gray-200">
-                  <th tw="py-1">Non-Recurring Invoices</th>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00 </td>
-                  <td>$0.00 </td>
-                  <td>$0.00 </td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr className="double" tw="font-bold">
-                  <th tw="text-left text-xs">Total</th>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00 </td>
-                  <td tw="text-left text-xs">$0.00 </td>
-                  <td tw="text-left text-xs">$0.00 </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-
-          <div tw="overflow-x-auto mt-10 ">
-            <table style={{ minWidth: "1000px" }}>
-              <thead>
-                <tr>
-                  <th tw="text-left py-4 ">
-                    <span tw="rounded-full border border-orange-500 px-2 py-1 mr-0.5 ">
-                      C
-                    </span>
-                    Company Name
-                  </th>
-                </tr>
-              </thead>
-              <tbody tw="overflow-scroll">
-                <tr tw="text-left text-xs font-bold  border-b border-gray-200">
-                  <th tw="py-1">Revenue Stream</th>
-                  <td>Jan</td>
-                  <td>Feb</td>
-                  <td>Mar</td>
-                  <td>Apr</td>
-                  <td>May</td>
-                  <td>Jun</td>
-                  <td>Jul</td>
-                  <td>Aug</td>
-                  <td>Sept</td>
-                  <td>Oct</td>
-                  <td>Dec</td>
-                  <td>Nov</td>
-                </tr>
-                <tr tw="text-left text-xs border-b border-dotted border-gray-200">
-                  <th tw="py-1">Recurring</th>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$6,000.00 </td>
-                  <td>$6,000.00 </td>
-                  <td>$6,000.00 </td>
-                </tr>
-                <tr tw="text-left text-xs border-b border-dotted  border-gray-200">
-                  <th tw="py-1">Non-Recurring Invoices</th>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00</td>
-                  <td>$0.00 </td>
-                  <td>$0.00 </td>
-                  <td>$0.00 </td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr className="double" tw="font-bold">
-                  <th tw="text-left text-xs">Total</th>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00</td>
-                  <td tw="text-left text-xs">$0.00 </td>
-                  <td tw="text-left text-xs">$0.00 </td>
-                  <td tw="text-left text-xs">$0.00 </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </CardReporting>
+      <div ref={myRef} tw="md:col-span-9 mb-10 mt-10 md:mt-2">
+          <CardReporting >
+            <h1 tw="text-blueDefault">Recurring Revenue Annual</h1>
+            <div tw="my-3 flex flex-col">
+              <span tw="text-sm text-gray-600">Oasis Land</span>
+              <span tw="text-sm text-gray-600">
+                Recurring Revenue Annual - Billed (USD)
+              </span>
+              <span tw="text-sm text-gray-600">
+                For Dec 1, 2021 - Nov 30, 2022
+              </span>
+            </div>
+            <div tw="overflow-x-auto ">
+              <table style={{ minWidth: "1000px" }}>
+                <thead>
+                  <tr>
+                    <th tw="text-left py-4 ">All Client</th>
+                  </tr>
+                </thead>
+                <tbody tw="overflow-scroll">
+                  <tr tw="text-left text-xs font-bold  border-b border-gray-200">
+                    <th tw="py-1">Revenue Stream</th>
+                    <td>Jan</td>
+                    <td>Feb</td>
+                    <td>Mar</td>
+                    <td>Apr</td>
+                    <td>May</td>
+                    <td>Jun</td>
+                    <td>Jul</td>
+                    <td>Aug</td>
+                    <td>Sept</td>
+                    <td>Oct</td>
+                    <td>Dec</td>
+                    <td>Nov</td>
+                  </tr>
+                  <tr tw="text-left text-xs border-b border-dotted border-gray-200">
+                    <th tw="py-1">Recurring</th>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$6,000.00 </td>
+                    <td>$6,000.00 </td>
+                    <td>$6,000.00 </td>
+                  </tr>
+                  <tr tw="text-left text-xs border-b border-dotted  border-gray-200">
+                    <th tw="py-1">Non-Recurring Invoices</th>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00 </td>
+                    <td>$0.00 </td>
+                    <td>$0.00 </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr className="double" tw="font-bold">
+                    <th tw="text-left text-xs">Total</th>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00 </td>
+                    <td tw="text-left text-xs">$0.00 </td>
+                    <td tw="text-left text-xs">$0.00 </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+        
+            <div tw="overflow-x-auto mt-10 ">
+              <table style={{ minWidth: "1000px" }}>
+                <thead>
+                  <tr>
+                    <th tw="text-left py-4 ">
+                      <span tw="rounded-full border border-orange-500 px-2 py-1 mr-0.5 ">
+                        C
+                      </span>
+                      Company Name
+                    </th>
+                  </tr>
+                </thead>
+                <tbody tw="overflow-scroll">
+                  <tr tw="text-left text-xs font-bold  border-b border-gray-200">
+                    <th tw="py-1">Revenue Stream</th>
+                    <td>Jan</td>
+                    <td>Feb</td>
+                    <td>Mar</td>
+                    <td>Apr</td>
+                    <td>May</td>
+                    <td>Jun</td>
+                    <td>Jul</td>
+                    <td>Aug</td>
+                    <td>Sept</td>
+                    <td>Oct</td>
+                    <td>Dec</td>
+                    <td>Nov</td>
+                  </tr>
+                  <tr tw="text-left text-xs border-b border-dotted border-gray-200">
+                    <th tw="py-1">Recurring</th>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$6,000.00 </td>
+                    <td>$6,000.00 </td>
+                    <td>$6,000.00 </td>
+                  </tr>
+                  <tr tw="text-left text-xs border-b border-dotted  border-gray-200">
+                    <th tw="py-1">Non-Recurring Invoices</th>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00</td>
+                    <td>$0.00 </td>
+                    <td>$0.00 </td>
+                    <td>$0.00 </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr className="double" tw="font-bold">
+                    <th tw="text-left text-xs">Total</th>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00</td>
+                    <td tw="text-left text-xs">$0.00 </td>
+                    <td tw="text-left text-xs">$0.00 </td>
+                    <td tw="text-left text-xs">$0.00 </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </CardReporting>
+      </div>
         <Filter Filtering={FilterRecurringRevenue} setOpen={setOpen} open={open} />
       </div>
     </div>

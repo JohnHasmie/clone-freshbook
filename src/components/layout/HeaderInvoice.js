@@ -1,4 +1,4 @@
-import {  useContext } from "react";
+import {  useContext,useRef } from "react";
 import { Popover, Button } from "antd";
 import {
   DownOutlined,
@@ -56,9 +56,8 @@ function HeaderInvoice({
   handleFixedNavbar,
 }) {
   const history = useHistory();
-const {globalDetailInvoice}=useContext(AppContext)
+const {globalDetailInvoice,refInvoice}=useContext(AppContext)
 let { pathname } = useLocation();
-
   return (
     <div tw="md:ml-24">
    {globalDetailInvoice &&   <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
@@ -89,7 +88,7 @@ let { pathname } = useLocation();
           </Popover>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={MoreAction} trigger="click">
+          <Popover placement="bottom" content={<MoreAction myRef={refInvoice}/>} trigger="click">
             <ButtonMore>
               <span>More Actions</span>
               <DownOutlined />

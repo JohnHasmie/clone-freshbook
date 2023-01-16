@@ -8,12 +8,16 @@ import { getTotalGlobal, numberWithDot } from "../Utils";
 function LineChart({dataTotalProfit}) {
   const { Title, Paragraph } = Typography;
 
-  console.log(dataTotalProfit,"totalProfit");
+  const numbers = [];
+
+  for (let i = 1; i <= 12; i++) {
+    numbers.push(i*0);
+  }
   const lineChart = {
     series: [
       {
         name: "Profit",
-        data: dataTotalProfit?.income?.map(item=>item?.profit),
+        data: dataTotalProfit?.income?.length > 0 ? calculateData(dataTotalProfit?.income)/* dataTotalProfit?.income?.map(item=>item?.profit) */: numbers.map(item=>item) ,
         offsetY: 0,
       }
   
@@ -97,7 +101,10 @@ function LineChart({dataTotalProfit}) {
     <>
       <div tw="flex justify-end">
         <div tw="grid justify-items-end">
-          <div tw="font-bold text-primary text-lg md:text-3xl">{dataTotalProfit?.income && numberWithDot(getTotalGlobal(dataTotalProfit?.income?.map(item=>item?.profit)))}</div>
+          <div tw="font-bold text-primary text-lg md:text-3xl">{dataTotalProfit?.income && numberWithDot(getTotalGlobal(dataTotalProfit?.income?.map((item)=>{
+            const splitAmount=item?.profit?.split(".")
+            return parseInt(splitAmount[0]);
+          })))}</div>
           <div>this month</div>
         </div>
       </div>
@@ -115,3 +122,15 @@ function LineChart({dataTotalProfit}) {
 }
 
 export default LineChart;
+
+export function calculateData(data) {
+  const numbers = [];
+
+  for (let i = 1; i <= 12-data.length; i++) {
+    numbers.push(i*0);
+  }
+  const newData=data?.map(item=>item?.profit)
+  newData.push(...numbers)
+return newData
+
+}

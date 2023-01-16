@@ -41,7 +41,7 @@ export default function FilterDate({ hide, filterProps }) {
     // mutation.mutate(newValues);
     // form.resetFields();
 
-    hide()
+    hide();
   };
   return (
     <>
@@ -100,7 +100,9 @@ export default function FilterDate({ hide, filterProps }) {
 
             <Radio.Group
               tw="col-span-2 px-2"
-              onChange={(e) => setLocalSearch({ ...localSearch, date_type: e.target.value })}
+              onChange={(e) =>
+                setLocalSearch({ ...localSearch, date_type: e.target.value })
+              }
               value={localSearch.date_type}
             >
               <Radio value={"last_invoice"}>Last Invoiced</Radio>

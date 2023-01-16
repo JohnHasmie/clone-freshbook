@@ -44,6 +44,8 @@ export default function AccountTrialBalance() {
     finish_at:"",
     currency:"USD"
   });
+  const myRef=useRef(null)
+
   const hide = () => {
     setClicked(false);
   };
@@ -202,7 +204,7 @@ export default function AccountTrialBalance() {
           <span tw="capitalize text-4xl font-bold text-black">Trial Balance</span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={<MoreAction ref={ref} />} trigger="click">
+          <Popover placement="bottom" content={<MoreAction myRef={myRef} />} trigger="click">
             <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />
@@ -217,7 +219,9 @@ export default function AccountTrialBalance() {
       </div>
 
       <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
-        <CardReporting ref={ref} tw="md:col-span-9 mb-10 mt-10 md:mt-2">
+        <div ref={myRef} tw="md:col-span-9 mb-10 mt-10 md:mt-2">
+
+        <CardReporting >
           <h1 tw="text-blueDefault">Trial Balance</h1>
           <div tw="grid">
           <span tw="text-xs">
@@ -363,6 +367,8 @@ export default function AccountTrialBalance() {
           </table>
         </div>}
         </CardReporting>
+        </div>
+
         <Filter
           Filtering={FilterAccountTrialBalance}
           setOpen={setOpen}
