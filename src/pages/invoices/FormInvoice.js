@@ -103,7 +103,9 @@ export default function FormInvoice() {
   });
   const [isClient, setIsClient] = useState("");
   const [form] = Form.useForm();
-  const dateFormat = "MMMM DD,YYYY";
+  // const dateFormat = "MMMM DD,YYYY";
+const dateFormat = "DD/MM/YYYY";
+
   const queryClient = useQueryClient();
 
   const { data: detailInvoice, status } = useQuery(
@@ -767,7 +769,6 @@ export default function FormInvoice() {
                       { required: true, message: "Please select a date!" },
                     ]}
                   >
-                    {/* <h4 tw="text-gray-400">Date of Issue</h4> */}
 
                     <DatePickerCustom
                       bordered={false}

@@ -7,7 +7,7 @@ import { DonutStyled } from "./DonutChart.style";
 import { getTotalGlobal, numberWithDot } from "../Utils";
 
 
-function DonutsRevenue({dataPayment}) {
+function DonutsRevenue({dataPayment,filterPayment}) {
   const { Title, Paragraph } = Typography;
   const newData=getTotal(dataPayment?.data?.data?.map((item)=>{
     const splitAmount=item?.amount?.split(".")
@@ -53,11 +53,11 @@ function DonutsRevenue({dataPayment}) {
        <div tw="text-lg">
        <FileDoneOutlined tw="text-xl mr-2 text-[#9c4aa4]" />
        <span>Invoices</span>
-       <span tw="text-gray-400 ml-2">{newData && numberWithDot(newData)}</span>
+       <span tw="text-gray-400 ml-2">{filterPayment?.currency == "GBP" ? '£' : "$"}{newData && numberWithDot(newData)}</span>
        </div>
    </div>
           <div tw="flex flex-col justify-start items-end">
-          <div tw="font-bold text-primary text-lg md:text-3xl">{newData && numberWithDot(newData)}</div>
+          <div tw="font-bold text-primary text-lg md:text-3xl">{filterPayment?.currency == "GBP" ? '£' : "$"}{newData && numberWithDot(newData)}</div>
           <div>this month</div>
       </div>
     </div>

@@ -363,7 +363,7 @@ export default function Clients() {
               </Tooltip>
             </div>
           </div>
-          <span>{`Rp. ${numberWithDot(record.total_outstanding)} IDR`}</span>
+          <span>{`${numberWithDot(record.total_outstanding)}`}</span>
         </div>
       ),
       sorter: (a, b) => a.total_outstanding.length - b.total_outstanding.length,
@@ -673,5 +673,5 @@ export function getTotal(outstanding) {
   const sum = outstanding.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
-  return `Rp. ${numberWithDot(sum)} IDR`;
+  return `${numberWithDot(sum)}`;
 }
