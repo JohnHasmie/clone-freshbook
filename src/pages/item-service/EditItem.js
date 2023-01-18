@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import CardPopup from "../../components/CardPopup";
 
-export default function EditItem({query,id,hide,data,clientId}) {
+export default function EditItem({query,id,hide,data,clientId,handlePopoverClick}) {
   const queryClient = useQueryClient();
   const [form]=Form.useForm();
   const [isForm, setIsForm] = useState({
@@ -68,7 +68,7 @@ qty:data.current
   };
   return (
     <>
-      <CardPopup title="Edit Item" tw="z-30">
+      <CardPopup title="Edit Item" tw="z-30" onClick={handlePopoverClick}>
         <Form
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
@@ -105,9 +105,9 @@ qty:data.current
           <Form.Item label="Rate" name="rate" tw="px-2">
             <Input onChange={onChange} name="rate"    placeholder="0.00" />
           </Form.Item>
-          <Form.Item label="stock" name="qty" tw="px-2">
+          {/* <Form.Item label="stock" name="qty" tw="px-2">
             <Input onChange={onChange} name="qty" type="number"  />
-          </Form.Item>
+          </Form.Item> */}
           </div>
 
           <div tw="flex justify-end border-t border-gray-200 px-5 pt-5 pb-0">

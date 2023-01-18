@@ -66,6 +66,7 @@ import FormRecurringTemplate from "./pages/invoices/FormRecurringTemplate";
 import FormInvoice from "./pages/invoices/FormInvoice";
 import AccountAgingPrint from "./pages/report/AccountAgingPrint";
 import AccountBalancePrint from "./pages/report/AccountBalancePrint";
+import InvoicePrint from "./pages/invoices/InvoicePrint";
 
 const queryClient = new QueryClient();
 
@@ -206,6 +207,7 @@ const refInvoice=useRef(null)
               />
             <Route exact path="/recurring-template/new" component={FormInvoice} />
             <Route exact path="/recurring-template/:invoiceId/edit" component={FormInvoice} />
+            <Route exact path="/invoices/:invoiceId/print" component={InvoicePrint} />
         
 
             <Main>
@@ -259,6 +261,7 @@ const refInvoice=useRef(null)
 
 
               <Route exact path="/invoices" component={Invoices} />
+
               <Route exact path="/invoices/archived" component={InvoicesArchived} />
               <Route exact path="/invoices/deleted" component={InvoicesDeleted} />
               <Route exact path="/invoices/draft" component={InvoicesDraft} />

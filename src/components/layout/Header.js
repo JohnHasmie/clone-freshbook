@@ -23,7 +23,7 @@ import AppContext from "../context/AppContext";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { ModalConfirm } from "../ModalConfirm.style";
-
+import * as XLSX from 'xlsx'
 const toggler = [
   <svg
     width="20"
@@ -69,16 +69,19 @@ function Header({
     "downloadPDF",
     async () =>
       axios
-        .get("clients/export", {
-          responseType: "blob",
-        })
+        .get("clients/export")
         .then((res) => {
-          const url = window.URL.createObjectURL(new Blob([res.data]))
-          const link = document.createElement("a")
-          link.href = url
-          link.setAttribute("download.pdf")
-          document.body.appendChild(link)
-          link.click()
+          console.log(res,"res")
+          const ws = XLSX.utils.json_to_sheet(res.data)
+          const wb = XLSX.utils.book_new()
+          XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+          XLSX.writeFile(wb, 'data.xlsx')
+          // const url = window.URL.createObjectURL(new Blob([res.data]))
+          // const link = document.createElement("a")
+          // link.href = url
+          // link.setAttribute("download.pdf")
+          // document.body.appendChild(link)
+          // link.click()
 
           return res.data
         }),
@@ -86,6 +89,24 @@ function Header({
       enabled: false,
     }
   )
+
+
+  // const fetchData = async () => {
+  //   const response = await axios.get('clients/export')
+  //   const data = await response.json()
+  //   return data
+  // }
+  // const { data, status } = useQuery('data', fetchData)
+
+  // const handleExport = () => {
+  //   if (status === 'success') {
+  //     console.log(data)
+      // const ws = XLSX.utils.json_to_sheet(data)
+      // const wb = XLSX.utils.book_new()
+      // XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+      // XLSX.writeFile(wb, 'data.xlsx')
+  //   }
+  // }
   const content = (
     <div className="user-pop">
       <ul>

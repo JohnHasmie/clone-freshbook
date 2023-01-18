@@ -278,25 +278,22 @@ function Sidenav({ color }) {
               className="profile-photo"
               alt="profile"
             /> */}
-          {data?.user?.avatar?.includes("storage")
-                ?
-              
-                  <img src={data?.user?.avatar} alt="profile" tw="w-20 h-20 rounded-full" />
-:   data?.user?.first_name !== null  && data?.user?.last_name !==null ? 
-  <div
-   tw="rounded-full w-[70px] bg-gray-300 text-black px-2 py-3.5 text-4xl font-medium"
-   >
-     {data?.user?.first_name[0] +data?.user?.last_name[0] }
-   </div>
- :  
- <div
- tw="rounded-full w-[70px] bg-gray-300 text-black px-2 py-3.5 text-4xl font-medium"
- >
-   UK
- </div>
- 
-
-                }
+            {data?.user?.avatar?.includes("storage") ? (
+              <img
+                src={data?.user?.avatar}
+                alt="profile"
+                tw="w-20 h-20 rounded-full"
+              />
+            ) : data?.user?.first_name !== null &&
+              data?.user?.last_name !== null ? (
+              <div tw="rounded-full w-[70px] bg-gray-300 text-black px-2 py-3.5 text-4xl font-medium">
+                {data?.user?.first_name[0] + data?.user?.last_name[0]}
+              </div>
+            ) : (
+              <div tw="rounded-full w-[70px] bg-gray-300 text-black px-2 py-3.5 text-4xl font-medium">
+                UK
+              </div>
+            )}
             <span style={{ marginTop: "1rem" }}>
               {data?.user?.first_name ? data?.user?.first_name : "Unknown"}
             </span>

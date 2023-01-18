@@ -5,7 +5,9 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import ButtonSubmit from "../../components/ButtonSubmit";
 import tw from "twin.macro";
 import AppContext from "../../components/context/AppContext";
+import moment from 'moment-timezone'
 
+const timezones = moment.tz.names()
 export default function GlobalSetting() {
   const { Title } = Typography;
   const queryClient = useQueryClient();
@@ -25,7 +27,7 @@ export default function GlobalSetting() {
     password: "password12345",
     new_password: "",
     new_password_confirmation: "",
-    time_zone: "(utc+0:00)",
+    time_zone: "utc",
   });
   const onChange = (e) => {
     setIsForm({ ...isForm, [e.target.name]: e.target.value });
@@ -476,13 +478,9 @@ export default function GlobalSetting() {
                     }
                     options={[
                       {
-                        value: "(utc+0:00)",
+                        value: "utc",
                         label: "(UTC+0:00) Etc - GMT",
-                      },
-                      {
-                        value: "cek",
-                        label: "Cek",
-                      },
+                      }
                     ]}
                   />
                 </Form.Item>

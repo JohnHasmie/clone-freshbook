@@ -8,31 +8,31 @@ import moment from "moment";
 
 const dateFormat = "DD/MM/YYYY";
 
-export default function FilterDate({ hide, filterProps }) {
+export default function FilterDateInvoice({ hide, localSearchProps }) {
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
-  const [filter, setFilter] = filterProps;
-  const [localSearch, setLocalSearch] = useState({
-    start_date: "",
-    end_date: "",
-    date_type: "last_invoice",
-  });
+  const [localSearch, setLocalSearch] = localSearchProps;
+  // const [localSearch, setLocalSearch] = useState({
+  //   start_date: "",
+  //   end_date: "",
+  //   date_type: "last_invoice",
+  // });
 
-  useEffect(() => {
-    setLocalSearch({
-      ...localSearch,
-      start_date: filter.start_date,
-      end_date: filter.end_date,
-      date_type: filter.date_type,
-    });
-  }, [filter]);
+  // useEffect(() => {
+  //   setLocalSearch({
+  //     ...localSearch,
+  //     start_date: filter.start_date,
+  //     end_date: filter.end_date,
+  //     date_type: filter.date_type,
+  //   });
+  // }, [filter]);
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    setFilter({
-      ...filter,
+    setLocalSearch({
+      ...localSearch,
       start_date: localSearch.start_date,
       end_date: localSearch.end_date,
       date_type: localSearch.date_type,
@@ -45,32 +45,38 @@ export default function FilterDate({ hide, filterProps }) {
   };
   return (
     <>
-      <CardPopup title="Filters">
+      <CardPopup>
         <Form
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           layout="vertical"
-          //   form={form}
           size="large"
-          //   fields={[
-          //     {
-          //       name: ["start_date"],
-          //       value: filter?.start_date,
-          //     },
-          //     {
-          //       name: ["end_date"],
-          //       value: filter?.end_date,
-          //     },
-          //     {
-          //       name: ["date_type"],
-          //       value: filter.date_type,
-          //     }
+         // fields={[
+      //   {
+      //     name: ["client_id"],
+      //     value: filter?.client_id,
+      //   },
+      //   {
+      //     name: ["contact_name"],
+      //     value: filter?.contact_name,
+      //   },
+      //   {
+      //     name: ["email"],
+      //     value: filter.email,
+      //   },
+      //   {
+      //     name: ["keyword"],
+      //     value: filter.keyword,
+      //   },
+      //   {
+      //     name: ["type"],
+      //     value: filter.type,
+      //   }
 
-          //   ]}
+      // ]}
         >
           <div tw="grid grid-cols-2">
             <Form.Item name="start_date" tw="px-2 pt-2">
-              {/* <Input type="text" placeholder="Enter a name" /> */}
               <DatePicker
                 placeholder="start"
                 onChange={(date, dateString) =>

@@ -239,6 +239,7 @@ const dateFormat = "DD/MM/YYYY";
     if(isRecurring){
        newData = {
         ...isForm,
+        logo:fileList[0],
         // items: lines,
         items: [
           {
@@ -472,6 +473,21 @@ const dateFormat = "DD/MM/YYYY";
         console.log(err);
       });
   };
+  const actionUploadLogo = async (options) => {
+    const formData = new FormData();
+    formData.append("file", options.file);
+    const newFileList = [...fileList];
+    return axios
+      .post(options.action, formData)
+      .then((res) => {
+        newFileList.push(res?.data?.data);
+        setFileList(newFileList);
+        // options.onSuccess(res?.data?.payload?.path, options.file)
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   // const onChangeAttach = ({ fileList: newFileList }) => {
   //   console.log(newFileList,"news");
@@ -562,10 +578,17 @@ const dateFormat = "DD/MM/YYYY";
                tw="w-screen md:w-auto"
              /> */}
               <UploadCustom
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                 name="file"
+                 headers={{
+                   Authorization: `Bearer ${token?.token}`,
+                   "Content-Type": "multipart/form-data",
+                 }}
+                 action="upload"
+                 customRequest={actionUploadLogo}
+                 beforeUpload={beforeUpload}
                 listType="picture-card"
                 fileList={fileList}
-                onChange={onChange}
+                // onChange={onChange}
                 onPreview={onPreview}
               >
                 {fileList.length < 1 && "+ Upload"}
