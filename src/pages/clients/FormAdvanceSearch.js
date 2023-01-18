@@ -1,4 +1,4 @@
-import { AutoComplete, Button, Form, Input, Select } from "antd";
+import { AutoComplete, Button, Form, Input, Popover, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import tw from "twin.macro";
 import InputAdvanceSearch from "../../components/InputAdvancedSearch";
@@ -6,6 +6,9 @@ import ButtonMore from "../../components/Reports/ButtonMore";
 import { styled } from "twin.macro";
 import { InputKeyword, SelectKeyword } from "./AdvanceSearch.style";
 import { Option } from "antd/lib/mentions";
+import FilterDate from "../invoices/FilterDate";
+import FilterDateInvoice from "../invoices/FilterDateInvoice";
+import moment from "moment";
 
 export default function FormAdvanceSearch({
   setIsAdvance,
@@ -368,17 +371,71 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
   );
 }
 
-export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
-  const onFinish = (values) => {
-    console.log("Success:", values);
+export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statusClients,filterProps}) {
+
+  const [filter, setFilter] = filterProps;
+  const [clicked, setClicked] = useState(false);
+
+  const handleClickChange = (open) => {
+    setClicked(open);
   };
+  const hide = () => {
+    setClicked(false);
+  };
+  const [localSearch, setLocalSearch] = useState({
+    client_id: "",
+    status: "",
+    currency: "",
+    keyword: "",
+    type: "all",
+    date_type:"last_invoice",
+    start_date:"",
+    end_date:""
+  });
+  const onFinish = (values) => {
+    setFilter({
+      ...filter,
+      client_id: localSearch.client_id,
+    status: localSearch.status,
+    currency: localSearch.currency,
+    keyword: localSearch.keyword,
+    type: localSearch.type,
+      start_date: localSearch.start_date,
+      end_date: localSearch.end_date,
+      date_type: localSearch.date_type,
+    });
+  setIsAdvance(false)
+
+  };
+  useEffect(() => {
+    setLocalSearch({
+      ...localSearch,
+      client_id: filter?.client_id,
+      status: filter?.status,
+      currency: filter?.currency,
+      keyword: filter?.keyword,
+        start_date: filter?.start_date,
+        end_date: filter?.end_date,
+    });
+    if(filter?.date_type){
+      setLocalSearch({...localSearch,date_type:filter?.date_type})
+    }
+    if(filter?.type){
+      setLocalSearch({...localSearch,type:filter?.type})
+    }
+  }, [filter]);
+  const onChange = (e) => {
+    setLocalSearch({ ...localSearch, [e.target.name]: e.target.value });
+  };
+  
   const handleReset = () => {
+    setLocalSearch("")
     form.resetFields();
   };
-
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+  console.log(localSearch,"local");
   return (
     <Form
       onFinish={onFinish}
@@ -386,53 +443,99 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
       layout="vertical"
       size={"large"}
       form={form}
+      // fields={[
+      //   {
+      //     name: ["client_id"],
+      //     value: filter?.client_id,
+      //   },
+      //   {
+      //     name: ["contact_name"],
+      //     value: filter?.contact_name,
+      //   },
+      //   {
+      //     name: ["email"],
+      //     value: filter.email,
+      //   },
+      //   {
+      //     name: ["keyword"],
+      //     value: filter.keyword,
+      //   },
+      //   {
+      //     name: ["type"],
+      //     value: filter.type,
+      //   }
+
+      // ]}
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
-          <Form.Item label="Clients" name="clients">
+          <Form.Item label="Clients" name="client_id">
             <Select
-              mode="multiple"
-              allowClear
+              // mode="multiple"
+              // allowClear
+              onChange={(e) => onChange({
+                target: { value: e, name: "client_id" },
+              })}
+              value={localSearch.client_id}
               placeholder="Type to add clients"
-              options={[
-                { label: "Suzie Jones", value: "Suzie Jones" },
-                { label: "John Doe ", value: "John Doe " },
-              ]}
+              options={            
+            dataClients?.data?.map(item=>({
+              label:item.company_name,
+              value:item.id
+            }))
+            }
             />
           </Form.Item>
         </div>
         <div>
-          <Form.Item label="Invoice Status" name="invoice_status">
+          <Form.Item label="Invoice Status" name="status">
             <Select
-              mode="multiple"
-              allowClear
+              // mode="multiple"
+              // allowClear
+              onChange={(e) => onChange({
+                target: { value: e, name: "status" },
+              })}
+              value={localSearch.status}
+
               placeholder="Type to add invoice status"
               options={[
-                { label: "Outstanding", value: "Outstanding" },
-                { label: "Paid", value: "Paid" },
-                { label: "Auto-Paid", value: "Auto-Paid" },
-                { label: "Partially Paid", value: "Partially Paid" },
-                { label: "Sent", value: "Sent" },
-                { label: "Viewed", value: "Viewed" },
-                { label: "Disputed", value: "Disputed" },
-                { label: "Draft", value: "Draft" },
-                { label: "Overdue", value: "Overdue" },
+                { label: "Paid", value: "paid" },
+                { label: "Success", value: "success" },
+                { label: "Partially Paid", value: "partial" },
+                { label: "Send", value: "send" },
+                { label: "Draft", value: "draft" },
+                { label: "Overdue", value: "overdue" },
               ]}
             />
           </Form.Item>
         </div>
         <div>
           <Form.Item label="Date Range" name="date">
-            <Input type="text" />
+          <Popover
+              placement="bottomLeft"
+              content={<FilterDateInvoice hide={hide} localSearchProps={[localSearch,setLocalSearch]} />}
+              trigger="click"
+              visible={clicked}
+              onVisibleChange={handleClickChange}
+            >
+            <Input type="text" value={localeMoment(localSearch.start_date,localSearch.end_date)} />
+                  </Popover>
           </Form.Item>
         </div>
         <div tw="col-span-2 ">
           <Form.Item label="Keyword Search" name="keyword">
             <div tw="flex relative">
-              <InputKeyword type="text" placeholder="Keyword or Number" />
+              <InputKeyword type="text" 
+              value={localSearch.keyword}
+              name="keyword"
+              onChange={onChange}
+              placeholder="Keyword or Number" />
               <SelectKeyword
                 tw="inline-flex "
-                defaultValue="all"
+                onChange={(e) => onChange({
+                  target: { value: e, name: "type" },
+                })}
+                value={localSearch.type}
                 options={[
                   {
                     value: "all",
@@ -472,10 +575,19 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
           <Form.Item label="Currency" name="currency">
             <Select
               placeholder="Type to add invoice status"
-              defaultValue="all"
+              // defaultValue="all"
+              onChange={(e) => onChange({
+                target: { value: e, name: "currency" },
+              })}
               options={[
-                { label: "All Currencies", value: "all" },
-                { label: "IDR-Rupiah", value: "idr" },
+                {
+                  value: "USD",
+                  label: "USD - US dollar",
+                },
+                {
+                  value: "GBP",
+                  label: "GBP - Pound Sterling",
+                },
               ]}
             />
           </Form.Item>
@@ -506,4 +618,18 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance }) {
       </div>
     </Form>
   );
+}
+
+export function localeMoment(a,b){
+let result=""
+let locale1=""
+let locale2=""
+if(a){
+  locale1= moment(a).format("DD MMM YYYY")
+}
+if(b){
+  locale2= moment(b).format("DD MMM YYYY")
+}
+result=locale1+" - "+locale2
+return result
 }

@@ -61,9 +61,9 @@ export default function NewItem({hide}) {
           <Form.Item label="Rate" name="rate" tw="px-2">
             <Input type="number" placeholder="0.00" />
           </Form.Item>
-          <Form.Item label="stock" name="qty" tw="px-2">
+          {/* <Form.Item label="stock" name="qty" tw="px-2">
             <Input  name="qty" type="number"  />
-          </Form.Item>
+          </Form.Item> */}
           </div>
 
           <div tw="flex justify-end border-t border-gray-200 px-5 pt-5 pb-0">

@@ -15,7 +15,7 @@ export default function SendEmail({hide}) {
       setIsTitle("Revenue By Client");
     }
     if (pathname.includes("account-aging")) {
-      setIsTitle("Account Aging");
+      setIsTitle("Accounts Aging");
     }
     if (pathname.includes("recurring-revenue")) {
       setIsTitle("Recurring Revenue Annual");

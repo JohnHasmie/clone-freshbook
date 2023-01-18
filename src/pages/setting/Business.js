@@ -12,12 +12,12 @@ export default function Business() {
   const [selectedItems, setSelectedItems] = useState({
     country: "Indonesia",
     base_currency: "usd",
-    business_time_zone: "(utc+0:00)",
+    business_time_zone: "utc",
     fiscal_year_end_month: "Dec",
     fiscal_year_end_day: "1",
     date_format: "dd/mm/yy",
   });
-  const { setting} = useContext(AppContext);
+  const {user, setting} = useContext(AppContext);
   const queryClient = useQueryClient();
 
 
@@ -81,11 +81,11 @@ export default function Business() {
 
   const mutation = useMutation(
     async (data) => {
-      return axios.put("settings", data).then((res) => res.data);
+      return axios.post("user/setting/business", data).then((res) => res.data);
     },
     {
       onSuccess: (res) => {
-        queryClient.invalidateQueries("settings");
+        queryClient.invalidateQueries("profile");
         notification.success({
           message: `Your Company Profile has been updated.`,
           description:'This information will appear on your invoice',
@@ -95,15 +95,32 @@ export default function Business() {
 
       },
       onError: (err) => {
-        notification.error({
-          message: `An Error Occurred Please Try Again Later`,
-          placement: "topLeft",
-        });
-        console.log(err.response.data.message);
+        switch (err?.response?.status) {
+          case 422:
+            notification.error({
+              message: `Invalid Input`,
+              placement: "topLeft",
+            });
+            break;
+            case 500:
+              notification.error({
+                message: `Internal Server Error`,
+                placement: "topLeft",
+              });
+              break;
+        
+          default:
+            notification.error({
+              message: `An Error Occurred Please Try Again Later`,
+              placement: "topLeft",
+            });
+            break;
+        }
       },
     }
   );
   const onFinish = (values) => {
+    console.log(values,"valuee")
     mutation.mutate(values)
 
   };
@@ -111,7 +128,7 @@ export default function Business() {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
-
+console.log(setting,user,"setting");
   return (
     <>
       <Form
@@ -123,59 +140,59 @@ export default function Business() {
         fields={[
           {
             name: ["company_name"],
-            value: setting?.data?.company_name,
+            value: user?.data?.company_name,
           },
           {
             name: ["phone"],
-            value: setting?.data?.phone,
+            value: user?.data?.phone,
           },
           {
             name: ["mobile_phone"],
-            value: "",
+            value:  user?.data?.mobile_phone,
           },
           {
             name: ["state"],
-            value: "",
+            value:  user?.data?.state,
           },
           {
             name: ["address"],
-            value: setting?.data?.address,
+            value: user?.data?.address,
           },
           {
-            name: ["address_2"],
-            value: "",
+            name: ["address_line_2"],
+            value: user?.data?.address_line_2,
           },
           {
             name: ["country"],
-            value: selectedItems.country,
+            value: user?.data?.country,
           },
           {
             name: ["base_currency"],
-            value: selectedItems.base_currency,
+            value: user?.data?.base_currency,
           },
           {
             name: ["business_time_zone"],
-            value: selectedItems.business_time_zone,
+            value: user?.data?.business_time_zone,
           },
           {
-            name: ["fiscal_year_end_month"],
-            value: selectedItems.fiscal_year_end_month,
+            name: ["fiscal_year_month"],
+            value: user?.data?.fiscal_year_month,
           },
           {
-            name: ["fiscal_year_end_day"],
-            value: selectedItems.fiscal_year_end_day,
+            name: ["fiscal_year_day"],
+            value: user?.data?.fiscal_year_day,
           },
           {
             name: ["date_format"],
-            value: selectedItems.date_format,
+            value: user?.data?.date_format,
           },
           {
             name: ["city"],
-            value: setting?.data?.city,
+            value: user?.data?.city,
           },
           {
             name: ["zip"],
-            value: setting?.data?.zip,
+            value: user?.data?.zip,
           },
         ]}
       >
@@ -205,13 +222,13 @@ export default function Business() {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Address Line 1" name="addres" rules={[{ required: true , message:"Address Required"}]}>
+              <Form.Item label="Address Line 1" name="address" rules={[{ required: true , message:"Address Required"}]}>
                 <Input name="address" type="text" />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Address Line 2" name="address_2">
-                <Input name="address_2" type="text" />
+              <Form.Item label="Address Line 2" name="address_line_2">
+                <Input name="address_line_2" type="text" />
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
@@ -235,9 +252,9 @@ export default function Business() {
                   style={{
                     width: "100%",
                   }}
-                  onChange={(e) => onChange({
-                    target: { value: e, name: "country" },
-                  })}
+                  // onChange={(e) => onChange({
+                  //   target: { value: e, name: "country" },
+                  // })}
                   options={countryList.map((item) => ({
                     label: item,
                     value: item,
@@ -257,18 +274,17 @@ export default function Business() {
                 name="base_currency"
               >
                 <Select
-                  onChange={(e) => onChange({
-                    target: { value: e, name: "base_currency" },
-                  })}
+                  // onChange={(e) => onChange({
+                  //   target: { value: e, name: "base_currency" },
+                  // })}
                   options={[
                     {
-                      value: "usd",
+                      value: "USD",
                       label: "USD - US dollar",
                     },
-
                     {
-                      value: "euro",
-                      label: "EUR- Euro",
+                      value: "GBP",
+                      label: "GBP - Pound Sterling",
                     },
                   ]}
                 />
@@ -279,12 +295,12 @@ export default function Business() {
               <Form.Item label="Business Time Zone" name="business_time_zone">
                 <Select
                   tw="rounded-lg"
-                  onChange={(e) => onChange({
-                    target: { value: e, name: "business_time_zone" },
-                  })}
+                  // onChange={(e) => onChange({
+                  //   target: { value: e, name: "business_time_zone" },
+                  // })}
                   options={[
                     {
-                      value: "(utc+0:00)",
+                      value: "utc",
                       label: "(UTC+0:00) Etc - GMT",
                     },
                   ]}
@@ -295,15 +311,15 @@ export default function Business() {
             <Col xs={24} lg={12}>
               <Form.Item
                 label="Fiscal Year End Month"
-                name="fiscal_year_end_month"
+                name="fiscal_year_month"
               >
                 <Select
                   style={{
                     width: "100%",
                   }}
-                  onChange={(e) => onChange({
-                    target: { value: e, name: "fiscal_year_end_month" },
-                  })}
+                  // onChange={(e) => onChange({
+                  //   target: { value: e, name: "fiscal_year_end_month" },
+                  // })}
                   options={[
                     {
                       value: "Jan",
@@ -358,14 +374,14 @@ export default function Business() {
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item label="Fiscal Year End Day" name="fiscal_year_end_day">
+              <Form.Item label="Fiscal Year End Day" name="fiscal_year_day">
                 <Select
                   style={{
                     width: "100%",
                   }}
-                  onChange={(e) => onChange({
-                    target: { value: e, name: "fiscal_year_end_day" },
-                  })}
+                  // onChange={(e) => onChange({
+                  //   target: { value: e, name: "fiscal_year_end_day" },
+                  // })}
                   options={[
                     {
                       value: 1,
@@ -431,9 +447,9 @@ export default function Business() {
             <Col xs={24} lg={12}>
               <Form.Item label="Date Format" name="date_format">
                 <Select
-                    onChange={(e) => onChange({
-                      target: { value: e, name: "date_format" },
-                    })}
+                    // onChange={(e) => onChange({
+                    //   target: { value: e, name: "date_format" },
+                    // })}
                   options={[
                     {
                       value: "dd/mm/yy",

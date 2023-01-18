@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
+import { numberWithDot } from "../../components/Utils";
 
 export default function TabHome() {
   const history = useHistory();
@@ -26,7 +27,6 @@ export default function TabHome() {
         })
         .then((res) => res.data?.data)
   );
-
   return (
     <>
       {" "}
@@ -39,7 +39,7 @@ export default function TabHome() {
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_draft?.total}{" "}
+                {dataOutstanding?.outstanding_draft?.total?.toFixed(2) && numberWithDot(dataOutstanding?.outstanding_draft?.total?.toFixed(2))}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">
                 {filterOutstanding?.currency}
@@ -55,7 +55,7 @@ export default function TabHome() {
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_overdue?.total}{" "}
+                {dataOutstanding?.outstanding_overdue?.total?.toFixed(2) && numberWithDot(dataOutstanding?.outstanding_overdue?.total?.toFixed(2))}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">
                 {filterOutstanding?.currency}
@@ -70,7 +70,7 @@ export default function TabHome() {
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_invoices?.total}{" "}
+                {dataOutstanding?.outstanding_invoices?.total?.toFixed(2) && numberWithDot(dataOutstanding?.outstanding_invoices?.total?.toFixed(2))}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">
                 {filterOutstanding?.currency}

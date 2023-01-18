@@ -185,7 +185,7 @@ export default function Clients() {
             clientName
               ? clientName
               : `The selected ${selectedRowKeys.length} clients`
-          }has been succesfully deleted`,
+          } has been succesfully deleted`,
           placement: "topLeft",
         });
       },
@@ -213,7 +213,7 @@ export default function Clients() {
             clientName
               ? clientName
               : `The selected ${selectedRowKeys.length} clients`
-          }has been succesfully deleted`,
+          } has been succesfully deleted`,
           placement: "topLeft",
         });
       },

@@ -121,7 +121,7 @@ function Home() {
                 role="button"
                 style={{ color: "#0063c1" }}
               >
-                View Account Aging Report
+                View Accounts Aging Report
               </a>
             </div>
             <Card

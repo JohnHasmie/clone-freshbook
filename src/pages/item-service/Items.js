@@ -14,7 +14,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { numberWithDot } from "../../components/Utils";
-import { Link, NavLink, useHistory } from "react-router-dom";
+import { Link,  useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import EditItem from "./EditItem";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
@@ -58,6 +58,10 @@ const Items = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const handlePopoverClick = (event) => {
+    event.stopPropagation();
+  }
+
 
   const columns = [
     {
@@ -81,6 +85,7 @@ const Items = () => {
             placement="bottom"
             content={
               <EditItem
+              handlePopoverClick={handlePopoverClick}
                 query="items-by-client"
                 id={record.key}
                 hide={hideClickRow}
@@ -90,7 +95,7 @@ const Items = () => {
             }
             trigger="click"
             visible={clickedRow && clickedId === record.key}
-            onVisibleChange={() => handleClickRowChange(record.key, record.i)}
+            // onVisibleChange={() => handleClickRowChange(record.key, record.i)}
           >
             <span>{text}</span>
           </Popover>
@@ -316,7 +321,7 @@ const Items = () => {
             onRow={(record, rowIndex) => {
               return {
            
-                onDoubleClick: (event) => {
+                onClick: (event) => {
                   setClickedRow(!clickedRow);
                   setClickedId(record.key);
                   setMarginResponsive("400px")
