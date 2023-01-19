@@ -13,6 +13,8 @@ import ButtonMore from "../Reports/ButtonMore";
 import MoreAction from "../Reports/MoreAction";
 import InvoiceSetting from "../../pages/invoices/InvoiceSetting";
 import AppContext from "../context/AppContext";
+import { useQuery } from "react-query";
+import axios from "axios";
 
 const bell = [
   <svg
@@ -58,6 +60,29 @@ function HeaderInvoice({
   const history = useHistory();
 const {globalDetailInvoice,refInvoice}=useContext(AppContext)
 let { pathname } = useLocation();
+const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
+  "export-excel",
+  async () =>
+    axios
+      .get(`invoices/export`, {
+        responseType: "blob",
+      })
+      .then((res) => {
+        const href = URL.createObjectURL(res.data);
+
+    const link = document.createElement("a");
+    link.href = href;
+    link.setAttribute("download", "invoices.xlsx");
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(href);
+      }),
+  {
+    enabled: false,
+  }
+)
   return (
     <div tw="md:ml-24">
    {globalDetailInvoice &&   <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
@@ -88,8 +113,8 @@ let { pathname } = useLocation();
           </Popover>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={<MoreAction myRef={refInvoice}/>} trigger="click">
-            <ButtonMore>
+          <Popover placement="bottom" content={<MoreAction myRef={{id:globalDetailInvoice?.id}} excelRefetch={excelRefetch} />} trigger="click">
+            <ButtonMore >
               <span>More Actions</span>
               <DownOutlined />
             </ButtonMore>

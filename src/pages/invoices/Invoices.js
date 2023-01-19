@@ -12,6 +12,7 @@ import {
   RestOutlined,
   RightOutlined,
   SearchOutlined,
+  SendOutlined,
   UnorderedListOutlined,
   VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
@@ -56,7 +57,7 @@ export default function Invoices() {
     limit: 10,
     page: 1,
     mode: "published",
-    currency:"USD",
+    currency: "USD",
     // status:"",
     // type:"",
     // date_type:"",
@@ -70,32 +71,50 @@ export default function Invoices() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalPayment, setIsModalPayment] = useState(false);
 
-  const [invoiceForPayment, setInvoiceForPayment] = useState('');
+  const [invoiceForPayment, setInvoiceForPayment] = useState("");
 
   const handleModal = (type) => {
-    if(type.key !== "payment"){
     switch (type.key) {
       case "archive":
         setIsType("archive");
+        setIsModalOpen(true);
         break;
       case "delete":
         setIsType("delete");
-
+        setIsModalOpen(true);
+        break;
+      case "mark":
+        setIsType("mark");
+        setIsModalOpen(true);
+        break;
+      case "payment":
+        setIsType("payment");
+        setIsModalPayment(true);
         break;
       default:
         setIsType("");
         break;
     }
-    setIsModalOpen(true);
+
     setClicked(false);
-}else{
-  setIsModalPayment(true)
-  setClicked(false);
+    //     if(type.key !== "payment"){
+    // switch (type.key) {
+    //   case "archive":
+    //     setIsType("archive");
+    //     break;
+    //   case "delete":
+    //     setIsType("delete");
 
-}
-    
-  
-
+    //     break;
+    //   default:
+    //     setIsType("");
+    //     break;
+    //     }
+    //     setIsModalOpen(true);
+    //     setClicked(false);
+    // }else{
+    //   setIsModalPayment(true)
+    //   setClicked(false);
   };
   const handleModalTooltip = (e, id, client, type) => {
     e.stopPropagation();
@@ -150,7 +169,7 @@ export default function Invoices() {
     ["clients-listing"],
     async (key) =>
       axios
-        .get("clients", {
+        .get("clients?limit=50&page=1", {
           params: key.queryKey[1],
         })
         .then((res) => res.data.data)
@@ -163,28 +182,25 @@ export default function Invoices() {
           responseType: "blob",
         })
         .then((res) => {
-          const url = window.URL.createObjectURL(new Blob([res.data]))
-          const link = document.createElement("a")
-          link.href = url
-          link.setAttribute("download.pdf")
-          document.body.appendChild(link)
-          link.click()
+          const url = window.URL.createObjectURL(new Blob([res.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download.pdf");
+          document.body.appendChild(link);
+          link.click();
 
-          return res.data
-        }
-        
-      
-        )
+          return res.data;
+        })
         .catch((error) => {
-          console.log(error,"error"); 
-          switch (error?.response?.status) {           
-              case 500:
-                notification.error({
-                  message: `Internal Server Error`,
-                  placement: "topLeft",
-                });
-                break;
-          
+          console.log(error, "error");
+          switch (error?.response?.status) {
+            case 500:
+              notification.error({
+                message: `Internal Server Error`,
+                placement: "topLeft",
+              });
+              break;
+
             default:
               notification.error({
                 message: `An Error Occurred Please Try Again Later`,
@@ -192,13 +208,11 @@ export default function Invoices() {
               });
               break;
           }
-        })
-        ,
+        }),
     {
       enabled: false,
-    },
-  
-  )
+    }
+  );
 
   const filteredData =
     status === "success" &&
@@ -223,8 +237,7 @@ export default function Invoices() {
 
   const defaultFooter = () => (
     <div tw="text-right text-base">
-      Grand Total:{" "}
-      {filter?.currency == "GBP" ? '£' : "$"}
+      Grand Total: {filter?.currency == "GBP" ? "£" : "$"}
       {data &&
         getTotal(
           data?.map((x) => {
@@ -318,7 +331,10 @@ export default function Invoices() {
               </Tooltip>
             </div> */}
           </div>
-          <span>{filter?.currency == "GBP" ? '£' : "$"}{numberWithDot(record.amount)}</span>{" "}
+          <span>
+            {filter?.currency == "GBP" ? "£" : "$"}
+            {numberWithDot(record.amount)}
+          </span>{" "}
           <span
             tw="text-xs rounded p-1 ml-auto"
             style={{ background: translateBg(record.status) }}
@@ -341,12 +357,12 @@ export default function Invoices() {
         history.push(`/invoices/${record.key}/edit`);
         break;
       case "payment":
-        let data=[]
-        data.push(record)
-        setInvoiceForPayment(data)
-        setIdRow("")
-        setIsModalPayment(true)
-        
+        let data = [];
+        data.push(record);
+        setInvoiceForPayment(data);
+        setIdRow("");
+        setIsModalPayment(true);
+
         break;
 
       default:
@@ -356,29 +372,34 @@ export default function Invoices() {
     }
   };
   const handleOk = (type) => {
-    if(type === "confirm"){
-    switch (isType) {
-      case "archive":
-        if (selectedRowKeys.length === 0) {
-          mutationArchive.mutate({ ids: [isInvoiceId], mode: "archive" });
-        } else {
-          mutationArchive.mutate({ ids: selectedRowKeys, mode: "archive" });
-        }
-        break;
-      case "delete":
-        if (isInvoiceId) {
-          mutation.mutate(isInvoiceId);
-        } else {
-          mutation.mutate(selectedRowKeys[0]);
-        }
-        break;
-      default:
-        setIsType("");
-        break;
-    }
+    if (type === "confirm") {
+      switch (isType) {
+        case "archive":
+          if (selectedRowKeys.length === 0) {
+            mutationArchive.mutate({ ids: [isInvoiceId], mode: "archive" });
+          } else {
+            mutationArchive.mutate({ ids: selectedRowKeys, mode: "archive" });
+          }
+          break;
+        case "delete":
+          if (isInvoiceId) {
+            mutation.mutate(isInvoiceId);
+          } else {
+            mutation.mutate(selectedRowKeys[0]);
+          }
+          break;
+          case "mark":
+            mutationMark.mutate(selectedRowKeys[0])
+         
+            break;
+        default:
+          setIsType("");
+          break;
+      }
 
-    setIsModalOpen(false);}else{
-      setIsModalPayment(false)
+      setIsModalOpen(false);
+    } else {
+      setIsModalPayment(false);
     }
   };
 
@@ -400,6 +421,35 @@ export default function Invoices() {
           has been succesfully deleted`,
           placement: "topLeft",
         });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+
+  const mutationMark = useMutation(
+    async (id) => {
+      return axios
+        .put(`invoices/status/${id}`, { status: "send" })
+        .then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        console.log("res",res)
+        // setTimeout(() => {
+          queryClient.invalidateQueries("invoices-listing");
+        // }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `Invoice ${res?.data?.invoice?.code} has been marked as sent`,
+          placement: "topLeft",
+        });
+
       },
       onError: () => {
         notification.error({
@@ -436,14 +486,15 @@ export default function Invoices() {
     }
   );
   const handleCancel = (type) => {
-    if(type === "confirm"){
-    setIsModalOpen(false);}else{
-      setIsModalPayment(false)
+    if (type === "confirm") {
+      setIsModalOpen(false);
+    } else {
+      setIsModalPayment(false);
     }
   };
-  const onSelectChange = (newSelectedRowKeys,x) => {
+  const onSelectChange = (newSelectedRowKeys, x) => {
     setSelectedRowKeys(newSelectedRowKeys);
-    setInvoiceForPayment(x)
+    setInvoiceForPayment(x);
   };
   const rowSelection = {
     selectedRowKeys,
@@ -487,14 +538,28 @@ export default function Invoices() {
             <MailOutlined />
             <span>Send By Email</span>
           </div>
-        </Menu.Item>
-        <Menu.Item key="mark-as-sent">
+        </Menu.Item> */}
+        <Menu.Item
+          key="mark"
+          disabled={
+            selectedRowKeys.length > 1 ||
+            invoiceForPayment[0]?.status !== "draft"
+          }
+          onClick={handleModal}
+        >
           <div>
             <SendOutlined />
             <span>Mark as Sent</span>
           </div>
-        </Menu.Item> */}
-        <Menu.Item key="payment" onClick={handleModal} disabled={selectedRowKeys.length > 1 || invoiceForPayment[0]?.status === "paid"}>
+        </Menu.Item>
+        <Menu.Item
+          key="payment"
+          onClick={handleModal}
+          disabled={
+            selectedRowKeys.length > 1 ||
+            invoiceForPayment[0]?.status === "paid"
+          }
+        >
           <div>
             <DollarOutlined />
             <span>Add a Payment</span>
@@ -525,7 +590,6 @@ export default function Invoices() {
       </Menu>
     </div>
   );
-  console.log(selectedRowKeys,"cek")
   return (
     <>
       <div className="layout-content">
@@ -551,7 +615,7 @@ export default function Invoices() {
                 {dataInvoices?.data.length < 4 && (
                   <div
                     onClick={() => history.push("/invoices/new")}
-                    tw="cursor-pointer border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
+                    tw="cursor-pointer min-h-[150px] border border-gray-200 hover:bg-blue-50 border-dashed flex w-44 rounded-md  mr-5 justify-center items-center"
                   >
                     <div tw="flex flex-col">
                       <PlusOutlined tw="text-xl text-green-400" />
@@ -633,40 +697,41 @@ export default function Invoices() {
             {isAdvance ? (
               <div tw="bg-gray-100 border-y-2 border-gray-400 p-3 mb-4">
                 <FormAdvanceSearchInvoice
-                statusClients={statusClients}
-                dataClients={dataClients}
+                  statusClients={statusClients}
+                  dataClients={dataClients}
                   form={form}
                   setIsAdvance={setIsAdvance}
-                  filterProps={[filter,setFilter]}
+                  filterProps={[filter, setFilter]}
                 />
               </div>
             ) : (
               <></>
             )}
-               <Modal
-               footer={null}
-            visible={isModalPayment}
-            onOk={()=>handleOk('modal')}
-            onCancel={()=>handleCancel('modal')}
-            width={"100%"}
-
-            centered
-          >
-            <FormPayment handleCancel={handleCancel} handleOk2={handleOk} data={invoiceForPayment[0]} />
-          </Modal>
+            <Modal
+              footer={null}
+              visible={isModalPayment}
+              onOk={() => handleOk("modal")}
+              onCancel={() => handleCancel("modal")}
+              width={"100%"}
+              centered
+            >
+              <FormPayment
+                handleCancel={handleCancel}
+                handleOk2={handleOk}
+                data={invoiceForPayment[0]}
+              />
+            </Modal>
             <ModalConfirm
               title="Confirm"
               visible={isModalOpen}
-              onOk={()=>handleOk('confirm')}
-              onCancel={()=>handleCancel('confirm')}
+              onOk={() => handleOk("confirm")}
+              onCancel={() => handleCancel("confirm")}
               width={500}
               closable={false}
             >
-              <span tw="text-lg">{`Are you sure you want to ${isType} ${
-                selectedRowKeys.length > 1
-                  ? selectedRowKeys.length + " invoice "
-                  : "this"
-              } ?`}</span>
+              <span tw="text-lg">
+                {translateIsType(isType, selectedRowKeys)}
+              </span>
             </ModalConfirm>
             <div className="table-responsive">
               <TableCustom
@@ -721,4 +786,17 @@ export function getTotal(outstanding) {
     return accumulator + value;
   }, 0);
   return ` ${numberWithDot(sum)} `;
+}
+
+export function translateIsType(type, selectedRowKeys) {
+  let text = "";
+  if (type === "mark") {
+    text =
+      "Your client won't receive a notification email about this invoice. However, the invoice will appear in their account if they have one. Do you want to mark it as sent?";
+  } else {
+    text = `Are you sure you want to ${type} ${
+      selectedRowKeys.length > 1 ? selectedRowKeys.length + " invoice " : "this"
+    } ?`;
+  }
+  return text;
 }

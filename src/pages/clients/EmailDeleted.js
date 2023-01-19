@@ -190,11 +190,11 @@ export default function EmailDeleted() {
       key: item.id,
       date: item.created_at,
       sender: item.sender.first_name + " " + item.sender.last_name,
-      recipient: item.recipent.company_name,
-      email_recipient: item.recipent.email,
+      recipient: item?.recipent?.company_name,
+      email_recipient: item?.recipent?.email,
 
       type: item.type,
-      organization: item.recipent.first_name + " " + item.recipent.last_name,
+      organization: item?.recipent?.first_name + " " + item?.recipent?.last_name,
       subject: item.subject,
       body: item.body,
     }));

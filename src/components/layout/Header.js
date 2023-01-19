@@ -23,7 +23,7 @@ import AppContext from "../context/AppContext";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { ModalConfirm } from "../ModalConfirm.style";
-import * as XLSX from 'xlsx'
+import * as XLSX from "xlsx";
 const toggler = [
   <svg
     width="20"
@@ -50,12 +50,11 @@ function Header({
   const [visible, setVisible] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [isType, setIsType] = useState(false);
+  const [data, setData] = useState("");
 
-  const {  globalDetailClient } = useContext(AppContext);
+  const { globalDetailClient } = useContext(AppContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient();
-
-
 
   const handleClickChange = (open) => {
     setClicked(open);
@@ -65,32 +64,29 @@ function Header({
   };
 
   // useEffect(() => window.scrollTo(0, 0));
-  const { status: pdfStatus, refetch: pdfRefetch } = useQuery(
-    "downloadPDF",
+  const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
+    "export-excel",
     async () =>
       axios
-        .get("clients/export")
+        .get(`clients/export`, {
+          responseType: "blob",
+        })
         .then((res) => {
-          console.log(res,"res")
-          const ws = XLSX.utils.json_to_sheet(res.data)
-          const wb = XLSX.utils.book_new()
-          XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-          XLSX.writeFile(wb, 'data.xlsx')
-          // const url = window.URL.createObjectURL(new Blob([res.data]))
-          // const link = document.createElement("a")
-          // link.href = url
-          // link.setAttribute("download.pdf")
-          // document.body.appendChild(link)
-          // link.click()
+          const href = URL.createObjectURL(res.data);
 
-          return res.data
+      const link = document.createElement("a");
+      link.href = href;
+      link.setAttribute("download", "clients.xlsx");
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(href);
         }),
     {
       enabled: false,
     }
   )
-
-
   // const fetchData = async () => {
   //   const response = await axios.get('clients/export')
   //   const data = await response.json()
@@ -101,10 +97,10 @@ function Header({
   // const handleExport = () => {
   //   if (status === 'success') {
   //     console.log(data)
-      // const ws = XLSX.utils.json_to_sheet(data)
-      // const wb = XLSX.utils.book_new()
-      // XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-      // XLSX.writeFile(wb, 'data.xlsx')
+  // const ws = XLSX.utils.json_to_sheet(data)
+  // const wb = XLSX.utils.book_new()
+  // XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+  // XLSX.writeFile(wb, 'data.xlsx')
   //   }
   // }
   const content = (
@@ -141,18 +137,18 @@ function Header({
   const createList = (
     <div>
       <Menu theme="light" mode="inline">
-        <Menu.Item onClick={()=>history.push("/clients/new")}>
-            <AppstoreOutlined />
-            <span>Client</span>
+        <Menu.Item onClick={() => history.push("/clients/new")}>
+          <AppstoreOutlined />
+          <span>Client</span>
         </Menu.Item>
 
-        <Menu.Item onClick={()=>history.push("/invoices/new")}>
-            <FileDoneOutlined />
-            <span>Invoice</span>
+        <Menu.Item onClick={() => history.push("/invoices/new")}>
+          <FileDoneOutlined />
+          <span>Invoice</span>
         </Menu.Item>
-        <Menu.Item onClick={()=>history.push("/recurring-template/new")}>
-            <FileTextOutlined />
-            <span>Recurring Template</span>
+        <Menu.Item onClick={() => history.push("/recurring-template/new")}>
+          <FileTextOutlined />
+          <span>Recurring Template</span>
         </Menu.Item>
       </Menu>
     </div>
@@ -211,7 +207,11 @@ function Header({
     const formData = new FormData();
     formData.append("file", e.target.files[0]);
     mutationUpload.mutate(formData);
-    
+  };
+  const onSelectFileClient = (e) => {
+    const formData = new FormData();
+    formData.append("file", e.target.files[0]);
+    mutationUploadClient.mutate(formData);
   };
   const mutationUpload = useMutation(
     async (data) => {
@@ -250,30 +250,67 @@ function Header({
         }
       },
     }
-
   );
+
+  const mutationUploadClient = useMutation(
+    async (data) => {
+      return axios
+        .post("clients/import", data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries("clients");
+        notification.success({
+          message: `The selected clients has been imported.
+          `,
+          placement: "topLeft",
+        });
+      },
+      onError: (err) => {
+        switch (err?.response?.status) {
+          case 500:
+            notification.error({
+              message: `Internal Server Error`,
+              placement: "topLeft",
+            });
+            break;
+
+          default:
+            notification.error({
+              message: `An Error Occurred Please Try Again Later`,
+              placement: "topLeft",
+            });
+            break;
+        }
+      },
+    }
+  );
+
   const handleOk = () => {
-  
-const dataArchive={
-  ids:[globalDetailClient?.id],
-  status:"archive"
-}
-    if(isType === "archive"){
-      mutationArchive.mutate(dataArchive)
-      }
-      else{
-        mutation.mutate()
-      }
+    const dataArchive = {
+      ids: [globalDetailClient?.id],
+      status: "archive",
+    };
+    if (isType === "archive") {
+      mutationArchive.mutate(dataArchive);
+    } else {
+      mutation.mutate();
+    }
 
     setIsModalOpen(false);
   };
   const mutationArchive = useMutation(
     async (data) => {
-      return axios.put(`clients/status`,data).then((res) => res.data);
+      return axios.put(`clients/status`, data).then((res) => res.data);
     },
     {
       onSuccess: (res) => {
-   history.push('/clients')
+        history.push("/clients");
         notification.success({
           message: `Client  has been successfully archived.`,
           placement: "topLeft",
@@ -289,11 +326,13 @@ const dataArchive={
   );
   const mutation = useMutation(
     async (data) => {
-      return axios.delete(`clients/${globalDetailClient?.id}`).then((res) => res.data);
+      return axios
+        .delete(`clients/${globalDetailClient?.id}`)
+        .then((res) => res.data);
     },
     {
       onSuccess: () => {
-        history.push('/clients')
+        history.push("/clients");
 
         notification.success({
           message: `Client  has been successfully deleted.`,
@@ -394,7 +433,7 @@ const dataArchive={
           </div>
           <div tw=" md:col-span-2">
             <button
-              onClick={() => history.push('/clients')}
+              onClick={() => history.push("/clients")}
               tw="bg-transparent flex justify-start -ml-2 items-center mt-5 text-primary cursor-pointer"
             >
               <LeftOutlined />
@@ -402,27 +441,34 @@ const dataArchive={
             </button>
           </div>
           <div tw="flex items-center">
-            <span tw="capitalize text-4xl font-bold">{globalDetailClient?.company_name}</span>
+            <span tw="capitalize text-4xl font-bold">
+              {globalDetailClient?.company_name}
+            </span>
           </div>
           <ModalConfirm
-              title="Confirm"
-              visible={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
-              width={500}
-              closable={false}
-            >
-              <span tw="text-lg">
-                {globalDetailClient?.company_name
-                  && `Are you sure you want to ${isType} ${globalDetailClient?.company_name}?`
-                  }
-              </span>
-            </ModalConfirm>
+            title="Confirm"
+            visible={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            width={500}
+            closable={false}
+          >
+            <span tw="text-lg">
+              {globalDetailClient?.company_name &&
+                `Are you sure you want to ${isType} ${globalDetailClient?.company_name}?`}
+            </span>
+          </ModalConfirm>
 
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <Popover
               placement="bottom"
-              content={<MoreActionClientsDetail globalDetailClient={globalDetailClient} history={history} handleModal={handleModal} />}
+              content={
+                <MoreActionClientsDetail
+                  globalDetailClient={globalDetailClient}
+                  history={history}
+                  handleModal={handleModal}
+                />
+              }
               trigger="click"
             >
               <ButtonInvite tw="!py-6 md:mr-5">
@@ -445,7 +491,7 @@ const dataArchive={
           <Divider tw="mt-0 md:col-span-2" />
         </div>
       ) : (
-        name.includes("clients") &&  (
+        name.includes("clients") && (
           <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
             <div tw="flex justify-between md:hidden">
               <div>{bell}</div>
@@ -464,7 +510,12 @@ const dataArchive={
             <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
               <Popover
                 placement="bottom"
-                content={<MoreActionClients pdfRefetch={pdfRefetch} />}
+                content={
+                  <MoreActionClients
+                    excelRefetch={excelRefetch}
+                    onSelectFileClient={onSelectFileClient}
+                  />
+                }
                 trigger="click"
               >
                 <ButtonInvite tw="!py-6 md:mr-5">
@@ -485,7 +536,7 @@ const dataArchive={
         )
       )}
 
-      {name.includes("invoices") &&!name.includes('clients') && (
+      {name.includes("invoices") && !name.includes("clients") && (
         <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
           <div tw="flex justify-between md:hidden">
             <div>{bell}</div>
@@ -555,22 +606,18 @@ const dataArchive={
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
             <ButtonInvite tw="!py-6 md:mr-2">
-            <label
-                  htmlFor="import-file"
-                  tw="cursor-pointer"
-      
-                >
-                  <input
-                    type="file"
-                    name="import-file"
-                    id="import-file"
-                    style={{ display: "none" }}
-                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                    onChange={onSelectFile}
-                  />
-           
-              <span>Import Items</span>
-                </label>
+              <label htmlFor="import-file" tw="cursor-pointer">
+                <input
+                  type="file"
+                  name="import-file"
+                  id="import-file"
+                  style={{ display: "none" }}
+                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                  onChange={onSelectFile}
+                />
+
+                <span>Import Items</span>
+              </label>
             </ButtonInvite>
             <Popover
               placement="bottomLeft"

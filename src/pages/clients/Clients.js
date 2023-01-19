@@ -376,7 +376,7 @@ export default function Clients() {
     _.debounce((value) => {
       setFilter({
         ...filter,
-        company_name: value,
+        keyword: value,
       })
     }, 1000)
   )
@@ -423,7 +423,6 @@ export default function Clients() {
     }
   }, [selectedRowKeys]);
   const filledValues = Object.values(filter).filter(value => value);
-  console.log(filledValues,"length");
   return (
     <>
       <div className="layout-content">
@@ -560,7 +559,7 @@ export default function Clients() {
                   onKeyUp={(event) => {
                     setSearchValue.current(event.target.value)
                   }}
-                  name="company_name"
+                  name="keyword"
                   placeholder="Search"
                   prefix={<SearchOutlined />}
                 />

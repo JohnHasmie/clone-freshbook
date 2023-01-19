@@ -372,7 +372,6 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
 }
 
 export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statusClients,filterProps}) {
-
   const [filter, setFilter] = filterProps;
   const [clicked, setClicked] = useState(false);
 
@@ -388,7 +387,7 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
     currency: "",
     keyword: "",
     type: "all",
-    date_type:"last_invoice",
+    date_type:"issued_at",
     start_date:"",
     end_date:""
   });
@@ -435,7 +434,9 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
-  console.log(localSearch,"local");
+  const dataFilter=dataClients?.data?.filter((item, index) => {
+    return dataClients?.data?.findIndex(i => i.company_name === item.company_name) === index;
+});
   return (
     <Form
       onFinish={onFinish}
@@ -479,7 +480,7 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
               value={localSearch.client_id}
               placeholder="Type to add clients"
               options={            
-            dataClients?.data?.map(item=>({
+            dataFilter?.map(item=>({
               label:item.company_name,
               value:item.id
             }))
