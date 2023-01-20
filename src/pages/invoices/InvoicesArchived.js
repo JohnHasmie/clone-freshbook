@@ -143,6 +143,7 @@ import {
   Button,
   Form,
   Menu,
+  Modal,
   notification,
   Popover,
   Tooltip,
@@ -164,12 +165,14 @@ import { numberWithDot, translateBg } from "../../components/Utils";
 import moment from "moment";
 import ListCardInvoice from "./ListCardInvoice";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import FormPayment from "./FormPayment";
 
 export default function InvoicesArchived() {
   const { Title } = Typography;
   const [isAdvance, setIsAdvance] = useState(false);
   const [isType, setIsType] = useState("");
   const [isInvoiceId, setIsInvoiceId] = useState("");
+  const [invoiceForPayment, setInvoiceForPayment] = useState("");
 
   const [form] = Form.useForm();
   const history = useHistory();
@@ -181,33 +184,38 @@ export default function InvoicesArchived() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalPayment, setIsModalPayment] = useState(false);
+
   const handleModal = (type) => {
     switch (type.key) {
       case "unarchive":
         setIsType("unarchive");
-        break;
-      case "delete":
-        setIsType("delete");
-
-        break;
-      default:
-        setIsType("");
-        break;
-    }
-    const handleModalTooltip = (e, id, client, type) => {
-      e.stopPropagation();
-      // setClientName(client);
-      setIsInvoiceId(id);
-      if (type === "delete") {
-        setIsType("delete");
-      } else {
-        setIsType("unarchive");
-      }
-      setIsModalOpen(true);
-      setClicked(false);
-    };
-
     setIsModalOpen(true);
+
+        break;
+        case "delete":
+          setIsType("delete");
+          setIsModalOpen(true);
+          break;
+        case "mark":
+          setIsType("mark");
+          setIsModalOpen(true);
+          break;
+        case "send":
+          setIsType("send");
+          setIsModalOpen(true);
+          break;
+        case "payment":
+          setIsType("payment");
+          setIsModalPayment(true);
+          break;
+        default:
+          setIsType("");
+          break;
+      }
+  
+
+
     setClicked(false);
   };
 
@@ -396,29 +404,122 @@ export default function InvoicesArchived() {
         break;
     }
   };
-  const handleOk = () => {
-    switch (isType) {
-      case "unarchive":
-        if (selectedRowKeys.length === 0) {
-          mutationUnarchive.mutate({ ids: [isInvoiceId], mode: "published" });
-        } else {
-          mutationUnarchive.mutate({ ids: selectedRowKeys, mode: "published" });
-        }
-        break;
-      case "delete":
-        if (isInvoiceId) {
-          mutation.mutate(isInvoiceId);
-        } else {
-          mutation.mutate(selectedRowKeys[0]);
-        }
-        break;
-      default:
-        setIsType("");
-        break;
-    }
 
-    setIsModalOpen(false);
+  const handleOk = (type) => {
+    console.log(type)
+    if (type === "confirm") {
+      switch (isType) {
+        case "unarchive":
+          if (selectedRowKeys.length === 0) {
+            mutationUnarchive.mutate({ ids: [isInvoiceId], mode: "published" });
+          } else {
+            mutationUnarchive.mutate({ ids: selectedRowKeys, mode: "published" });
+          }
+          break;
+        case "delete":
+          if (isInvoiceId) {
+            mutation.mutate(isInvoiceId);
+          } else {
+            mutation.mutate(selectedRowKeys[0]);
+          }
+          break;
+        case "mark":
+          mutationMark.mutate(selectedRowKeys[0]);
+
+          break;
+        case "send":
+          mutationSend.mutate({
+            client_id: invoiceForPayment[0].client_id,
+            ids: selectedRowKeys,
+          });
+
+          break;
+        default:
+          setIsType("");
+          break;
+      }
+
+      setIsModalOpen(false);
+    } else {
+      setIsModalPayment(false);
+    }
   };
+
+  // const handleOk = () => {
+  //   switch (isType) {
+  //     case "unarchive":
+  //       if (selectedRowKeys.length === 0) {
+  //         mutationUnarchive.mutate({ ids: [isInvoiceId], mode: "published" });
+  //       } else {
+  //         mutationUnarchive.mutate({ ids: selectedRowKeys, mode: "published" });
+  //       }
+  //       break;
+  //     case "delete":
+  //       if (isInvoiceId) {
+  //         mutation.mutate(isInvoiceId);
+  //       } else {
+  //         mutation.mutate(selectedRowKeys[0]);
+  //       }
+  //       break;
+  //     default:
+  //       setIsType("");
+  //       break;
+  //   }
+
+  //   setIsModalOpen(false);
+  // };
+  const mutationMark = useMutation(
+    async (id) => {
+      return axios
+        .put(`invoices/status/${id}`, { status: "send" })
+        .then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        console.log("res", res);
+        // setTimeout(() => {
+        queryClient.invalidateQueries("invoices-listing");
+        // }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `Invoice ${res?.data?.invoice?.code} has been marked as sent`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const mutationSend = useMutation(
+    async (data) => {
+      return axios.post(`invoices/send`, data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        console.log("res", res);
+        // setTimeout(() => {
+        queryClient.invalidateQueries("invoices-listing");
+        // }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `Invoice has been send by email`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
   const mutation = useMutation(
     async (data) => {
       return axios.delete(`invoices/${data}`).then((res) => res.data);
@@ -458,9 +559,9 @@ export default function InvoicesArchived() {
         setSelectedRowKeys([]);
         notification.success({
           message: `The selected ${
-            selectedRowKeys.length > 1 && selectedRowKeys.length
+            selectedRowKeys.length > 1 ? selectedRowKeys.length : ""
           } invoices
-          has been succesfully archived`,
+          has been succesfully unarchived`,
           placement: "topLeft",
         });
       },
@@ -475,13 +576,54 @@ export default function InvoicesArchived() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const onSelectChange = (newSelectedRowKeys) => {
+  const onSelectChange = (newSelectedRowKeys, x) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    setInvoiceForPayment(x);
   };
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
+  const { status: pdfStatus, refetch: pdfRefetch } = useQuery(
+    "downloadPDF",
+    async () =>
+      axios
+        .get("invoices/export", {
+          responseType: "blob",
+        })
+        .then((res) => {
+          const url = window.URL.createObjectURL(new Blob([res.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download.pdf");
+          document.body.appendChild(link);
+          link.click();
+
+          return res.data;
+        })
+        .catch((error) => {
+          console.log(error, "error");
+          switch (error?.response?.status) {
+            case 500:
+              notification.error({
+                message: `Internal Server Error`,
+                placement: "topLeft",
+              });
+              break;
+
+            default:
+              notification.error({
+                message: `An Error Occurred Please Try Again Later`,
+                placement: "topLeft",
+              });
+              break;
+          }
+        }),
+    {
+      enabled: false,
+    }
+  );
+
   const hasSelected = selectedRowKeys.length > 0;
   const bulkList = (
     <div tw="w-36">
@@ -497,42 +639,65 @@ export default function InvoicesArchived() {
           </div>
         </Menu.Item>
 
-        <Menu.Item key="duplicate" 
-          disabled={selectedRowKeys.length > 1}
-        
-        >
+        <Menu.Item key="duplicate">
           <div>
             <CopyOutlined />
             <span>Duplicate</span>
           </div>
         </Menu.Item>
 
-        <Menu.Item key="print">
+        <Menu.Item
+          key="print"
+          onClick={() => history.push(`/invoices/${selectedRowKeys[0]}/print`)}
+          disabled={selectedRowKeys.length > 1}
+        >
           <div>
             <PrinterOutlined />
             <span>Print</span>
           </div>
         </Menu.Item>
 
-        {/* <Menu.Item key="send-email">
+        <Menu.Item
+          key="send"
+          onClick={handleModal}
+          disabled={
+            selectedRowKeys.length > 1 ||
+            invoiceForPayment[0]?.status === "paid" ||
+            invoiceForPayment[0]?.status === "send"
+          }
+        >
           <div>
             <MailOutlined />
             <span>Send By Email</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="mark-as-sent">
+        <Menu.Item
+          key="mark"
+          disabled={
+            selectedRowKeys.length > 1 ||
+            invoiceForPayment[0]?.status !== "draft"
+          }
+          onClick={handleModal}
+        >
           <div>
             <SendOutlined />
             <span>Mark as Sent</span>
           </div>
-        </Menu.Item> */}
-        <Menu.Item key="payment">
+        </Menu.Item>
+        <Menu.Item
+          key="payment"
+          onClick={handleModal}
+          disabled={
+            selectedRowKeys.length > 1 ||
+            invoiceForPayment[0]?.status === "paid"
+          }
+        >
           <div>
             <DollarOutlined />
             <span>Add a Payment</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="download-pdf">
+        <Menu.Item key="download-pdf" onClick={() => pdfRefetch()}>
           <div>
             <VerticalAlignBottomOutlined />
             <span>Download PDF</span>
@@ -544,9 +709,10 @@ export default function InvoicesArchived() {
             <span>Unarchive</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="delete" onClick={handleModal}
+        <Menu.Item
+          key="delete"
+          onClick={handleModal}
           disabled={selectedRowKeys.length > 1}
-        
         >
           <div>
             <RestOutlined />
@@ -626,23 +792,30 @@ export default function InvoicesArchived() {
             ) : (
               <></>
             )} */}
+               <Modal
+              footer={null}
+              visible={isModalPayment}
+              onOk={() => handleOk("modal")}
+              onCancel={() => handleCancel("modal")}
+              width={"100%"}
+              centered
+            >
+              <FormPayment
+                handleCancel={handleCancel}
+                handleOk2={handleOk}
+                data={invoiceForPayment[0]}
+              />
+            </Modal>
             <ModalConfirm
               title="Confirm"
               visible={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
+              onOk={() => handleOk("confirm")}
+              onCancel={() => handleCancel("confirm")}
               width={500}
               closable={false}
             >
-              <span tw="text-lg">{isType == "unarchive" ?  `${
-                selectedRowKeys.length > 1
-                  ? selectedRowKeys.length + " invoice "
-                  : "This invoice"
-              } archived . Would you like to unarchive it?` : `Are you sure you want to ${isType} ${
-                selectedRowKeys.length > 1
-                  ? selectedRowKeys.length + " invoice "
-                  : "this"
-              } ?`}</span>
+              <span tw="text-lg">                {translateIsType(isType, selectedRowKeys)}
+</span>
             </ModalConfirm>
             <div className="table-responsive">
               <TableCustom
@@ -697,4 +870,27 @@ export function getTotal(outstanding) {
     return accumulator + value;
   }, 0);
   return `Rp. ${numberWithDot(sum)} IDR`;
+}
+export function translateIsType(type, selectedRowKeys) {
+  let text = "";
+  switch (type) {
+    case "mark":
+      text =
+        "Your client won't receive a notification email about this invoice. However, the invoice will appear in their account if they have one. Do you want to mark it as sent?";
+      break;
+    case "send":
+      text =
+        "Are you sure you want to send this invoice? Only the primary contact will be notified.";
+      break;
+
+    default:
+      text = `Are you sure you want to ${type} ${
+        selectedRowKeys.length > 1
+          ? selectedRowKeys.length + " invoice "
+          : "this"
+      } ?`;
+      break;
+  }
+
+  return text;
 }

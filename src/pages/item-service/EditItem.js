@@ -57,7 +57,8 @@ qty:data.current
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    let newValues={...values,client_id:clientId,rate:parseInt(values.rate)}
+    console.log(values,"value");
+    let newValues={...values,qty:1,current_stock:1,with_tracking:true,rate:parseInt(values.rate)}
     mutation.mutate(newValues);
     hide()
 

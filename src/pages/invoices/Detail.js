@@ -247,7 +247,7 @@ export default function Detail() {
       sorter: (a, b) => a.amount - b.amount,
     },
   ];
-
+console.log(detailInvoice,"invoice");
   return (
     <>
       <div className="layout-content">
@@ -292,32 +292,39 @@ export default function Detail() {
 <>
               <CardDetailInvoice ref={refInvoice}>
                 <div tw="grid gap-2 md:flex justify-between mb-10">
-                  <img
+                 {detailInvoice?.logo !== null ?
+                 <img
+                 src={detailInvoice?.logo}
+                 alt="profile company"
+                 tw="w-52 h-52"
+               />:
+                 <img
                     src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"
                     alt="profile company"
                     tw="w-52 h-52"
                   />
+                }
                      <div tw="flex justify-between ">
                <div tw="flex flex-col items-end mr-5">
          
                  <span
             
-                 >{setting?.data?.company_name}</span>
+                 >{user?.data?.company_name}</span>
                  <span
               
-                 >{setting?.data?.phone}</span>
+                 >{user?.data?.phone}</span>
                </div>
                <div tw="flex flex-col items-end">
                  <span
                   
-                 >{setting?.data?.address}</span>
+                 >{user?.data?.address}</span>
                  {/* <span
           
                  >line_address_2</span> */}
                  <div tw="flex">
                    <span
                   
-                   >{setting?.data?.city}</span>
+                   >{user?.data?.city}</span>
                    <span>,</span>
                    {/* <span
                 
@@ -326,9 +333,9 @@ export default function Detail() {
         
                  <span
                  
-                 >{setting?.data?.zip}</span>
+                 >{user?.data?.zip}</span>
         
-                <span>{setting?.data?.country}</span>
+                <span>{user?.data?.country}</span>
                  {/* <div tw="flex">
                    <span
            
@@ -454,8 +461,8 @@ export default function Detail() {
                   </table>
                 </div>
               </CardDetailInvoice>
-              <Card tw="border-gray-200 rounded-lg p-5 mt-5">
-          {detailInvoice?.attachments?.length !== null &&    detailInvoice?.attachments?.map((item,i)=>(
+           {detailInvoice?.attachments?.length > 0 &&   <Card tw="border-gray-200 rounded-lg p-5 mt-5">
+          {detailInvoice?.attachments?.map((item,i)=>(
 
            <img
            key={i}
@@ -463,7 +470,7 @@ export default function Detail() {
                 tw="rounded-lg w-48 h-48"
                 alt={item.name}
                 /> ))}
-                </Card>
+                </Card>}
 
 </>
 

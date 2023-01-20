@@ -21,7 +21,7 @@ const MyPrintButton = ({ myRef }) => (
   />
 );
 
-export default function MoreAction({  myRef }) {
+export default function MoreAction({  myRef ,excelRefetch}) {
   const history = useHistory();
   const handlePrint = () => {
     // let a = window.open('', 'Cek')
@@ -32,21 +32,30 @@ export default function MoreAction({  myRef }) {
     />;
     // window.print()
   };
+  console.log(myRef,"Type");
   return (
     <div>
       <Menu>
-        <Menu.Item key="export" disabled>
+        <Menu.Item key="export" >
           <div>
             <VerticalAlignBottomOutlined />
             <span
               tw="cursor-pointer"
-              onClick={() => console.log("export for PDF")}
+              onClick={() => excelRefetch()}
             >
-              Export for PDF
+              Export
             </span>
           </div>
         </Menu.Item>
-        <ReactToPrint
+{typeof(myRef) === 'object'?
+  <Menu.Item key="print" onClick={()=>history.push(`/invoices/${myRef.id}/print`)}>
+  <div>
+    <PrinterOutlined />
+    <span tw="cursor-pointer">Print</span>
+  </div>
+</Menu.Item>
+
+:<ReactToPrint
           trigger={() => (
             <Menu.Item key="print">
               <div>
@@ -56,32 +65,44 @@ export default function MoreAction({  myRef }) {
             </Menu.Item>
           )}
           content={() => myRef.current}
-        />
+        />}
       </Menu>
     </div>
   );
 }
 
-export function MoreActionClients({ pdfRefetch }) {
+export function MoreActionClients({ excelRefetch,onSelectFileClient }) {
   return (
     <div>
       <Menu>
         <Menu.Item key="import">
-          <div>
-            <ImportOutlined />
-            <span
+        <label
+                  htmlFor="import-file"
+                  tw="cursor-pointer"
+      
+                >
+                  <input
+                    type="file"
+                    name="import-file"
+                    id="import-file"
+                    style={{ display: "none" }}
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                    onChange={onSelectFileClient}
+                  />
+           
+           <ImportOutlined />
+           <span
               tw="cursor-pointer"
-              onClick={() => console.log("export for PDF")}
             >
               Import Clients
             </span>
-          </div>
+         </label>
         </Menu.Item>
 
         <Menu.Item key="export">
           <div>
             <ExportOutlined />
-            <span tw="cursor-pointer" onClick={() => pdfRefetch()}>
+            <span tw="cursor-pointer" onClick={()=>excelRefetch()}>
               Export Clients
             </span>
           </div>

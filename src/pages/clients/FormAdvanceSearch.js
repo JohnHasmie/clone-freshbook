@@ -372,7 +372,6 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
 }
 
 export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statusClients,filterProps}) {
-
   const [filter, setFilter] = filterProps;
   const [clicked, setClicked] = useState(false);
 
@@ -388,10 +387,33 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
     currency: "",
     keyword: "",
     type: "all",
-    date_type:"last_invoice",
+    date_type:"issued_at",
     start_date:"",
-    end_date:""
+    end_date:"",
+    all:""
   });
+  useEffect(() => {
+    console.log("berjalan?")
+    setLocalSearch({
+      ...localSearch,
+      client_id: filter?.client_id,
+      status: filter?.status,
+      currency: filter?.currency,
+      keyword: filter?.keyword,
+        start_date: filter?.start_date,
+        end_date: filter?.end_date,
+        date_type:filter?.type,
+        type:filter?.type
+    });
+    // if(filter?.date_type){
+    //   setLocalSearch({...localSearch,date_type:filter?.date_type})
+    // }
+    // if(filter?.type){
+    //   setLocalSearch({...localSearch,type:filter?.type})
+    // }
+  }, []);
+
+
   const onFinish = (values) => {
     setFilter({
       ...filter,
@@ -403,27 +425,12 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
       start_date: localSearch.start_date,
       end_date: localSearch.end_date,
       date_type: localSearch.date_type,
+      all:localSearch.all
     });
   setIsAdvance(false)
 
   };
-  useEffect(() => {
-    setLocalSearch({
-      ...localSearch,
-      client_id: filter?.client_id,
-      status: filter?.status,
-      currency: filter?.currency,
-      keyword: filter?.keyword,
-        start_date: filter?.start_date,
-        end_date: filter?.end_date,
-    });
-    if(filter?.date_type){
-      setLocalSearch({...localSearch,date_type:filter?.date_type})
-    }
-    if(filter?.type){
-      setLocalSearch({...localSearch,type:filter?.type})
-    }
-  }, [filter]);
+
   const onChange = (e) => {
     setLocalSearch({ ...localSearch, [e.target.name]: e.target.value });
   };
@@ -435,7 +442,10 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
-  console.log(localSearch,"local");
+//   const dataFilter=dataClients?.data?.filter((item, index) => {
+//     return dataClients?.data?.findIndex(i => i.company_name === item.company_name) === index;
+// });
+console.log(localSearch.start_date,"cek")
   return (
     <Form
       onFinish={onFinish}
@@ -443,29 +453,7 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
       layout="vertical"
       size={"large"}
       form={form}
-      // fields={[
-      //   {
-      //     name: ["client_id"],
-      //     value: filter?.client_id,
-      //   },
-      //   {
-      //     name: ["contact_name"],
-      //     value: filter?.contact_name,
-      //   },
-      //   {
-      //     name: ["email"],
-      //     value: filter.email,
-      //   },
-      //   {
-      //     name: ["keyword"],
-      //     value: filter.keyword,
-      //   },
-      //   {
-      //     name: ["type"],
-      //     value: filter.type,
-      //   }
 
-      // ]}
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
@@ -527,7 +515,7 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
             <div tw="flex relative">
               <InputKeyword type="text" 
               value={localSearch.keyword}
-              name="keyword"
+              name="all"
               onChange={onChange}
               placeholder="Keyword or Number" />
               <SelectKeyword
@@ -625,10 +613,14 @@ let result=""
 let locale1=""
 let locale2=""
 if(a){
-  locale1= moment(a).format("DD MMM YYYY")
+  let date = moment(a, "DD/MM/YYYY");
+  locale1= date.format("DD MMM YYYY")
 }
 if(b){
-  locale2= moment(b).format("DD MMM YYYY")
+  let date = moment(b, "DD/MM/YYYY");
+  locale2= date.format("DD MMM YYYY")
+  // locale2=b
+  // locale2= moment(b).format("DD MMM YYYY")
 }
 result=locale1+" - "+locale2
 return result

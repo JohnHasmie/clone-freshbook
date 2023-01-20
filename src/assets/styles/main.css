@@ -3476,3 +3476,15 @@ color:#a2aab4fd
   margin: 0 8px 8px 0;
   vertical-align: top;
 }
+
+
+/* styling border-top invoice type */
+.blue-bordered{
+  border-color: #0175DD;
+
+}
+
+.blue-not-bordered{
+  border-color: transparent;
+
+}

@@ -27,19 +27,28 @@ export default function TabHome() {
         })
         .then((res) => res.data?.data)
   );
+
   return (
     <>
       {" "}
       {statusOutstanding === "success" && (
         <div tw="hidden md:grid grid-cols-3 gap-4 justify-items-center content-center pb-5">
           <div
-            tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 border-transparent hover:border-primary"
+            tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 hover:border-primary"
+            className={
+              pathname.includes(`overdue`)
+                ? "blue-bordered"
+                : "blue-not-bordered"
+            }
             onClick={() => handleClick("overdue")}
           >
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_draft?.total?.toFixed(2) && numberWithDot(dataOutstanding?.outstanding_draft?.total?.toFixed(2))}{" "}
+                {dataOutstanding?.outstanding_draft?.total?.toFixed(2) &&
+                  numberWithDot(
+                    dataOutstanding?.outstanding_draft?.total?.toFixed(2)
+                  )}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">
                 {filterOutstanding?.currency}
@@ -49,13 +58,21 @@ export default function TabHome() {
             <p tw="text-secondary">overdue</p>
           </div>
           <div
-            tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 border-transparent hover:border-primary"
+            tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 hover:border-primary"
+            className={
+              pathname.includes(`outstanding`)
+                ? "blue-bordered"
+                : "blue-not-bordered"
+            }
             onClick={() => handleClick("outstanding")}
           >
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_overdue?.total?.toFixed(2) && numberWithDot(dataOutstanding?.outstanding_overdue?.total?.toFixed(2))}{" "}
+                {dataOutstanding?.outstanding_overdue?.total?.toFixed(2) &&
+                  numberWithDot(
+                    dataOutstanding?.outstanding_overdue?.total?.toFixed(2)
+                  )}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">
                 {filterOutstanding?.currency}
@@ -64,13 +81,19 @@ export default function TabHome() {
             <p>total outstanding</p>
           </div>
           <div
-            tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 border-transparent hover:border-primary"
+            tw="cursor-pointer w-full text-center pt-10 hover:border-t-4 border-t-4 hover:border-primary"
+            className={
+              pathname.includes(`draft`) ? "blue-bordered" : "blue-not-bordered"
+            }
             onClick={() => handleClick("draft")}
           >
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_invoices?.total?.toFixed(2) && numberWithDot(dataOutstanding?.outstanding_invoices?.total?.toFixed(2))}{" "}
+                {dataOutstanding?.outstanding_invoices?.total?.toFixed(2) &&
+                  numberWithDot(
+                    dataOutstanding?.outstanding_invoices?.total?.toFixed(2)
+                  )}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">
                 {filterOutstanding?.currency}

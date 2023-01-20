@@ -40,7 +40,7 @@ function Sidenav({ color }) {
     axios.get("user/profile").then((res) => res.data?.data)
   );
 
-  const text = <Title level={5}>{settingData?.setting?.company_name}</Title>;
+  const text = <Title level={5}>{data?.user?.company_name}</Title>;
   useEffect(() => {
     data && setUser({ data: data?.user, status: status });
   }, [data]);
@@ -326,10 +326,10 @@ function Sidenav({ color }) {
             <span className="sr-only">Error</span>
           </div>
         )}
-        {settingStatus === "success" && (
-          <span tw="font-bold">{settingData?.setting?.company_name}</span>
+        {status === "success" && (
+          <span tw="font-bold">{data?.user?.company_name}</span>
         )}
-        {settingStatus === "loading" && (
+        {status === "loading" && (
           <div
             role="status"
             tw="flex flex-col items-center justify-center mt-10"
@@ -352,7 +352,7 @@ function Sidenav({ color }) {
             <span className="sr-only">Loading...</span>
           </div>
         )}
-        {settingStatus === "error" && (
+        {status === "error" && (
           <div tw="flex flex-col items-center justify-center">
             <CloseCircleFilled tw="text-2xl text-red-400" />
 

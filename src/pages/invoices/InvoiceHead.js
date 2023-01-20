@@ -30,7 +30,7 @@ const dummyClients = [{
 
 const ListClients = ({ hide,setIsClient }) => {
     const [filter, setFilter] = useState({
-        limit: 10,
+        limit: 150,
         page: 1,
       });
     const { data: dataClients, status } = useQuery(
@@ -42,8 +42,9 @@ const ListClients = ({ hide,setIsClient }) => {
             })
             .then((res) => res.data.data)
       );
-
-     
+    //   const dataFilter=dataClients?.data?.filter((item, index) => {
+    //       return dataClients?.data?.findIndex(i => i.company_name === item.company_name) === index;
+    //     });
     return (
         <ListClientsWrapper tw="overflow-y-auto h-72">
             {status === "success" &&

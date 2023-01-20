@@ -5,8 +5,8 @@ import {
   RestOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { Button,  Card,  Menu, notification, Popover, } from "antd";
-import React, { useState, useContext, useEffect ,useRef} from "react";
+import { Button, Card, Menu, notification, Popover } from "antd";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import TableCustom from "../../components/Table";
 import CardDetailInvoice from "../../components/CardDetailInvoice";
@@ -19,7 +19,6 @@ import { numberWithDot } from "../../components/Utils";
 import PopupPayment from "./PopupPayment";
 
 export default function InvoicePrint() {
-
   const [clicked, setClicked] = useState(false);
   const [clickedList, setClickedList] = useState(false);
 
@@ -29,32 +28,30 @@ export default function InvoicePrint() {
   const [clickedRow, setClickedRow] = useState(false);
   const queryClient = useQueryClient();
 
-
   const [clickedId, setClickedId] = useState("");
   const [marginResponsive, setMarginResponsive] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const [filteayment, setFilteayment] = useState({
     payment_method: 1,
-    client_id:'',
-    limit:10,
-    status:'',
-    invoice_id:'',
-
+    client_id: "",
+    limit: 10,
+    status: "",
+    invoice_id: "",
   });
   const { invoiceId } = useParams();
-  const {pathname}= useLocation()  
-  const {  setGlobalDetailInvoice,user,setting,refInvoice } =
+  const { pathname } = useLocation();
+  const { setGlobalDetailInvoice, user, setting, refInvoice } =
     useContext(AppContext);
 
   const handleClickChange = (open) => {
     setClicked(open);
   };
-  console.log(refInvoice,"ref");
+  console.log(refInvoice, "ref");
   const handleClickChangeList = (open) => {
     setClickedList(open);
   };
- 
+
   const hide = () => {
     setClicked(false);
   };
@@ -62,11 +59,11 @@ export default function InvoicePrint() {
     if (clickedRow === false) {
       setClickedRow(true);
       setClickedId(id);
-      setMarginResponsive("400px")
+      setMarginResponsive("400px");
     } else {
       setClickedRow(false);
       setClickedId("");
-      setMarginResponsive("")
+      setMarginResponsive("");
     }
   };
   const hideClickRow = (e) => {
@@ -86,13 +83,15 @@ export default function InvoicePrint() {
   useEffect(() => {
     if (status === "success") {
       setGlobalDetailInvoice(detailInvoice);
-   setFilteayment({...filteayment,invoice_id:invoiceId,client_id:detailInvoice.client_id})
-
+      setFilteayment({
+        ...filteayment,
+        invoice_id: invoiceId,
+        client_id: detailInvoice.client_id,
+      });
     }
   }, [status]);
 
-
-  const { data: listPayment, status:statusListPayment } = useQuery(
+  const { data: listPayment, status: statusListPayment } = useQuery(
     ["payment-listing", filteayment],
     async (key) =>
       axios
@@ -104,18 +103,17 @@ export default function InvoicePrint() {
 
   const history = useHistory();
 
-
-  const data = statusListPayment === "success" &&
-  listPayment?.data?.map((item,i)=>({
-    key:item.id,
-    payment_at:item.payment_at,
-    payment_method:item.payment_method.name,
-    note:item.note,
-    amount:item.amount,
-    method_id:item.payment_method.id,
-    status:item.status
-  }))
- 
+  const data =
+    statusListPayment === "success" &&
+    listPayment?.data?.map((item, i) => ({
+      key: item.id,
+      payment_at: item.payment_at,
+      payment_method: item.payment_method.name,
+      note: item.note,
+      amount: item.amount,
+      method_id: item.payment_method.id,
+      status: item.status,
+    }));
 
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -127,28 +125,28 @@ export default function InvoicePrint() {
   const hasSelected = selectedRowKeys.length > 0;
   const mutationDelete = useMutation(
     async (data) => {
-      return axios.delete(`payments/${selectedRowKeys[0]}`).then((res) => res.data);
+      return axios
+        .delete(`payments/${selectedRowKeys[0]}`)
+        .then((res) => res.data);
     },
     {
       onSuccess: (res) => {
         queryClient.invalidateQueries("payment-listing");
-        setClickedList(false)
-        setSelectedRowKeys([])
+        setClickedList(false);
+        setSelectedRowKeys([]);
 
         notification.success({
           message: `A payment was deleted`,
           // description:'This information will appear on your invoice',
           placement: "topLeft",
         });
-        
-
       },
       onError: (err) => {
         notification.error({
           message: `An Error Occurred Please Try Again Later`,
           placement: "topLeft",
         });
-        setClickedList(false)
+        setClickedList(false);
 
         console.log(err.response.data.message);
       },
@@ -158,25 +156,36 @@ export default function InvoicePrint() {
   const bulkList = (
     <div>
       <Menu>
-        <Menu.Item key="edit" onClick={()=>{
-          setClickedRow(!clickedRow);
-          setClickedId(selectedRowKeys[0]);
-          setMarginResponsive("400px")
-          setClickedList(false)
-        }} disabled={selectedRowKeys.length > 1}>
+        <Menu.Item
+          key="edit"
+          onClick={() => {
+            setClickedRow(!clickedRow);
+            setClickedId(selectedRowKeys[0]);
+            setMarginResponsive("400px");
+            setClickedList(false);
+          }}
+          disabled={selectedRowKeys.length > 1}
+        >
           <div>
             <EditOutlined />
             <span>Edit</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="refund" /* onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} */ disabled>
+        <Menu.Item
+          key="refund"
+          /* onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} */ disabled
+        >
           <div>
             <UndoOutlined />
             <span>Refund</span>
           </div>
         </Menu.Item>
 
-        <Menu.Item key="delete" onClick={()=>mutationDelete.mutate()} disabled={selectedRowKeys.length > 1}>
+        <Menu.Item
+          key="delete"
+          onClick={() => mutationDelete.mutate()}
+          disabled={selectedRowKeys.length > 1}
+        >
           <div>
             <RestOutlined />
             <span>Delete</span>
@@ -186,17 +195,13 @@ export default function InvoicePrint() {
     </div>
   );
 
- 
   const columns = [
-   
     {
       title: "Client / Invoice Number",
       dataIndex: "payment_at",
       key: "payment_at",
       render: (text, record) => (
-        <span >
-          {moment(record.payment_at).format("MM/DD/YYYY")}
-          </span>
+        <span>{moment(record.payment_at).format("MM/DD/YYYY")}</span>
       ),
       sorter: (a, b) => a.payment_at - b.payment_at,
     },
@@ -205,7 +210,6 @@ export default function InvoicePrint() {
       dataIndex: "payment_method",
       key: "payment_method",
       sorter: (a, b) => a.payment_method.length - b.payment_method.length,
-
     },
     {
       title: "Internal Notes",
@@ -232,52 +236,46 @@ export default function InvoicePrint() {
         </>
       ),
       sorter: (a, b) => a.note?.length - b.note?.length,
-
     },
 
-  
     {
       title: "Line Total",
       key: "amount",
       dataIndex: "amount",
-      render: (text, record) => (
-       <span> {numberWithDot(record.amount)}
-        </span>
-      ),
+      render: (text, record) => <span> {numberWithDot(record.amount)}</span>,
       sorter: (a, b) => a.amount - b.amount,
     },
   ];
 
   useEffect(() => {
-    status === "success" &&
-    window.print()
-   
+    status === "success" && window.print();
   }, [status]);
 
-  useEffect(() => {
-    const handleBeforePrint = () => {
-      console.log('before print');
-    };
-    const handleAfterPrint = () => {
-      console.log('after print');
-      setTimeout(() => {
-        
-        history.goBack();
-      }, 10000);
-    };
-    window.addEventListener('beforeprint', handleBeforePrint);
-    window.addEventListener('afterprint', handleAfterPrint);
+  // useEffect(() => {
+  //   const handleBeforePrint = () => {
+  //     console.log('before print');
+  //   };
+  //   const handleAfterPrint = () => {
+  //     console.log('after print');
+  //     setTimeout(() => {
 
-    return () => {
-      window.removeEventListener('beforeprint', handleBeforePrint);
-      window.removeEventListener('afterprint', handleAfterPrint);
-    };
-  }, [history]);
+  //       history.goBack();
+  //     }, 10000);
+  //   };
+  //   window.addEventListener('beforeprint', handleBeforePrint);
+  //   window.addEventListener('afterprint', handleAfterPrint);
 
+  //   return () => {
+  //     window.removeEventListener('beforeprint', handleBeforePrint);
+  //     window.removeEventListener('afterprint', handleAfterPrint);
+  //   };
+  // }, [history]);
   return (
     <>
       <div className="layout-content" tw="mt-10">
-        <div tw="flex justify-center" style={{ marginBottom: marginResponsive }}>
+        <div
+          tw="flex justify-center"
+        >
           <div tw="md:col-span-12 mb-10 ">
             {/* <p>
               {" "}
@@ -315,47 +313,44 @@ export default function InvoicePrint() {
               </div>
             )}
             {status === "success" && (
-<>
-              <CardDetailInvoice ref={refInvoice}>
-                <div tw="grid gap-2 md:flex justify-between mb-10">
-                  <img
-                    src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"
-                    alt="profile company"
-                    tw="w-52 h-52"
-                  />
-                     <div tw="flex justify-between ">
-               <div tw="flex flex-col items-end mr-5">
-         
-                 <span
-            
-                 >{setting?.data?.company_name}</span>
-                 <span
-              
-                 >{setting?.data?.phone}</span>
-               </div>
-               <div tw="flex flex-col items-end">
-                 <span
-                  
-                 >{setting?.data?.address}</span>
-                 {/* <span
+              <>
+                <CardDetailInvoice ref={refInvoice}>
+                  <div tw="grid gap-2 md:flex justify-between mb-10">
+                    {detailInvoice?.logo !== null ? (
+                      <img
+                        src={detailInvoice?.logo}
+                        alt="profile company"
+                        tw="w-52 h-52"
+                      />
+                    ) : (
+                      <img
+                        src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"
+                        alt="profile company"
+                        tw="w-52 h-52"
+                      />
+                    )}
+                    <div tw="flex justify-between ">
+                      <div tw="flex flex-col items-end mr-5">
+                        <span>{user?.data?.company_name}</span>
+                        <span>{user?.data?.phone}</span>
+                      </div>
+                      <div tw="flex flex-col items-end">
+                        <span>{user?.data?.address}</span>
+                        {/* <span
           
                  >line_address_2</span> */}
-                 <div tw="flex">
-                   <span
-                  
-                   >{setting?.data?.city}</span>
-                   <span>,</span>
-                   {/* <span
+                        <div tw="flex">
+                          <span>{user?.data?.city}</span>
+                          <span>,</span>
+                          {/* <span
                 
                    >State</span> */}
-                 </div>
-        
-                 <span
-                 
-                 >{setting?.data?.zip}</span>
-        
-                <span>{setting?.data?.country}</span>
-                 {/* <div tw="flex">
+                        </div>
+
+                        <span>{user?.data?.zip}</span>
+
+                        <span>{user?.data?.country}</span>
+                        {/* <div tw="flex">
                    <span
            
                    >TAX NAME</span>
@@ -364,124 +359,136 @@ export default function InvoicePrint() {
                  
                    >TAX NUMBER</span>
                  </div> */}
-               </div>
-             </div>
-                </div>
-                <div tw="grid grid-cols-4 mb-16">
-             <div className="flex flex-col">
-             <span tw="text-gray-400">Billed To</span>
-                    <span tw="text-xs w-28">{detailInvoice?.client.first_name} {detailInvoice?.client.last_name}</span>
-                    <span tw="text-xs w-28">{detailInvoice?.client.company_name}</span>
-                    <span tw="text-xs">{detailInvoice?.client.address}</span>
-                    <span tw="text-xs">{detailInvoice?.client.city}</span>
-                    <span tw="text-xs">{detailInvoice?.client.zip}</span>
-                    <span tw="text-xs">{detailInvoice?.client.country}</span>
-             </div>
-             <div tw="space-y-5 ">
-               <div>
-                 <h4 tw="text-gray-400">Date of Issue</h4>
-        
-                 <span>
-                 {moment(detailInvoice?.issued_at).format(`DD/MM/YYYY`)}
-                  </span>
-               </div>
-        
-               <div>
-                 <h4 tw="text-gray-400">Due Date</h4>
-               <span>{moment(detailInvoice?.due_date).format(`DD/MM/YYYY`)}</span>
-               </div>
-             </div>
-             <div tw="space-y-5 ">
-               <div>
-                 <h4 tw="text-gray-400">Invoice Number</h4>
-        
-                 <span tw="text-xs">{detailInvoice?.code}</span>
-               </div>
-        
-               <div>
-                 <h4 tw="text-gray-400">Reference</h4>
-                 <span
-     
-                   
-                 >{detailInvoice?.references}</span>
-               </div>
-             </div>
-             <div tw="text-right">
-               <h3 tw="text-gray-400">Amount Due </h3>
-               <span tw="font-medium text-3xl ">
-               {numberWithDot(detailInvoice?.total)}
-               </span>
-             </div>
-           </div>
- 
+                      </div>
+                    </div>
+                  </div>
+                  <div tw="grid grid-cols-4 mb-16">
+                    <div className="flex flex-col">
+                      <span tw="text-gray-400">Billed To</span>
+                      <span tw="text-xs w-28">
+                        {detailInvoice?.client.first_name}{" "}
+                        {detailInvoice?.client.last_name}
+                      </span>
+                      <span tw="text-xs w-28">
+                        {detailInvoice?.client.company_name}
+                      </span>
+                      <span tw="text-xs">{detailInvoice?.client.address}</span>
+                      <span tw="text-xs">{detailInvoice?.client.city}</span>
+                      <span tw="text-xs">{detailInvoice?.client.zip}</span>
+                      <span tw="text-xs">{detailInvoice?.client.country}</span>
+                    </div>
+                    <div tw="space-y-5 ">
+                      <div>
+                        <h4 tw="text-gray-400">Date of Issue</h4>
 
-                <table>
-                  <tbody>
-                    <tr tw="border-t-4 border-gray-600 text-sm text-gray-500 text-right font-bold">
-                      <th tw="text-left  py-2">Description</th>
-                      <th>Rate</th>
-                      <th tw="invisible">hide</th>
-                      <th>Qty</th>
-                      <th>Line Total</th>
-                    </tr>
-               
-                  {detailInvoice?.items_detail.length > 0 && detailInvoice?.items_detail?.map((detail,i)=>
-                  (
-                  <tr key={i} tw="border-b text-sm  border-gray-300 text-right">
-                      <th tw="grid text-left py-2">
-                        <span>{detail.name}</span>
-                        <span tw="text-xs">
-                         {detail.description}
+                        <span>
+                          {moment(detailInvoice?.issued_at).format(
+                            `DD/MM/YYYY`
+                          )}
                         </span>
-                      </th>
-                      <td>{numberWithDot(detail.rate)}</td>
-                      <td></td>
-                      <td>{detail.pivot.qty}</td>
+                      </div>
 
-                      <td>{numberWithDot(detail.pivot.total)}</td>
-                    </tr> ))}
-                  </tbody>
-                </table>
+                      <div>
+                        <h4 tw="text-gray-400">Due Date</h4>
+                        <span>
+                          {moment(detailInvoice?.due_date).format(`DD/MM/YYYY`)}
+                        </span>
+                      </div>
+                    </div>
+                    <div tw="space-y-5 ">
+                      <div>
+                        <h4 tw="text-gray-400">Invoice Number</h4>
 
-                <div tw="grid grid-cols-12 mt-10 mb-20">
-                  <div tw="col-span-8"></div>
+                        <span tw="text-xs">{detailInvoice?.code}</span>
+                      </div>
 
-                  <table tw="col-span-4">
+                      <div>
+                        <h4 tw="text-gray-400">Reference</h4>
+                        <span>{detailInvoice?.references}</span>
+                      </div>
+                    </div>
+                    <div tw="text-right">
+                      <h3 tw="text-gray-400">Amount Due </h3>
+                      <span tw="font-medium text-3xl ">
+                        {numberWithDot(detailInvoice?.total)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <table>
                     <tbody>
-                      <tr tw="text-right">
-                        <td>Subtotal</td>
-                        <td>{detailInvoice?.subtotal !== null && numberWithDot(detailInvoice?.subtotal)}</td>
+                      <tr tw="border-t-4 border-gray-600 text-sm text-gray-500 text-right font-bold">
+                        <th tw="text-left  py-2">Description</th>
+                        <th>Rate</th>
+                        <th tw="invisible">hide</th>
+                        <th>Qty</th>
+                        <th>Line Total</th>
                       </tr>
-                      <tr tw="border-b  border-gray-300 text-right">
-                        <td>Tax</td>
-                        <td>0.00</td>
-                      </tr>
-                      <tr tw="text-right ">
-                        <td tw="pt-1">Total</td>
-                        <td>{numberWithDot(detailInvoice?.total)}</td>
-                      </tr>
-                      <tr tw="text-right">
-                        <td>Amount Paid</td>
-                        <td>0.00</td>
-                      </tr>
-                    </tbody>
-                    <tfoot>
-                      <tr className="double">
-                        <td tw=" text-right align-top text-gray-400">
-                          Amount Due
-                        </td>
 
-                        <td tw=" grid gap-0 items-end ">
-                          <span tw="font-semibold ">{numberWithDot(detailInvoice?.total)}</span>
-                          {/* <span tw="text-gray-600 text-right">IDR</span> */}
-                        </td>
-                      </tr>
-                    </tfoot>
+                      {detailInvoice?.items_detail.length > 0 &&
+                        detailInvoice?.items_detail?.map((detail, i) => (
+                          <tr
+                            key={i}
+                            tw="border-b text-sm  border-gray-300 text-right"
+                          >
+                            <th tw="grid text-left py-2">
+                              <span>{detail.name}</span>
+                              <span tw="text-xs">{detail.description}</span>
+                            </th>
+                            <td>{numberWithDot(detail.rate)}</td>
+                            <td></td>
+                            <td>{detail.pivot.qty}</td>
+
+                            <td>{numberWithDot(detail.pivot.total)}</td>
+                          </tr>
+                        ))}
+                    </tbody>
                   </table>
-                </div>
-              </CardDetailInvoice>
-              <Card tw="border-gray-200 rounded-lg p-5 mt-5">
-          {detailInvoice?.attachments?.length !== null &&    detailInvoice?.attachments?.map((item,i)=>(
+
+                  <div tw="grid grid-cols-12 mt-10 mb-20">
+                    <div tw="col-span-8"></div>
+
+                    <table tw="col-span-4">
+                      <tbody>
+                        <tr tw="text-right">
+                          <td>Subtotal</td>
+                          <td>
+                            {detailInvoice?.subtotal !== null &&
+                              numberWithDot(detailInvoice?.subtotal)}
+                          </td>
+                        </tr>
+                        <tr tw="border-b  border-gray-300 text-right">
+                          <td>Tax</td>
+                          <td>0.00</td>
+                        </tr>
+                        <tr tw="text-right ">
+                          <td tw="pt-1">Total</td>
+                          <td>{numberWithDot(detailInvoice?.total)}</td>
+                        </tr>
+                        <tr tw="text-right">
+                          <td>Amount Paid</td>
+                          <td>0.00</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr className="double">
+                          <td tw=" text-right align-top text-gray-400">
+                            Amount Due
+                          </td>
+
+                          <td tw=" grid gap-0 items-end ">
+                            <span tw="font-semibold ">
+                              {numberWithDot(detailInvoice?.total)}
+                            </span>
+                            {/* <span tw="text-gray-600 text-right">IDR</span> */}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </CardDetailInvoice>
+                {detailInvoice?.attachments?.length > 0 &&   <Card tw="border-gray-200 rounded-lg p-5 mt-5">
+          {detailInvoice?.attachments?.map((item,i)=>(
 
            <img
            key={i}
@@ -489,12 +496,9 @@ export default function InvoicePrint() {
                 tw="rounded-lg w-48 h-48"
                 alt={item.name}
                 /> ))}
-                </Card>
-
-</>
-
+                </Card>}
+              </>
             )}
-   
           </div>
         </div>
       </div>

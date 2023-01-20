@@ -34,7 +34,7 @@ export default function ListCardInvoice({ invoiceProps }) {
         dataInvoices?.data
           ?.sort((a, b) => b.id - a.id)
           ?.map((item, i) => (
-            <Link key={item?.id} to={`/invoices/${item?.id}/invoice-detail`} tw="mr-5">
+            <Link key={item?.id} to={`/invoices/${item?.id}/invoice-detail`} tw="mr-5 ">
               <CardInvoice
                 bg={translateBg(item.status)}
                 style={{
