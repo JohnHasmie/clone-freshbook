@@ -28,6 +28,9 @@ const FormMultiplePayment = ({ linesProps }) => {
     const showModal = () => {
         setIsModalOpen(true);
     };
+    const hideModal = () => {
+        setIsModalOpen(false);
+    };
     const onFinish = (values) => {
         const { noOfLines, startMonth, startYear, lineDesc, rate, qty } = values
         if (noOfLines > 0) {
@@ -53,6 +56,7 @@ const FormMultiplePayment = ({ linesProps }) => {
             <Modal
                 title="Multiple Payment"
                 open={isModalOpen}
+                onCancel={hideModal}
                 footer={null}
             >
                 <Form
