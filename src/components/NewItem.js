@@ -32,7 +32,7 @@ export default function NewItem({hide}) {
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    let newValues={...values,client_id:1}
+    let newValues={...values,qty:1,current_stock:1,with_tracking:true}
     mutation.mutate(newValues);
     form.resetFields();
     
