@@ -9,23 +9,9 @@ import moment from "moment";
 const dateFormat = "DD/MM/YYYY";
 
 export default function FilterDateInvoice({ hide, localSearchProps }) {
-  const queryClient = useQueryClient();
-  const [form] = Form.useForm();
-  const [localSearch, setLocalSearch] = localSearchProps;
-  // const [localSearch, setLocalSearch] = useState({
-  //   start_date: "",
-  //   end_date: "",
-  //   date_type: "last_invoice",
-  // });
 
-  // useEffect(() => {
-  //   setLocalSearch({
-  //     ...localSearch,
-  //     start_date: filter.start_date,
-  //     end_date: filter.end_date,
-  //     date_type: filter.date_type,
-  //   });
-  // }, [filter]);
+  const [localSearch, setLocalSearch] = localSearchProps;
+
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
@@ -37,10 +23,7 @@ export default function FilterDateInvoice({ hide, localSearchProps }) {
       end_date: localSearch.end_date,
       date_type: localSearch.date_type,
     });
-    // let newValues={...values,client_id:1}
-    // mutation.mutate(newValues);
-    // form.resetFields();
-
+   
     hide();
   };
   return (

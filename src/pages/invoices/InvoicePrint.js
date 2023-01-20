@@ -331,25 +331,25 @@ export default function InvoicePrint() {
                     )}
                     <div tw="flex justify-between ">
                       <div tw="flex flex-col items-end mr-5">
-                        <span>{setting?.data?.company_name}</span>
-                        <span>{setting?.data?.phone}</span>
+                        <span>{user?.data?.company_name}</span>
+                        <span>{user?.data?.phone}</span>
                       </div>
                       <div tw="flex flex-col items-end">
-                        <span>{setting?.data?.address}</span>
+                        <span>{user?.data?.address}</span>
                         {/* <span
           
                  >line_address_2</span> */}
                         <div tw="flex">
-                          <span>{setting?.data?.city}</span>
+                          <span>{user?.data?.city}</span>
                           <span>,</span>
                           {/* <span
                 
                    >State</span> */}
                         </div>
 
-                        <span>{setting?.data?.zip}</span>
+                        <span>{user?.data?.zip}</span>
 
-                        <span>{setting?.data?.country}</span>
+                        <span>{user?.data?.country}</span>
                         {/* <div tw="flex">
                    <span
            
@@ -487,17 +487,16 @@ export default function InvoicePrint() {
                     </table>
                   </div>
                 </CardDetailInvoice>
-                <Card tw="border-gray-200 rounded-lg p-5 mt-5">
-                  {detailInvoice?.attachments?.length !== null &&
-                    detailInvoice?.attachments?.map((item, i) => (
-                      <img
-                        key={i}
-                        src={item.url}
-                        tw="rounded-lg w-48 h-48"
-                        alt={item.name}
-                      />
-                    ))}
-                </Card>
+                {detailInvoice?.attachments?.length > 0 &&   <Card tw="border-gray-200 rounded-lg p-5 mt-5">
+          {detailInvoice?.attachments?.map((item,i)=>(
+
+           <img
+           key={i}
+                src={item.url}
+                tw="rounded-lg w-48 h-48"
+                alt={item.name}
+                /> ))}
+                </Card>}
               </>
             )}
           </div>

@@ -4,9 +4,11 @@ import {
   DownOutlined,
   EditOutlined,
   HddOutlined,
+  MailOutlined,
   PrinterOutlined,
   RestOutlined,
   RightOutlined,
+  SendOutlined,
   VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
 import {
@@ -60,27 +62,36 @@ export default function InvoicesDraft() {
   const [invoiceForPayment, setInvoiceForPayment] = useState("");
 
   const handleModal = (type) => {
-    if (type.key !== "payment") {
-      switch (type.key) {
-        case "archive":
-          setIsType("archive");
-          break;
-        case "delete":
-          setIsType("delete");
-
-          break;
-        default:
-          setIsType("");
-          break;
-      }
-      setIsModalOpen(true);
-      setClicked(false);
-    } else {
-      setIsModalPayment(true);
-      setClicked(false);
+    switch (type.key) {
+      case "archive":
+        setIsType("archive");
+        setIsModalOpen(true);
+        break;
+      case "delete":
+        setIsType("delete");
+        setIsModalOpen(true);
+        break;
+      case "mark":
+        setIsType("mark");
+        setIsModalOpen(true);
+        break;
+      case "send":
+        setIsType("send");
+        setIsModalOpen(true);
+        break;
+      case "payment":
+        setIsType("payment");
+        setIsModalPayment(true);
+        break;
+      default:
+        setIsType("");
+        break;
     }
-  };
 
+    setClicked(false);
+  
+  };
+  
   const [searchField, setSearchField] = useState({
     company_name: "",
     name: "",
@@ -313,6 +324,17 @@ export default function InvoicesDraft() {
             mutation.mutate(selectedRowKeys[0]);
           }
           break;
+        case "mark":
+          mutationMark.mutate(selectedRowKeys[0]);
+
+          break;
+        case "send":
+          mutationSend.mutate({
+            client_id: invoiceForPayment[0].client_id,
+            ids: selectedRowKeys,
+          });
+
+          break;
         default:
           setIsType("");
           break;
@@ -324,6 +346,58 @@ export default function InvoicesDraft() {
     }
   };
 
+  const mutationMark = useMutation(
+    async (id) => {
+      return axios
+        .put(`invoices/status/${id}`, { status: "send" })
+        .then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        console.log("res", res);
+        // setTimeout(() => {
+        queryClient.invalidateQueries("invoices-listing");
+        // }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `Invoice ${res?.data?.invoice?.code} has been marked as sent`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const mutationSend = useMutation(
+    async (data) => {
+      return axios.post(`invoices/send`, data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        console.log("res", res);
+        // setTimeout(() => {
+        queryClient.invalidateQueries("invoices-listing");
+        // }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `Invoice has been send by email`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
   const mutation = useMutation(
     async (data) => {
       return axios.delete(`invoices/${data}`).then((res) => res.data);
@@ -425,18 +499,33 @@ export default function InvoicesDraft() {
           </div>
         </Menu.Item>
 
-        {/* <Menu.Item key="send-email">
+        <Menu.Item
+          key="send"
+          onClick={handleModal}
+          disabled={
+            selectedRowKeys.length > 1 ||
+            invoiceForPayment[0]?.status === "paid" ||
+            invoiceForPayment[0]?.status === "send"
+          }
+        >
           <div>
             <MailOutlined />
             <span>Send By Email</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="mark-as-sent">
+        <Menu.Item
+          key="mark"
+          disabled={
+            selectedRowKeys.length > 1 ||
+            invoiceForPayment[0]?.status !== "draft"
+          }
+          onClick={handleModal}
+        >
           <div>
             <SendOutlined />
             <span>Mark as Sent</span>
           </div>
-        </Menu.Item> */}
+        </Menu.Item>
         <Menu.Item
           key="payment"
           onClick={handleModal}
@@ -550,11 +639,9 @@ export default function InvoicesDraft() {
               width={500}
               closable={false}
             >
-              <span tw="text-lg">{`Are you sure you want to ${isType} ${
-                selectedRowKeys.length > 1
-                  ? selectedRowKeys.length + " invoice "
-                  : "this"
-              } ?`}</span>
+               <span tw="text-lg">
+                {translateIsType(isType, selectedRowKeys)}
+              </span>
             </ModalConfirm>
             <div className="table-responsive">
               <TableCustom
@@ -596,4 +683,27 @@ export function getTotal(outstanding) {
     return accumulator + value;
   }, 0);
   return ` ${numberWithDot(sum)} `;
+}
+export function translateIsType(type, selectedRowKeys) {
+  let text = "";
+  switch (type) {
+    case "mark":
+      text =
+        "Your client won't receive a notification email about this invoice. However, the invoice will appear in their account if they have one. Do you want to mark it as sent?";
+      break;
+    case "send":
+      text =
+        "Are you sure you want to send this invoice? Only the primary contact will be notified.";
+      break;
+
+    default:
+      text = `Are you sure you want to ${type} ${
+        selectedRowKeys.length > 1
+          ? selectedRowKeys.length + " invoice "
+          : "this"
+      } ?`;
+      break;
+  }
+
+  return text;
 }

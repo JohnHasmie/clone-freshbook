@@ -32,13 +32,13 @@ const ListClients = ({ hide,setIsClient }) => {
             })
             .then((res) => res.data.data)
       );
-      const dataFilter=dataClients?.data?.filter((item, index) => {
-          return dataClients?.data?.findIndex(i => i.company_name === item.company_name) === index;
-        });
+    //   const dataFilter=dataClients?.data?.filter((item, index) => {
+    //       return dataClients?.data?.findIndex(i => i.company_name === item.company_name) === index;
+    //     });
     return (
         <ListClientsWrapper tw="overflow-y-auto h-72">
             {status === "success" &&
-                dataFilter?.map(client => {
+                dataClients?.data?.map(client => {
                     return (
                         <ListClientItem onClick={()=>{
                             setIsClient(client.id)

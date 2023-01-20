@@ -54,6 +54,7 @@ export default function ClientsOverdue() {
     keyword: "",
     contact_name: "",
     type: "all",
+    invoice_status:"overdue",
   });
   const [searchField, setSearchField] = useState({
     company_name: "",

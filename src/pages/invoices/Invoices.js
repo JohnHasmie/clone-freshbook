@@ -6,6 +6,7 @@ import {
   DownOutlined,
   EditOutlined,
   HddOutlined,
+  MailOutlined,
   PlusCircleFilled,
   PlusOutlined,
   PrinterOutlined,
@@ -26,7 +27,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardInvoice from "../../components/CardInvoice/index";
@@ -43,6 +44,7 @@ import moment from "moment";
 import ListCardInvoice from "./ListCardInvoice";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 import FormPayment from "./FormPayment";
+import _ from "lodash";
 
 export default function Invoices() {
   const { Title } = Typography;
@@ -58,6 +60,9 @@ export default function Invoices() {
     page: 1,
     mode: "published",
     currency: "USD",
+    all: "",
+    type: "all",
+    date_type: "issued_at",
     // status:"",
     // type:"",
     // date_type:"",
@@ -87,6 +92,10 @@ export default function Invoices() {
         setIsType("mark");
         setIsModalOpen(true);
         break;
+      case "send":
+        setIsType("send");
+        setIsModalOpen(true);
+        break;
       case "payment":
         setIsType("payment");
         setIsModalPayment(true);
@@ -97,37 +106,9 @@ export default function Invoices() {
     }
 
     setClicked(false);
-    //     if(type.key !== "payment"){
-    // switch (type.key) {
-    //   case "archive":
-    //     setIsType("archive");
-    //     break;
-    //   case "delete":
-    //     setIsType("delete");
-
-    //     break;
-    //   default:
-    //     setIsType("");
-    //     break;
-    //     }
-    //     setIsModalOpen(true);
-    //     setClicked(false);
-    // }else{
-    //   setIsModalPayment(true)
-    //   setClicked(false);
+  
   };
-  const handleModalTooltip = (e, id, client, type) => {
-    e.stopPropagation();
-    // setClientName(client);
-    setIsInvoiceId(id);
-    if (type === "delete") {
-      setIsType("delete");
-    } else {
-      setIsType("archive");
-    }
-    setIsModalOpen(true);
-    setClicked(false);
-  };
+  
 
   const [searchField, setSearchField] = useState({
     company_name: "",
@@ -214,14 +195,6 @@ export default function Invoices() {
     }
   );
 
-  const filteredData =
-    status === "success" &&
-    dataInvoices?.data.filter((item) => {
-      return item?.client?.company_name
-        .toLowerCase()
-        .includes(searchField?.company_name.toLowerCase());
-    });
-
   const data =
     status === "success" &&
     dataInvoices?.data?.map((item) => ({
@@ -233,8 +206,16 @@ export default function Invoices() {
       description: item.notes,
       amount: item.total,
       status: item.status,
+      client_id: item?.client_id,
     }));
-
+  const setSearchValue = useRef(
+    _.debounce((value) => {
+      setFilter({
+        ...filter,
+        all: value,
+      });
+    }, 1000)
+  );
   const defaultFooter = () => (
     <div tw="text-right text-base">
       Grand Total: {filter?.currency == "GBP" ? "£" : "$"}
@@ -388,10 +369,17 @@ export default function Invoices() {
             mutation.mutate(selectedRowKeys[0]);
           }
           break;
-          case "mark":
-            mutationMark.mutate(selectedRowKeys[0])
-         
-            break;
+        case "mark":
+          mutationMark.mutate(selectedRowKeys[0]);
+
+          break;
+        case "send":
+          mutationSend.mutate({
+            client_id: invoiceForPayment[0].client_id,
+            ids: selectedRowKeys,
+          });
+
+          break;
         default:
           setIsType("");
           break;
@@ -439,9 +427,9 @@ export default function Invoices() {
     },
     {
       onSuccess: (res) => {
-        console.log("res",res)
+        console.log("res", res);
         // setTimeout(() => {
-          queryClient.invalidateQueries("invoices-listing");
+        queryClient.invalidateQueries("invoices-listing");
         // }, 500);
         setSelectedRowKeys([]);
         setIsInvoiceId("");
@@ -449,7 +437,31 @@ export default function Invoices() {
           message: `Invoice ${res?.data?.invoice?.code} has been marked as sent`,
           placement: "topLeft",
         });
-
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const mutationSend = useMutation(
+    async (data) => {
+      return axios.post(`invoices/send`, data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        console.log("res", res);
+        // setTimeout(() => {
+        queryClient.invalidateQueries("invoices-listing");
+        // }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `Invoice has been send by email`,
+          placement: "topLeft",
+        });
       },
       onError: () => {
         notification.error({
@@ -533,12 +545,20 @@ export default function Invoices() {
           </div>
         </Menu.Item>
 
-        {/* <Menu.Item key="send-email">
+        <Menu.Item
+          key="send"
+          onClick={handleModal}
+          disabled={
+            selectedRowKeys.length > 1 ||
+            invoiceForPayment[0]?.status === "paid" ||
+            invoiceForPayment[0]?.status === "send"
+          }
+        >
           <div>
             <MailOutlined />
             <span>Send By Email</span>
           </div>
-        </Menu.Item> */}
+        </Menu.Item>
         <Menu.Item
           key="mark"
           disabled={
@@ -590,6 +610,8 @@ export default function Invoices() {
       </Menu>
     </div>
   );
+  const filledValues = Object.values(filter).filter((value) => value);
+  // console.log("filter",filter);
   return (
     <>
       <div className="layout-content">
@@ -683,13 +705,23 @@ export default function Invoices() {
                 )}
               </div>
               <div tw="flex relative cursor-pointer">
-                <InputAdvanceSearch prefix={<SearchOutlined />} />
+                <InputAdvanceSearch
+                  onKeyUp={(event) => {
+                    setSearchValue.current(event.target.value);
+                  }}
+                  name="all"
+                  prefix={<SearchOutlined />}
+                />
                 <div
                   onClick={() => setIsAdvance(!isAdvance)}
                   tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center px-1"
                 >
                   <UnorderedListOutlined />
-                  <span tw="text-xs ml-2">Advanced Search </span>
+                  <span tw="text-xs ml-2">
+                    {filledValues.length > 6
+                      ? filledValues.length - 6 + " filter applied"
+                      : "Advanced Search"}{" "}
+                  </span>
                   <CaretDownOutlined tw="ml-1" />
                 </div>
               </div>
@@ -790,13 +822,24 @@ export function getTotal(outstanding) {
 
 export function translateIsType(type, selectedRowKeys) {
   let text = "";
-  if (type === "mark") {
-    text =
-      "Your client won't receive a notification email about this invoice. However, the invoice will appear in their account if they have one. Do you want to mark it as sent?";
-  } else {
-    text = `Are you sure you want to ${type} ${
-      selectedRowKeys.length > 1 ? selectedRowKeys.length + " invoice " : "this"
-    } ?`;
+  switch (type) {
+    case "mark":
+      text =
+        "Your client won't receive a notification email about this invoice. However, the invoice will appear in their account if they have one. Do you want to mark it as sent?";
+      break;
+    case "send":
+      text =
+        "Are you sure you want to send this invoice? Only the primary contact will be notified.";
+      break;
+
+    default:
+      text = `Are you sure you want to ${type} ${
+        selectedRowKeys.length > 1
+          ? selectedRowKeys.length + " invoice "
+          : "this"
+      } ?`;
+      break;
   }
+
   return text;
 }

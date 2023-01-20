@@ -53,6 +53,7 @@ export default function ClientsOutstanding() {
     email:"",
     keyword:"",
     contact_name:"",
+    invoice_status:"paid",
     type:"all"
   });
   const [searchField, setSearchField] = useState({

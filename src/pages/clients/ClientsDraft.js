@@ -54,6 +54,8 @@ export default function ClientsDraft() {
     keyword: "",
     contact_name: "",
     type: "all",
+    invoice_status:"draft",
+
   });
   const [searchField, setSearchField] = useState({
     company_name: "",

@@ -241,7 +241,7 @@ export default function Clients() {
             clientName
               ? clientName
               : `The selected ${selectedRowKeys.length} clients`
-          }has been succesfully archived`,
+          } has been succesfully archived`,
           placement: "topLeft",
         });
       },

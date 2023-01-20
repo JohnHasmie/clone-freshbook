@@ -168,7 +168,7 @@ export default function FormInvoice() {
       });
       setFileListAttach(detailInvoice.attachments)
       if(detailInvoice?.logo !== "0"){
-        setFileList({id:1,url:detailInvoice?.logo})
+        setFileList([{id:1,url:detailInvoice?.logo}])
       }
       if (detailInvoice?.items_detail !== null) {
         const newLines = detailInvoice?.items_detail?.map((x) => {
@@ -618,7 +618,7 @@ export default function FormInvoice() {
               visible={clicked}
               onVisibleChange={handleClickChange}
             >
-              <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center ">
+              <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center hidden ">
                 <span tw="text-lg">Send To...</span>
               </Button>
             </Popover>

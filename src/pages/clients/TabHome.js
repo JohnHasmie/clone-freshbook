@@ -28,7 +28,6 @@ export default function TabHome() {
         .then((res) => res.data?.data)
   );
 
-  console.log(pathname, "path");
   return (
     <>
       {" "}
