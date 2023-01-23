@@ -4,6 +4,7 @@ import { useState } from "react"
 import "twin.macro"
 import EditableText from "../../components/EditableText"
 import { formatter } from "../../components/Utils"
+import FormMultiplePayment from "./FormMultiplePayment"
 
 const InvoiceLines = ({linesProps}) => {
     const [lines, setLines] = linesProps
@@ -73,6 +74,7 @@ setLines(newLines)
                 <PlusOutlined />
                 <span>Add a Line</span>
             </Button>
+            <FormMultiplePayment linesProps={[lines, setLines]} />
         </>
     )
 }
