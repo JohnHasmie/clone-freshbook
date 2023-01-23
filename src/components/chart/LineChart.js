@@ -17,7 +17,7 @@ function LineChart({dataTotalProfit,filterRecurring}) {
     series: [
       {
         name: "Profit",
-        data: dataTotalProfit?.income?.length > 0 ? calculateData(dataTotalProfit?.income)/* dataTotalProfit?.income?.map(item=>item?.profit) */: numbers.map(item=>item) ,
+        data: dataTotalProfit?.income?.map(item=>item.total_profit),
         offsetY: 0,
       }
   
@@ -72,20 +72,7 @@ function LineChart({dataTotalProfit,filterRecurring}) {
             ],
           },
         },
-        categories: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec"
-        ],
+        categories: dataTotalProfit?.income?.map(item=>item.month),
       },
   
       tooltip: {
@@ -102,8 +89,8 @@ function LineChart({dataTotalProfit,filterRecurring}) {
       <div tw="flex justify-end">
         <div tw="grid justify-items-end">
           <div tw="font-bold text-primary text-lg md:text-3xl">{filterRecurring?.currency == "GBP" ? '£' : "$"}{dataTotalProfit?.income && numberWithDot(getTotalGlobal(dataTotalProfit?.income?.map((item)=>{
-            const splitAmount=item?.profit?.split(".")
-            return parseInt(splitAmount[0]);
+            const splitAmount=item?.total_profit
+            return parseInt(splitAmount);
           })))}</div>
           <div>this month</div>
         </div>

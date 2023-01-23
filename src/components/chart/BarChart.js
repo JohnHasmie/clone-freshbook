@@ -2,75 +2,87 @@ import ReactApexChart from "react-apexcharts";
 import { numberWithDot } from "../Utils";
 // import barChart from "./configs/barChart";
 
-function BarChart({data,cek}) {
-
-  const barChart = {  
-    series: [{
-      name: 'Overdue',
-      data: [],
-      color:"#EC8192"
-    },{
-      name: 'Outstanding',
-      data: [data?.total],
-      color:"#f4d980"
-  
-    }],
+function BarChart({ data, filterOutstanding }) {
+  const barChart = {
+    series: [
+      {
+        name: "Overdue",
+        data: [data?.overdue_total],
+        color: "#EC8192",
+      },
+      {
+        name: "Outstanding",
+        data: [data?.outstanding_total],
+        color: "#f4d980",
+      },
+    ],
     options: {
       chart: {
         toolbar: {
-          show: false
+          show: false,
         },
-        type: 'bar',
+        type: "bar",
         // height: 350,
         stacked: true,
-        stackType: '100%'
+        stackType: "100%",
       },
-          dataLabels: {
-        enabled: false
+      dataLabels: {
+        enabled: false,
       },
       plotOptions: {
         bar: {
           horizontal: true,
           borderRadius: 4,
-  
-        }},
+        },
+      },
       stroke: {
         width: 1,
-        colors: ['#fff']
+        colors: ["#fff"],
       },
-    
+
       xaxis: {
         categories: [""],
         labels: {
           formatter: function (val) {
-            return val + "K"
-          }
-        }
+            return val + "K";
+          },
+        },
       },
       yaxis: {
-        
         title: {
-          text: undefined
+          text: undefined,
         },
       },
       tooltip: {
         y: {
           formatter: function (val) {
-            return numberWithDot(val)
-          }
-        }
+            let currency = filterOutstanding.currency === "USD" ? "$" : "£";
+            let dataTooltip= numberWithDot(Math.round(
+              val * 100
+            ) / 100)
+
+            return currency + dataTooltip;
+          },
+        },
       },
+      // tooltip: {
+      //   custom: function({ series, seriesIndex, dataPointIndex, w }) {
+      //     return (
+      //       <div>
+      //      Cek
+      //       </div>
+      //     );
+      //   }
+      // },
       fill: {
-        opacity: 1
+        opacity: 1,
       },
       legend: {
-        position: 'bottom',
-        horizontalAlign: 'left',
+        position: "bottom",
+        horizontalAlign: "left",
         // offsetX: 0
-      }
+      },
     },
-  
-  
   };
 
   return (
@@ -83,7 +95,6 @@ function BarChart({data,cek}) {
           height={150}
         />
       </div>
-     
     </>
   );
 }

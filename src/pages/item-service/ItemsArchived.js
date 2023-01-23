@@ -134,7 +134,7 @@ export default function ItemsArchived() {
       i: i,
       name: item.name,
       desc: item.description,
-      current: item.qty,
+      current: item.current_stock,
       rate: item.rate,
       client_id:item.client_id
     }));
@@ -235,7 +235,7 @@ export default function ItemsArchived() {
       dataIndex: "rate",
       render: (text, record) => (
         <div>
-         {numberWithDot(record.rate)}
+         USD{numberWithDot(record.rate)}
         </div>
       ),
       sorter: (a, b) => a.rate.length - b.rate.length,

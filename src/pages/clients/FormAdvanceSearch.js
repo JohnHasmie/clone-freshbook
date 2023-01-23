@@ -7,7 +7,7 @@ import { styled } from "twin.macro";
 import { InputKeyword, SelectKeyword } from "./AdvanceSearch.style";
 import { Option } from "antd/lib/mentions";
 import FilterDate from "../invoices/FilterDate";
-import FilterDateInvoice from "../invoices/FilterDateInvoice";
+import FilterDateInvoice, { FilterDateEmail } from "../invoices/FilterDateInvoice";
 import moment from "moment";
 
 export default function FormAdvanceSearch({
@@ -25,11 +25,11 @@ export default function FormAdvanceSearch({
     keyword: "",
     type: "",
   });
+  const [filter, setFilter] = filterProps;
   const [form] = Form.useForm();
 
   const [localKeyword, setLocalKeyword] = useState("");
   const [searchField, setSearchField] = searchProps;
-  const [filter, setFilter] = filterProps;
 
   const [typeSearch, setTypeSearch] = typeSearchProps;
   const [keywordSearch, setKeywordSearch] = keywordSearchProps;
@@ -238,11 +238,55 @@ export default function FormAdvanceSearch({
   );
 }
 
-export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
+export function FormAdvanceSearchEmail({ data,form, setIsAdvance ,filterProps,dataSentEmail}) {
+  const [localSearch, setLocalSearch] = useState({
+    sender: "",
+    recipent: "",
+    start_date: "",
+    end_date: "",
+    subject:"",
+    body:"",
+  });
+  const [clicked, setClicked] = useState(false);
+
+  const handleClickChange = (open) => {
+    setClicked(open);
+  };
+  const hide = () => {
+    setClicked(false);
+  };
+  useEffect(() => {
+    setLocalSearch({
+      ...localSearch,
+      sender: filterEmail?.sender,
+      recipent: filterEmail?.recipent,
+      subject: filterEmail?.subject,
+      body: filterEmail?.body,
+        start_date: filterEmail?.start_date,
+        end_date: filterEmail?.end_date,
+        
+
+    });
+
+  }, []);
+  const onChange = (e) => {
+    setLocalSearch({ ...localSearch, [e.target.name]: e.target.value });
+  };
+  const [filterEmail,setFilterEmail] = filterProps;
   const onFinish = (values) => {
-    console.log("Success:", values);
+    setFilterEmail({
+      ...filterEmail,
+      sender: localSearch?.sender,
+      recipent: localSearch?.recipent,
+      subject: localSearch?.subject,
+      body: localSearch?.body,
+        start_date: localSearch?.start_date,
+        end_date: localSearch?.end_date,
+    })
+    setIsAdvance(false)
   };
   const handleReset = () => {
+    setLocalSearch("")
     form.resetFields();
   };
 
@@ -256,41 +300,61 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
       layout="vertical"
       size={"large"}
       form={form}
+    
     >
       <div tw="grid grid-cols-3 gap-3">
         <div>
           <Form.Item label="Sender (Team Member)" name="sender">
             <Select
-              mode="multiple"
-              allowClear
+              // mode="multiple"
+              // allowClear
+              value={localSearch?.sender}
+              onChange={(e) => onChange({
+                target: { value: e, name: "sender" },
+              })}
               placeholder="Type to add team members"
-              options={[
-                { label: "Suzie Jones", value: "Suzie Jones" },
-                { label: "John Doe ", value: "John Doe " },
-              ]}
+              options={dataSentEmail?.map(item=>({
+                label:item?.sender?.first_name + " " + item.sender.last_name,
+                value:item?.sender?.email
+              }))}
             />
           </Form.Item>
         </div>
         <div>
-          <Form.Item label="Recipient" name="recipient">
+          <Form.Item label="Recipient" name="recipent">
             <Select
-              mode="multiple"
+              // mode="multiple"
               placeholder="Type to add recipients or emails"
+              value={localSearch?.recipent}
+
               optionLabelProp="label"
+              onChange={(e) => onChange({
+                target: { value: e, name: "recipent" },
+              })}
             >
-              <Option value="bonis@gmail.com" label="bonis@gmail.com">
+            {dataSentEmail?.map(item=>(
+
+             <Option value={item?.recipent.email} label={item?.recipent.email}>
                 <div tw="grid">
-                  <span tw="text-primary text-sm">bonis@gmail.com</span>
-                  <span tw="text-xs">Boni Syahrudin Inc</span>
-                  <span tw="text-xs">Boni Syahrudin</span>
+                  <span tw="text-primary text-sm">{item.recipent.email}</span>
+                  <span tw="text-xs">{item?.recipent.company_name}</span>
+                  <span tw="text-xs">{item.recipent.first_name + " " + item.recipent.last_name}</span>
                 </div>
-              </Option>
+              </Option> ))}
             </Select>
           </Form.Item>
         </div>
         <div>
-          <Form.Item label="Date Range" name="date">
-            <Input type="text" />
+        <Form.Item label="Date Range" name="date">
+          <Popover
+              placement="bottomLeft"
+              content={<FilterDateEmail hide={hide} localSearchProps={[localSearch,setLocalSearch]} />}
+              trigger="click"
+              visible={clicked}
+              onVisibleChange={handleClickChange}
+            >
+            <Input type="text" value={localeMoment(localSearch.start_date,localSearch.end_date)} />
+                  </Popover>
           </Form.Item>
         </div>
         <div>
@@ -337,13 +401,19 @@ export function FormAdvanceSearchEmail({ form, setIsAdvance }) {
           </Form.Item>
         </div>
         <div>
-          <Form.Item label="Email Subject" name="email_subject">
-            <Input type="text" placeholder="Type to add subject" />
+          <Form.Item label="Email Subject" name="subject">
+            <Input type="text" onChange={onChange} 
+              value={localSearch?.subject}
+            
+            name="subject" placeholder="Type to add subject" />
           </Form.Item>
         </div>
         <div>
-          <Form.Item label="Email Body" name="email_body">
-            <Input type="text" placeholder="Type to add body" />
+          <Form.Item label="Email Body" name="body">
+            <Input type="text" onChange={onChange}
+              value={localSearch?.body}
+            
+            name="body" placeholder="Type to add body" />
           </Form.Item>
         </div>
       </div>
@@ -390,10 +460,10 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
     date_type:"issued_at",
     start_date:"",
     end_date:"",
-    all:""
+    all:"",
+    email:""
   });
   useEffect(() => {
-    console.log("berjalan?")
     setLocalSearch({
       ...localSearch,
       client_id: filter?.client_id,
@@ -403,14 +473,11 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
         start_date: filter?.start_date,
         end_date: filter?.end_date,
         date_type:filter?.type,
-        type:filter?.type
+        type:filter?.type,
+        email:filter?.email
+
     });
-    // if(filter?.date_type){
-    //   setLocalSearch({...localSearch,date_type:filter?.date_type})
-    // }
-    // if(filter?.type){
-    //   setLocalSearch({...localSearch,type:filter?.type})
-    // }
+
   }, []);
 
 
@@ -425,7 +492,8 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
       start_date: localSearch.start_date,
       end_date: localSearch.end_date,
       date_type: localSearch.date_type,
-      all:localSearch.all
+      all:localSearch.all,
+      email:localSearch.email
     });
   setIsAdvance(false)
 
@@ -445,7 +513,6 @@ export function FormAdvanceSearchInvoice({ form, setIsAdvance ,dataClients,statu
 //   const dataFilter=dataClients?.data?.filter((item, index) => {
 //     return dataClients?.data?.findIndex(i => i.company_name === item.company_name) === index;
 // });
-console.log(localSearch.start_date,"cek")
   return (
     <Form
       onFinish={onFinish}
@@ -459,8 +526,7 @@ console.log(localSearch.start_date,"cek")
         <div>
           <Form.Item label="Clients" name="client_id">
             <Select
-              // mode="multiple"
-              // allowClear
+            
               onChange={(e) => onChange({
                 target: { value: e, name: "client_id" },
               })}
