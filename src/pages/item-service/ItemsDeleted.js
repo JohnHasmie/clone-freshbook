@@ -106,7 +106,7 @@ export default function ItemsDeleted() {
         i: i,
         name: item.name,
         desc: item.description,
-        current: item.qty,
+        current: item.current_stock,
         rate: numberWithDot(item.rate),
         client_id:item.client_id
       }));
@@ -181,10 +181,15 @@ export default function ItemsDeleted() {
     },
 
     {
-      title: "Rate/Taxes",
+      title: "Rate",
       key: "rate",
       dataIndex: "rate",
-      sorter: (a, b) => a.rate - b.rate,
+      render: (text, record) => (
+        <div>
+         USD{numberWithDot(record.rate)}
+        </div>
+      ),
+      sorter: (a, b) => a.rate.length - b.rate.length,
     },
   ];
 

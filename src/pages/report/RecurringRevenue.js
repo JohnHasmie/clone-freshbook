@@ -20,7 +20,7 @@ const dateFormat = "DD/MM/YYYY";
 
   const [open, setOpen] = useState(false);
   const [clicked, setClicked] = useState(false);
-  const [newSetting, setNewSetting] = useState(JSON.parse(localStorage.getItem("newSetting")) || {data:""});
+  const [newUser, setNewUser] = useState(JSON.parse(localStorage.getItem("newUser")) || {data:""});
   const [filter, setFilter] = useState({
     start_at:"",
     finish_at:"",
@@ -31,7 +31,7 @@ const dateFormat = "DD/MM/YYYY";
     finish_at:"",
     currency: "USD",
   });
-  const { setting } = useContext(AppContext);
+  const { user } = useContext(AppContext);
   const myRef=useRef()
   const handleClickChange = (open) => {
     setClicked(open);
@@ -154,9 +154,9 @@ console.log("filter,",filter);
   const items = Array.from({length: 12-dataRecurring?.data?.data?.length}, (_, index) => (index + 1)*0);
   console.log(items,"recurring");
   useEffect(() => {
-    setting &&
-      localStorage.setItem("newSetting",JSON.stringify(setting))
-  }, [setting]);
+    user &&
+      localStorage.setItem("newUser",JSON.stringify(user))
+  }, [user]);
 
   return (
     <div tw="max-w-screen-lg mx-auto">
@@ -205,7 +205,7 @@ console.log("filter,",filter);
           <CardReporting >
             <h1 tw="text-blueDefault">Recurring Revenue Annual</h1>
             <div tw="my-3 flex flex-col">
-            <span tw="text-sm text-gray-600">        {setting?.data?.company_name || newSetting?.data?.company_name}</span>
+            <span tw="text-sm text-gray-600">        {user?.data?.company_name || newUser?.data?.company_name}</span>
 
               <span tw="text-sm text-gray-600">
                 Recurring Revenue Annual - Billed 

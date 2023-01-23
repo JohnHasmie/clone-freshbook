@@ -166,9 +166,7 @@ export default function Email() {
     },
     {
       onSuccess: () => {
-        setTimeout(() => {
           queryClient.invalidateQueries("mail-log-listing");
-        }, 500);
         setSelectedRowKeys([]);
         notification.success({
           message: `The selected email has been deleted`,
@@ -190,6 +188,7 @@ export default function Email() {
       key: item.id,
       date: item.created_at,
       sender: item.sender.first_name + " " + item.sender.last_name,
+      email_sender:item?.sender?.email,
       recipient: item.recipent.company_name,
       email_recipient: item.recipent.email,
 
@@ -266,6 +265,8 @@ export default function Email() {
   //     setClientName("");
   //   }
   // }, [selectedRowKeys]);
+  const filledValues = Object.values(filterEmail).filter(value => value);
+
   return (
     <>
       <div className="layout-content">
@@ -401,7 +402,7 @@ export default function Email() {
                   onKeyUp={(event) => {
                     setSearchValue.current(event.target.value);
                   }}
-                  name="company_name"
+                  name="keyword"
                   placeholder="Search"
                   prefix={<SearchOutlined />}
                 />
@@ -410,7 +411,8 @@ export default function Email() {
                   tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36"
                 >
                   <UnorderedListOutlined />
-                  <span tw="text-xs ml-2">Advanced Search </span>
+                  <span tw="text-xs ml-2 text-primary">{filledValues.length > 1 ? filledValues.length - 1 + " filter applied" : "Advanced Search"} </span>
+
                   <CaretDownOutlined tw="ml-1" />
                 </div>
               </div>
@@ -420,6 +422,9 @@ export default function Email() {
                 <FormAdvanceSearchEmail
                   form={form}
                   setIsAdvance={setIsAdvance}
+                  filterProps={[filterEmail,setFilterEmail]}
+                  data={data}
+                  dataSentEmail={dataSentEmail?.data}
                 />
               </div>
             ) : (

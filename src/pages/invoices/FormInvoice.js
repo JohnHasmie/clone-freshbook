@@ -48,6 +48,7 @@ const dateFormat = "DD/MM/YYYY";
 export default function FormInvoice() {
   const [open, setOpen] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
+
   const next29day = moment().add(30, "days");
 
   const [isTitle, setIsTitle] = useState("Invoice");
@@ -58,6 +59,8 @@ export default function FormInvoice() {
 
   const [clicked, setClicked] = useState(false);
   const [clicked2, setClicked2] = useState(false);
+  const [dontThrow, setDontThrow] = useState(false);
+
   const [localTotal, setLocalTotal] = useState("");
   const [localSubTotal, setLocalSubTotal] = useState("");
 
@@ -65,7 +68,8 @@ export default function FormInvoice() {
   const [toggleInvoiceNumber, setToggleInvoiceNumber] = useState("");
 
   const handleClickChange = (open) => {
-    setClicked(open);
+    if (isClient){
+    setClicked(open);}
   };
   const hide = () => {
     setClicked(false);
@@ -302,12 +306,12 @@ export default function FormInvoice() {
         attachments: fileListAttach,
       };
     }
-
+if(!dontThrow){
     if (pathname.includes("edit")) {
       mutationUpdate.mutate(newData);
     } else {
       mutation.mutate(newData);
-    }
+    }}
   };
   const onFinishRecurring = () => {
     setOpen(false);
@@ -613,12 +617,12 @@ export default function FormInvoice() {
           {!isRecurring && (
             <Popover
               placement="bottom"
-              content={<SendEmailInvoice hide={hide} dataUser={dataUser?.user?.company_name} invoiceId={invoiceId} />}
+              content={<SendEmailInvoice clientProps={[isClient, setIsClient]} hide={hide} dataUser={dataUser?.user?.company_name} invoiceId={invoiceId} date={isForm?.due_date} total={numberWithDot(localSubTotal-(localSubTotal*isForm.discount/100))} onFinishInvoice={onFinish} setDontThrow={setDontThrow} />}
               trigger="click"
               visible={clicked}
               onVisibleChange={handleClickChange}
             >
-              <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center hidden ">
+              <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled={!isClient}>
                 <span tw="text-lg">Send To...</span>
               </Button>
             </Popover>

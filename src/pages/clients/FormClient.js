@@ -15,6 +15,15 @@ import axios from "axios";
 export default function FormClient() {
 
   let history = useHistory();
+  const [isSettings, setIsSettings] = useState({
+    is_send_payment_reminder:false,
+    is_charge_late_fees:false,
+    is_send_attachment:false,
+    currency:"usd",
+    language:"english"
+
+
+  })
   const [isForm, setIsForm] = useState({
     first_name:'',
     last_name:"",
@@ -164,9 +173,9 @@ useEffect(() => {
   const [form] = Form.useForm();
   const handleFinish = (values) => {
     if(pathname.includes('edit')){
-      mutationEdit.mutate(isForm)
+      mutationEdit.mutate({...isForm,...isSettings})
     }else{
-    mutation.mutate(isForm)}
+    mutation.mutate({...isForm,...isSettings})}
   };
   const onChange = (e) => {
     setIsForm({ ...isForm, [e.target.name]: e.target.value });
@@ -280,6 +289,7 @@ useEffect(() => {
                 value: isForm.tax_name,
               },
             ]}
+            size="large"
           >
             <div tw="grid grid-cols-1 md:grid-cols-2 gap-3 mt-10">
               <div tw="col-span-2 md:col-span-1">
@@ -454,7 +464,7 @@ useEffect(() => {
             </div>
           </Form>
         </CardReporting>
-        <ClientSetting open={open} setOpen={setOpen} />
+        <ClientSetting open={open} setOpen={setOpen} settingProps={[isSettings, setIsSettings]} />
       </div>
     </div>
   );

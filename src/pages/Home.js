@@ -1,4 +1,4 @@
-import { useContext, useState,useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 
 import { Card, Col, Row, Popover, Menu } from "antd";
 import { DownOutlined, UnorderedListOutlined } from "@ant-design/icons";
@@ -21,16 +21,15 @@ function Home() {
   });
   const [filterPayment, setFilterPayment] = useState({
     currency: "USD",
-    start_at:"",
-    finish_at:""
+    start_at: "",
+    finish_at: "",
   });
   const [filterRecurring, setFilterRecurring] = useState({
     currency: "USD",
-    start_at:"",
-    finish_at:""
+    start_at: "",
+    finish_at: "",
   });
   const [clicked, setClicked] = useState(false);
-
 
   const { user, setGlobalOutstanding } = useContext(AppContext);
   const handleClickChange = (open) => {
@@ -39,17 +38,23 @@ function Home() {
   const invoiceList = (
     <div /* tw="border border-[#7f8c9f]" */>
       <Menu>
-        <Menu.Item onClick={() => {
-          setClicked(false)
-          setFilterOutstanding({ currency: "USD" })}}>
+        <Menu.Item
+          onClick={() => {
+            setClicked(false);
+            setFilterOutstanding({ currency: "USD" });
+          }}
+        >
           <div>
             <span tw="cursor-pointer">USD</span>
           </div>
         </Menu.Item>
 
-        <Menu.Item onClick={() => {
-          setClicked(false)
-          setFilterOutstanding({ currency: "GBP" })}}>
+        <Menu.Item
+          onClick={() => {
+            setClicked(false);
+            setFilterOutstanding({ currency: "GBP" });
+          }}
+        >
           <div>
             <span tw="cursor-pointer">GBP</span>
           </div>
@@ -68,7 +73,7 @@ function Home() {
   );
 
   const { data: dataTotalProfit, status: statusTotalProfit } = useQuery(
-    ["total-profit-listing",filterRecurring],
+    ["total-profit-listing", filterRecurring],
     async (key) =>
       axios
         .get("reports/total-profit", {
@@ -87,10 +92,9 @@ function Home() {
         .then((res) => res.data)
   );
   useEffect(() => {
-    statusOutstanding == "success" &&
-    setGlobalOutstanding(dataOutstanding)
-  }, [statusOutstanding])
-
+    statusOutstanding == "success" && setGlobalOutstanding(dataOutstanding);
+  }, [statusOutstanding]);
+  console.log(dataTotalProfit,"dataTotalProfit");
   return (
     <>
       <div className="layout-content" style={{ width: "98%" }}>
@@ -181,7 +185,7 @@ function Home() {
                           }}
                         >
                           <div style={{ flexGrow: "1" }}>
-                            <BarChart data={dataOutstanding} cek={"cek"} />
+                            <BarChart data={dataOutstanding} filterOutstanding={filterOutstanding} />
                           </div>
                           <div
                             style={{ textAlign: "right", marginLeft: "20px" }}
@@ -200,13 +204,19 @@ function Home() {
                                   fontSize: "30px",
                                   fontWeight: "bold",
                                 }}
-                                onClick={()=>history.push(`/invoices/outstanding`)}
+                                onClick={() =>
+                                  history.push(`/invoices/outstanding`)
+                                }
                               >
                                 {filterOutstanding.currency === "USD"
                                   ? "$"
                                   : "£"}{" "}
-                                {dataOutstanding?.total &&
-                                  numberWithDot(dataOutstanding?.total)}
+                                {dataOutstanding?.outstanding_total &&
+                                  numberWithDot(
+                                    Math.round(
+                                      dataOutstanding?.outstanding_total * 100
+                                    ) / 100
+                                  )}
                               </span>
                             </div>
                             <div
@@ -231,7 +241,7 @@ function Home() {
                   )}
                 </Col>
                 <Col xs={24} md={6} sm={24} lg={6} xl={6}>
-                  <div className="h-full col-content p-20">
+                  <div className="h-full" tw="pt-6 pl-6">
                     <div
                       style={{
                         paddingLeft: "20px",
@@ -244,37 +254,78 @@ function Home() {
                         borderLeft: "2px solid #cdd4d9",
                       }}
                     >
-                      {dataOutstanding?.invoice?.data?.map((item, i) => (
-                        <div
-                          key={item.id}
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            flexWrap: "nowrap",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            color: "#576981",
-                            fontSize: "16px",
-                            lineHeight: "16px",
-                            paddingTop: "6px",
-                            paddingBottom: "6px",
-                          }}
-                        >
-                          <div>
-                            {i === 0 ? 0 : i * 31}-
-                            {i + 1 === 1 ? 30 : (i + 1) * 30} Days
-                          </div>
-                          <div style={{ marginLeft: "auto" }}>
-                            <a
-                              href="#"
-                              style={{ color: "#0063c1", cursor: "pointer" }}
+                      {dataOutstanding?.side_data &&
+                        Object?.keys(dataOutstanding?.side_data)?.filter(x=>x !== "90")?.map(
+                          (item, i) => (
+                            <div
+                              key={i}
+                              tw="grid grid-cols-2 w-auto justify-items-start text-base"
+                              // style={{
+                              //   display: "flex",
+                              //   flexDirection: "row",
+                              //   alignItems: "center",
+                              //   justifyContent: "space-between",
+                              //   color: "#576981",
+                              //   fontSize: "16px",
+                              //   lineHeight: "16px",
+                              //   paddingTop: "6px",
+                              //   paddingBottom: "6px",
+                              //   textAlign:"left"
+                              // }}
                             >
-                              {filterOutstanding.currency === "USD" ? "$" : "£"}{" "}
-                              {item.total && numberWithDot(item.total)}
-                            </a>
-                          </div>
-                        </div>
-                      ))}
+                              <div>{translateDays(item)}</div>
+                              <div tw="text-left">
+                                <a
+                                  href="#"
+                                  style={{
+                                    color: "#0063c1",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  {filterOutstanding.currency === "USD"
+                                    ? "$"
+                                    : "£"}{" "}
+                                  {dataOutstanding?.side_data[item] && numberWithDot(Math.round(
+                                      dataOutstanding?.side_data[item] * 100
+                                    ) / 100)}
+                                </a>
+                              </div>
+                            </div>
+                          )
+                        )}
+                       {dataOutstanding?.side_data &&    <div
+                              tw="grid grid-cols-2 w-auto justify-items-start text-base"
+                              // style={{
+                              //   display: "flex",
+                              //   flexDirection: "row",
+                              //   alignItems: "center",
+                              //   justifyContent: "space-between",
+                              //   color: "#576981",
+                              //   fontSize: "16px",
+                              //   lineHeight: "16px",
+                              //   paddingTop: "6px",
+                              //   paddingBottom: "6px",
+                              //   textAlign:"left"
+                              // }}
+                            >
+                              <div>{translateDays("90")}</div>
+                              <div tw="text-left">
+                                <a
+                                  href="#"
+                                  style={{
+                                    color: "#0063c1",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  {filterOutstanding?.currency === "USD"
+                                    ? "$"
+                                    : "£"}{" "}
+                                  {dataOutstanding?.side_data["90"] && numberWithDot(Math.round(
+                                      dataOutstanding?.side_data["90"] * 100
+                                    ) / 100)}
+                                </a>
+                              </div>
+                            </div>}
                     </div>
                   </div>
                 </Col>
@@ -414,13 +465,20 @@ function Home() {
           </Col>
         </Row>
 
-        <Row gutter={[24, 0]} style={{ marginBottom: "2rem",marginTop:'5rem' }} >
+        <Row
+          gutter={[24, 0]}
+          style={{ marginBottom: "2rem", marginTop: "5rem" }}
+        >
           <Col xs={24} md={24} sm={24} lg={24} xl={24} className="mb-24">
             <div tw="flex justify-start items-center mb-5">
               <span tw="text-xl font-bold text-black">Revenue Streams</span>
               <Popover
                 placement="bottom"
-                content={<FilterRevenue filterRevenueProps={[filterPayment, setFilterPayment] } />}
+                content={
+                  <FilterRevenue
+                    filterRevenueProps={[filterPayment, setFilterPayment]}
+                  />
+                }
                 trigger="click"
               >
                 <UnorderedListOutlined tw="ml-3 text-base flex items-end" />
@@ -436,31 +494,36 @@ function Home() {
               }}
               className="criclebox "
             >
-                     {statusPayment === "loading" && (
-                    <div
-                      role="status"
-                      tw="flex flex-col w-full h-full items-center justify-center"
-                    >
-                      <svg
-                        tw="inline mr-2 w-20 h-20 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                        viewBox="0 0 100 101"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                          fill="currentFill"
-                        />
-                      </svg>
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  )}
-              
-             {statusPayment === "success" && <DonutsRevenue dataPayment={dataPayment} filterPayment={filterPayment} />}
+              {statusPayment === "loading" && (
+                <div
+                  role="status"
+                  tw="flex flex-col w-full h-full items-center justify-center"
+                >
+                  <svg
+                    tw="inline mr-2 w-20 h-20 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                    viewBox="0 0 100 101"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                      fill="currentFill"
+                    />
+                  </svg>
+                  <span className="sr-only">Loading...</span>
+                </div>
+              )}
+
+              {statusPayment === "success" && (
+                <DonutsRevenue
+                  dataPayment={dataPayment}
+                  filterPayment={filterPayment}
+                />
+              )}
               {/* <div 
                 className="h-full col-content p-20"
                 style={{ display: "flex", justifyContent: "space-between" }}
@@ -503,6 +566,30 @@ function Home() {
       </div>
     </>
   );
+}
+export function translateDays(data) {
+  let days = "";
+  switch (data) {
+    case "0_30":
+      days = "0-30 Days";
+      break;
+    case "31_60":
+      days = "31-60 Days";
+      break;
+    case "61_90":
+      days = "61-90 Days";
+
+      break;
+    case "90":
+      days = "90+ Days";
+      break;
+
+    default:
+     days="90+ Days"
+
+      break;
+  }
+  return days;
 }
 
 export default Home;

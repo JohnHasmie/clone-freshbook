@@ -16,12 +16,33 @@ import {
   Select,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import tw, { styled, css } from "twin.macro";
 import { DividerCustom } from "./AdvanceSearch.style";
 
-export default function ClientSetting({ open, setOpen }) {
+export default function ClientSetting({ open, setOpen, settingProps }) {
   const { Title } = Typography;
+  const [isSettings, setIsSettings] = settingProps;
+  const [isSettingsLocal, setIsSettingsLocal] = useState({
+    is_send_payment_reminder: false,
+    is_charge_late_fees: false,
+    is_send_attachment: false,
+    currency: "usd",
+    language: "english",
+  });
+  useEffect(() => {
+    setIsSettingsLocal({
+      ...isSettingsLocal,
+      is_send_payment_reminder: isSettings.is_send_payment_reminder,
+      is_charge_late_fees: isSettings.is_charge_late_fees,
+      is_send_attachment: isSettings.is_send_attachment,
+      currency: isSettings.currency,
+      language: isSettings.language,
+    });
+  }, []);
+  const onChange = (e) => {
+    setIsSettingsLocal({ ...isSettingsLocal, [e.target.name]: e.target.value });
+  };
   const handleIsOpen = (type) => {
     switch (type) {
       case "sendReminders":
@@ -65,7 +86,7 @@ export default function ClientSetting({ open, setOpen }) {
         break;
     }
   };
-    const handleIsClose = (type) => {
+  const handleIsClose = (type) => {
     switch (type) {
       case "sendReminders":
         setOpen({
@@ -108,6 +129,8 @@ export default function ClientSetting({ open, setOpen }) {
         break;
     }
   };
+
+  console.log("settings",isSettingsLocal,isSettings);
   const onFinish = (values) => {
     console.log("Success:", values);
   };
@@ -120,8 +143,8 @@ export default function ClientSetting({ open, setOpen }) {
       <Title level={5}>Send Payment Reminders</Title>
 
       <Form
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
+        // onFinish={onFinish}
+        // onFinishFailed={onFinishFailed}
         layout="vertical"
         size={"large"}
         tw="mt-5"
@@ -129,7 +152,16 @@ export default function ClientSetting({ open, setOpen }) {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item name="reminder" tw="!mb-2">
-              <Checkbox>
+              <Checkbox
+                checked={isSettingsLocal.is_send_payment_reminder}
+                onChange={() =>
+                  setIsSettingsLocal({
+                    ...isSettingsLocal,
+                    is_send_payment_reminder:
+                      !isSettingsLocal.is_send_payment_reminder,
+                  })
+                }
+              >
                 Automatically send payment reminders for this client's invoices.
               </Checkbox>
               <DividerCustom />
@@ -158,7 +190,19 @@ export default function ClientSetting({ open, setOpen }) {
             </Button>
           </Col>
           <Col span={12}>
-            <Button tw="text-lg text-white bg-success px-8">Done</Button>
+            <Button
+              tw="text-lg text-white bg-success px-8"
+              onClick={() => {
+                setIsSettings({
+                  ...isSettings,
+                  is_send_payment_reminder:
+                    isSettingsLocal.is_send_payment_reminder,
+                });
+                handleIsClose("sendReminders");
+              }}
+            >
+              Done
+            </Button>
           </Col>
         </Row>
       </Form>
@@ -170,8 +214,8 @@ export default function ClientSetting({ open, setOpen }) {
       <Title level={5}>Charge Late Fees</Title>
 
       <Form
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
+        // onFinish={onFinish}
+        // onFinishFailed={onFinishFailed}
         layout="vertical"
         size={"large"}
         tw="mt-5"
@@ -179,7 +223,15 @@ export default function ClientSetting({ open, setOpen }) {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item name="reminder" tw="!mb-2">
-              <Checkbox>
+              <Checkbox
+                checked={isSettingsLocal.is_charge_late_fees}
+                onChange={() =>
+                  setIsSettingsLocal({
+                    ...isSettingsLocal,
+                    is_charge_late_fees: !isSettingsLocal.is_charge_late_fees,
+                  })
+                }
+              >
                 Automatically add late fees to this client's overdue invoices.
               </Checkbox>
               <DividerCustom />
@@ -200,7 +252,18 @@ export default function ClientSetting({ open, setOpen }) {
             </Button>
           </Col>
           <Col span={12}>
-            <Button tw="text-lg text-white bg-success px-8">Done</Button>
+            <Button
+              tw="text-lg text-white bg-success px-8"
+              onClick={() => {
+                setIsSettings({
+                  ...isSettings,
+                  is_charge_late_fees: isSettingsLocal.is_charge_late_fees,
+                });
+                handleIsClose("charge");
+              }}
+            >
+              Done
+            </Button>
           </Col>
         </Row>
       </Form>
@@ -212,8 +275,8 @@ export default function ClientSetting({ open, setOpen }) {
       <Title level={5}>Invoice Attachments</Title>
 
       <Form
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
+        // onFinish={onFinish}
+        // onFinishFailed={onFinishFailed}
         layout="vertical"
         size={"large"}
         tw="mt-5"
@@ -221,7 +284,15 @@ export default function ClientSetting({ open, setOpen }) {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item name="reminder" tw="!mb-2">
-              <Checkbox>
+              <Checkbox
+                checked={isSettingsLocal.is_send_attachment}
+                onChange={() =>
+                  setIsSettingsLocal({
+                    ...isSettingsLocal,
+                    is_send_attachment: !isSettingsLocal.is_send_attachment,
+                  })
+                }
+              >
                 Add the option to attach a PDF copy when sending invoices by
                 email.
               </Checkbox>
@@ -230,7 +301,7 @@ export default function ClientSetting({ open, setOpen }) {
           </Col>
 
           <Col span={24} tw="space-y-5 mb-5">
-            <span >
+            <span>
               <ExclamationOutlined tw="mr-1 rounded-full bg-gray-300 text-white p-0.5" />{" "}
               Changes will apply to new invoices.
             </span>
@@ -246,7 +317,18 @@ export default function ClientSetting({ open, setOpen }) {
             </Button>
           </Col>
           <Col span={12}>
-            <Button tw="text-lg text-white bg-success px-8">Done</Button>
+            <Button
+              tw="text-lg text-white bg-success px-8"
+              onClick={() => {
+                setIsSettings({
+                  ...isSettings,
+                  is_send_attachment: isSettingsLocal.is_send_attachment,
+                });
+                handleIsClose("invoiceAttachment");
+              }}
+            >
+              Done
+            </Button>
           </Col>
         </Row>
       </Form>
@@ -257,17 +339,22 @@ export default function ClientSetting({ open, setOpen }) {
       <Title level={5}>Currency & Languange</Title>
 
       <Form
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
+        // onFinish={onFinish}
+        // onFinishFailed={onFinishFailed}
         layout="vertical"
         size={"large"}
         tw="mt-5"
       >
         <Row gutter={24}>
           <Col span={24}>
-            <Form.Item label="Choose a Languange" name="languange">
+            <Form.Item label="Choose a Languange" name="language">
               <Select
-                defaultValue="English"
+                onChange={(e) =>
+                  onChange({
+                    target: { value: e, name: "language" },
+                  })
+                }
+                value={isSettingsLocal.language}
                 options={[
                   {
                     value: "English",
@@ -290,15 +377,20 @@ export default function ClientSetting({ open, setOpen }) {
           <Col span={24}>
             <Form.Item label="Choose a Currency" name="currency">
               <Select
-                defaultValue="usd"
+                onChange={(e) =>
+                  onChange({
+                    target: { value: e, name: "currency" },
+                  })
+                }
+                value={isSettingsLocal.currency}
                 options={[
                   {
-                    value: "usd",
+                    value: "USD",
                     label: "USD - US dollar",
                   },
                   {
-                    value: "idr",
-                    label: "IDR - Rupiah",
+                    value: "GBP",
+                    label: "GBP - Pound Sterling",
                   },
                 ]}
               />
@@ -312,7 +404,17 @@ export default function ClientSetting({ open, setOpen }) {
             </Button>
           </Col>
           <Col span={12}>
-            <Button tw="text-lg text-white bg-success px-8">Done</Button>
+            <Button tw="text-lg text-white bg-success px-8"
+              onClick={() => {
+                setIsSettings({
+                  ...isSettings,
+                  currency: isSettingsLocal.currency,
+                  language: isSettingsLocal.language,
+
+                });
+                handleIsClose("currency");
+              }}
+            >Done</Button>
           </Col>
         </Row>
       </Form>
@@ -335,7 +437,7 @@ export default function ClientSetting({ open, setOpen }) {
                   <span tw="text-base font-bold ml-2">Send Reminders</span>
                 </div>
                 <div tw="flex items-center">
-                  <span tw="font-bold">NO</span>
+                  <span tw="font-bold">{isSettings?.is_send_payment_reminder?"YES":"NO"}</span>
                   <RightOutlined />
                 </div>
               </div>
@@ -358,7 +460,7 @@ export default function ClientSetting({ open, setOpen }) {
                   <span tw="text-base font-bold ml-2">Charge Late Fees</span>
                 </div>
                 <div tw="flex items-center">
-                  <span tw="font-bold">NO</span>
+                  <span tw="font-bold">{isSettings?.is_charge_late_fees? "YES": "NO"}</span>
                   <RightOutlined />
                 </div>
               </div>
@@ -386,7 +488,7 @@ export default function ClientSetting({ open, setOpen }) {
 
                 <RightOutlined />
               </div>
-              <span tw="text-xs ml-5">IDR, English</span>
+              <span tw="text-xs ml-5 capitalize">{isSettings.currency+", "+  isSettings.language}</span>
             </div>
           </div>
         </div>
@@ -405,7 +507,7 @@ export default function ClientSetting({ open, setOpen }) {
                   <span tw="text-base font-bold ml-2">Invoice Attachments</span>
                 </div>
                 <div tw="flex items-center">
-                  <span tw="font-bold">NO</span>
+                  <span tw="font-bold">{isSettings.is_send_attachment ? "YES" : "NO"}</span>
                   <RightOutlined />
                 </div>
               </div>

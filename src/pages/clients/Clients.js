@@ -568,7 +568,7 @@ export default function Clients() {
                   tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36"
                 >
                   <UnorderedListOutlined />
-                  <span tw="text-xs ml-2">{filledValues.length > 4 ? filledValues.length - 4 + "filter applied" : "Advanced Search"} </span>
+                  <span tw="text-xs ml-2 text-primary">{filledValues.length > 4 ? filledValues.length - 4 + " filter applied" : "Advanced Search"} </span>
                   <CaretDownOutlined tw="ml-1" />
                 </div>
               </div>

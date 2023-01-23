@@ -34,9 +34,9 @@ export default function AccountAging() {
     currency: "USD",
   });
   const [clicked, setClicked] = useState(false);
-  const [newSetting, setNewSetting] = useState(JSON.parse(localStorage.getItem("newSetting")) || {data:""});
+  const [newUser, setNewUser] = useState(JSON.parse(localStorage.getItem("newUser")) || {data:""});
 const myRef=useRef()
-  const { setting } = useContext(AppContext);
+  const { user } = useContext(AppContext);
 
   const { data: dataOutstanding, status: statusOutstanding } = useQuery(
     ["outstanding-listing", filterOutstanding],
@@ -67,7 +67,7 @@ const myRef=useRef()
     <div tw="mt-3">
       <div tw="flex justify-between ">
         <Title level={3}>Filters</Title>
-        <p tw="text-base text-primary">Reset All</p>
+        <p tw="text-base text-primary cursor-pointer" onClick={()=>setFilterOutstanding({currency:"USD"})}>Reset All</p>
       </div>
       <span tw="text-black ">AS OF</span>
       <Form
@@ -156,9 +156,11 @@ const myRef=useRef()
     </div>
   );
   useEffect(() => {
-    setting &&
-      localStorage.setItem("newSetting",JSON.stringify(setting))
-  }, [setting]);
+    user &&
+      localStorage.setItem("newUser",JSON.stringify(user))
+  }, [user]);
+
+  console.log(dataOutstanding?.outstanding_invoice?.data[0]?.client?.company_name,"cek");
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -214,7 +216,7 @@ const myRef=useRef()
            <h1 tw="text-blueDefault">Accounts Aging</h1>
            <div tw="my-3 flex flex-col">
              <span tw="text-sm text-gray-600">
-               {setting?.data?.company_name || newSetting?.data?.company_name}
+               {user?.data?.company_name || newUser?.data?.company_name}
              </span>
              <span tw="text-sm text-gray-600">Amounts Outstanding</span>
              <span tw="text-sm text-gray-600">
@@ -249,13 +251,16 @@ const myRef=useRef()
                <thead>
                  <tr>
                    <th tw="text-left py-4 ">Client</th>
-                   {dataOutstanding?.invoice?.data?.map((item, i) => (
+                   {/* {Object?.keys(dataOutstanding?.side_data)?.map((item, i) => (
                      <th key={i} tw="py-4 ">
-                       {" "}
-                       {i === 0 ? 0 : i * 31}-{i + 1 === 1 ? 30 : (i + 1) * 30}{" "}
-                       Days
+                       {item}
                      </th>
-                   ))}
+                   ))} */}
+                   <th tw="py-4">0-30 Days</th>
+                   <th tw="py-4">31-60 Days</th>
+                   <th tw="py-4">61-90 Days</th>
+                   <th tw="py-4">90+ Days</th>
+
     
                    <th tw="py-4  ">Total</th>
                  </tr>
@@ -264,28 +269,40 @@ const myRef=useRef()
                  <tr tw="text-right text-sm" style={{ display: "table-row" }}>
                    <th tw="pt-12 text-left ">
                      <span tw="rounded-full border border-orange-500 px-2 py-1 mr-0.5 ">
-                       {dataOutstanding?.invoice?.data[0]?.client?.company_name[0]}
+                       {dataOutstanding?.outstanding_invoice?.data[0]?.client?.company_name[0]}
                      </span>
-                     <span tw="text-primary">    {dataOutstanding?.invoice?.data[0]?.client?.company_name && truncate(dataOutstanding?.invoice?.data[0]?.client?.company_name,20)}</span>
+                     <span tw="text-primary">    {dataOutstanding?.outstanding_invoice?.data[0]?.client?.company_name && truncate(dataOutstanding?.outstanding_invoice?.data[0]?.client?.company_name,20)}</span>
                    </th>
-                   {dataOutstanding?.invoice?.data?.map((item,i)=>(
-                     <td key={i} tw="py-5  text-primary">{item?.total && numberWithDot(item?.total)}</td>
+                   {Object?.keys(dataOutstanding?.side_data)?.filter(x=>x !== "90")?.map((item,i)=>(
+                     <td key={i} tw="py-5  text-primary">{dataOutstanding?.side_data[item] && numberWithDot(dataOutstanding?.side_data[item])}</td>
     
                    ))}
+                   <td tw="py-5  text-primary">{dataOutstanding?.side_data["90"] && numberWithDot(dataOutstanding?.side_data["90"])}</td>
                    
-                   <td tw="py-5 ">{dataOutstanding?.total && numberWithDot(dataOutstanding?.total)}</td>
+                   <td tw="py-5 ">{dataOutstanding?.outstanding_total && numberWithDot(Math.round(dataOutstanding?.outstanding_total* 100
+                                    ) / 100)}</td>
                  </tr>
                </tbody>
                <tfoot>
                  <tr className="double">
                    <td tw=" text-left font-semibold">Total</td>
-                   {dataOutstanding?.invoice?.data?.map((item,i)=>(
-                     <td key={i} >{item?.total && numberWithDot(item?.total)}</td>
+                   {Object?.keys(dataOutstanding?.side_data)?.filter(x=>x !== "90")?.map((item,i)=>(
+                     <td key={i} tw="py-5  text-primary">  {filterOutstanding.currency === "USD"
+                     ? "$"
+                     : "£"}{dataOutstanding?.side_data[item] && numberWithDot(dataOutstanding?.side_data[item])}</td>
     
                    ))}
+                   <td tw="py-5  text-primary">  {filterOutstanding.currency === "USD"
+                                    ? "$"
+                                    : "£"}{dataOutstanding?.side_data["90"] && numberWithDot(dataOutstanding?.side_data["90"])}</td>
+                   
+               
               
                    <td tw="pt-5  flex flex-col items-end ">
-                     <span tw="font-semibold ">{dataOutstanding?.total && numberWithDot(dataOutstanding?.total)}</span>
+                     <span tw="font-semibold ">  {filterOutstanding.currency === "USD"
+                                    ? "$"
+                                    : "£"}{dataOutstanding?.outstanding_total && numberWithDot(Math.round(dataOutstanding?.outstanding_total* 100
+                                    ) / 100)}</span>
                      <span tw="text-gray-600 text-right">{filterOutstanding.currency}</span>
                    </td>
                  </tr>

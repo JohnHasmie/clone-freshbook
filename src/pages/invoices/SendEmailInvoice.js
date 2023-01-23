@@ -5,10 +5,21 @@ import { useHistory, useLocation } from "react-router-dom";
 import CardPopup from "../../components/CardPopup";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
+import moment from "moment";
 
-export default function SendEmailInvoice({hide,dataUser,invoiceId}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function SendEmailInvoice({hide,dataUser,invoiceId,clientProps,date,total,onFinishInvoice,setDontThrow}) {
+  const [isContactId, setIsContactId] = useState(false);
+  const [isBody, setIsBody] = useState(
+  `${dataUser} sent you an invoices for ${total} that's due on ${moment(date).format("DD MMMM YYYY")}`
+  );
+
   const [isTitle, setIsTitle] = useState("");
+  const [isClient, setIsClient]=clientProps
+
+  useEffect(() => {
+    setDontThrow(true)
+  }, [])
+  
 const history=useHistory()
 const queryClient=useQueryClient()
   let { pathname } = useLocation();
@@ -27,7 +38,7 @@ const { data: dataClients, status } = useQuery(
   );
   const mutation = useMutation(
     async (data) => {
-      return axios.post("invoices/send", data).then((res) => res.data);
+      return axios.post("invoices/send-contact", data).then((res) => res.data);
     },
     {
       onSuccess: (res) => {
@@ -47,23 +58,20 @@ const { data: dataClients, status } = useQuery(
       },
     }
   );
-  const dataFilter=status === "success" && dataClients?.data?.filter((item, index) => {
-      return dataClients?.data?.findIndex(i => i.company_name === item.company_name) === index;
-    });
-
+  const dataFilter=status === "success" && dataClients?.data?.filter((item) =>(item.id === isClient));
   const { TextArea } = Input;
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    mutation.mutate({
-      client_id:values.email,
-      invoice_ids:[parseInt(invoiceId)]
-    })
+    onFinishInvoice()
+    // mutation.mutate({
+    //   contact_id:values.email,
+    //   invoice_ids:[parseInt(invoiceId)]
+    // })
     console.log("Success:", values);
   };
-  console.log(invoiceId,"dataClients")
   return (
     <>
       <CardPopup title={`Send by Email`}>
@@ -77,19 +85,27 @@ const { data: dataClients, status } = useQuery(
           }}
           initialValues={{
             subject: `${dataUser} sent you an invoices`,
+            
           }}
+          fields={[
+            {
+              name: ["contact_id"],
+              value: dataFilter[0]?.id,
+            },
+          ]}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
           size="large"
         >
-          <Form.Item label="To" name="email" tw="px-2 pt-2">
+          <Form.Item label="To" name="contact_id" tw="px-2 pt-2">
             {/* <Input type="email" placeholder="Email Address" /> */}
             <Select
+            mode="multiple"
                   // onChange={(e) => onChange({
                   //   target: { value: e, name: "base_currency" },
                   // })}
-                  options={status=== "success" && dataFilter?.map(client=>({
+                  options={status=== "success" && dataClients?.data?.map(client=>({
                     label:client.email,
                     value:client.id
 
@@ -102,14 +118,15 @@ const { data: dataClients, status } = useQuery(
           </Form.Item>
           {/* <Form.Item label="File" name="file" tw="px-2 ">
             <div> {isTitle} as of Nov 23, 2022.csv</div>
-          </Form.Item>
+          </Form.Item> */}
           <div tw="flex flex-col justify-center border-t border-gray-200 p-2">
-            <div tw="text-center mb-2">
+            {/* <div tw="text-center mb-2">
               Heri Setiawan from Oasis Land has sent you an {isTitle} as of Nov
               23, 2022
-            </div>
-            <TextArea rows={3} />
-          </div> */}
+            </div> */}
+
+            <TextArea rows={3} value={isBody} />
+          </div>
           <div tw="flex justify-end border-t border-gray-200 pb-0 pt-2 px-2">
             <Form.Item>
               <Button tw="mr-2" onClick={hide}>Cancel</Button>
