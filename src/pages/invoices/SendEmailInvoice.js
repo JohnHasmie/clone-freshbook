@@ -18,7 +18,7 @@ export default function SendEmailInvoice({hide,dataUser,invoiceId,clientProps,da
 
   useEffect(() => {
     setDontThrow(true)
-  }, [third])
+  }, [])
   
 const history=useHistory()
 const queryClient=useQueryClient()
