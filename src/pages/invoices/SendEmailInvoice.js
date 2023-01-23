@@ -7,18 +7,27 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import moment from "moment";
 
-export default function SendEmailInvoice({hide,dataUser,invoiceId,clientProps,date,total,onFinishInvoice,setDontThrow}) {
-  const [isContactId, setIsContactId] = useState(false);
+export default function SendEmailInvoice({hide,dataUser,invoiceId,clientProps,date,total,onFinishInvoice,setDontThrow,isInvoiceId}) {
   const [isBody, setIsBody] = useState(
-  `${dataUser} sent you an invoices for ${total} that's due on ${moment(date).format("DD MMMM YYYY")}`
-  );
+    `${dataUser} sent you an invoices for ${total} that's due on ${moment(date).format("DD MMMM YYYY")}`
+    );
+    const [isClient, setIsClient]=clientProps
+    const [isContactId, setIsContactId] = useState([isClient]);
+    const [isSubject, setIsSubject] = useState("");
 
-  const [isTitle, setIsTitle] = useState("");
-  const [isClient, setIsClient]=clientProps
 
   useEffect(() => {
     setDontThrow(true)
   }, [])
+  useEffect(() => {
+    isInvoiceId &&
+     mutation.mutate({
+      contact_id:isContactId,
+      subject:isSubject,
+      body:isBody,
+      invoice_id:isInvoiceId  
+    })
+  }, [isInvoiceId])
   
 const history=useHistory()
 const queryClient=useQueryClient()
@@ -59,6 +68,10 @@ const { data: dataClients, status } = useQuery(
     }
   );
   const dataFilter=status === "success" && dataClients?.data?.filter((item) =>(item.id === isClient));
+  useEffect(() => {
+    setDontThrow(true)
+    setIsContactId([dataFilter[0].id])
+  }, [])
   const { TextArea } = Input;
 
   const onFinishFailed = (errorInfo) => {
@@ -72,6 +85,10 @@ const { data: dataClients, status } = useQuery(
     // })
     console.log("Success:", values);
   };
+  const handleChange = (value) => {
+    setIsContactId(value);
+  };
+console.log(isContactId,isSubject,isBody,"cek");
   return (
     <>
       <CardPopup title={`Send by Email`}>
@@ -90,8 +107,13 @@ const { data: dataClients, status } = useQuery(
           fields={[
             {
               name: ["contact_id"],
-              value: dataFilter[0]?.id,
+              value: isContactId,
             },
+            {
+              name: ["subject"],
+              value: isSubject,
+            },
+            
           ]}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
@@ -99,12 +121,9 @@ const { data: dataClients, status } = useQuery(
           size="large"
         >
           <Form.Item label="To" name="contact_id" tw="px-2 pt-2">
-            {/* <Input type="email" placeholder="Email Address" /> */}
             <Select
             mode="multiple"
-                  // onChange={(e) => onChange({
-                  //   target: { value: e, name: "base_currency" },
-                  // })}
+                  onChange={handleChange}
                   options={status=== "success" && dataClients?.data?.map(client=>({
                     label:client.email,
                     value:client.id
@@ -114,7 +133,7 @@ const { data: dataClients, status } = useQuery(
           </Form.Item>
 
           <Form.Item label="Subject" name="subject" tw="px-2 ">
-            <Input type="text" />
+            <Input type="text" onChange={(e)=>setIsSubject(e.target.value)}/>
           </Form.Item>
           {/* <Form.Item label="File" name="file" tw="px-2 ">
             <div> {isTitle} as of Nov 23, 2022.csv</div>

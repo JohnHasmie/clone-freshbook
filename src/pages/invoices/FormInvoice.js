@@ -48,6 +48,8 @@ const dateFormat = "DD/MM/YYYY";
 export default function FormInvoice() {
   const [open, setOpen] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
+  const [isInvoiceId, setIsInvoiceId] = useState("");
+
 
   const next29day = moment().add(30, "days");
 
@@ -208,12 +210,15 @@ export default function FormInvoice() {
     },
     {
       onSuccess: (res) => {
+        setIsInvoiceId(res?.data?.invoice?.id)
         queryClient.invalidateQueries("invoices-listing");
         notification.success({
           message: `Invoice has been saved`,
           placement: "topLeft",
         });
-        history.push("/invoices");
+        if(!dontThrow){
+
+          history.push("/invoices");}
       },
       onError: (err) => {
         notification.error({
@@ -236,7 +241,9 @@ export default function FormInvoice() {
           message: `Invoice has been updated`,
           placement: "topLeft",
         });
-        history.push("/invoices");
+if(!dontThrow){
+
+        history.push("/invoices");}
       },
       onError: (err) => {
         switch (err?.response?.status) {
@@ -306,12 +313,11 @@ export default function FormInvoice() {
         attachments: fileListAttach,
       };
     }
-if(!dontThrow){
     if (pathname.includes("edit")) {
       mutationUpdate.mutate(newData);
     } else {
       mutation.mutate(newData);
-    }}
+    }
   };
   const onFinishRecurring = () => {
     setOpen(false);
@@ -617,7 +623,7 @@ if(!dontThrow){
           {!isRecurring && (
             <Popover
               placement="bottom"
-              content={<SendEmailInvoice clientProps={[isClient, setIsClient]} hide={hide} dataUser={dataUser?.user?.company_name} invoiceId={invoiceId} date={isForm?.due_date} total={numberWithDot(localSubTotal-(localSubTotal*isForm.discount/100))} onFinishInvoice={onFinish} setDontThrow={setDontThrow} />}
+              content={<SendEmailInvoice clientProps={[isClient, setIsClient]} hide={hide} dataUser={dataUser?.user?.company_name} invoiceId={invoiceId} date={isForm?.due_date} total={numberWithDot(localSubTotal-(localSubTotal*isForm.discount/100))} onFinishInvoice={onFinish} setDontThrow={setDontThrow} isInvoiceId={isInvoiceId} />}
               trigger="click"
               visible={clicked}
               onVisibleChange={handleClickChange}
