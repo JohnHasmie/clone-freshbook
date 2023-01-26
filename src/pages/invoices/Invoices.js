@@ -222,7 +222,7 @@ export default function Invoices() {
       {data &&
         getTotal(
           data?.map((x) => {
-            const splitAmount = x.amount.split(".");
+            const splitAmount = x.amount.toString().split(".");
             return parseInt(splitAmount[0]);
           })
         )}{" "}
