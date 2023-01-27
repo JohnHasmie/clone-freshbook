@@ -26,6 +26,7 @@ export default function ClientInfo({ clientId }) {
 
   const [filterOutstanding, setFilterOutstanding] = useState({
     currency: "USD",
+    client_id:clientId
   });
 
   const history = useHistory();
@@ -42,7 +43,7 @@ export default function ClientInfo({ clientId }) {
     ["outstanding-listing", filterOutstanding],
     async (key) =>
       axios
-        .get(`clients/${clientId}/outstanding-income`, {
+        .get(`clients/outstanding-income`, {
           params: key.queryKey[1],
         })
         .then((res) => res.data?.data)
@@ -81,6 +82,7 @@ export default function ClientInfo({ clientId }) {
       </Menu>
     </div>
   );
+  console.log(detailClient?.client?.first_name,"outstanding");
   return (
     <Row gutter={24} tw="mb-1.5 max-w-full">
       <Col span={8}>
@@ -190,7 +192,7 @@ export default function ClientInfo({ clientId }) {
                       </div>
                       <span
                         onClick={() =>
-                          history.push("/invoices/outstanding-balance")
+                          history.push(`/client/${clientId}/invoices/outstanding-balance?name=${detailClient?.client?.first_name+" "+detailClient?.client?.last_name}`)
                         }
                         tw="text-primary text-2xl font-bold cursor-pointer"
                       >
@@ -205,6 +207,7 @@ export default function ClientInfo({ clientId }) {
                     
                       <BarChartClient
                         data={dataOutstanding}
+                        filterOutstanding={filterOutstanding}
                         setFilterOutstanding={setFilterOutstanding}
                       />
                     </div>

@@ -127,7 +127,7 @@ export default function AccountStatement() {
             <span tw="capitalize text-4xl font-bold">Account Statement</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={MoreAction} trigger="click">
+          <Popover placement="bottom" content={<MoreAction myRef={"print"}excelRefetch={"for download"}/>} trigger="click">
             <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />

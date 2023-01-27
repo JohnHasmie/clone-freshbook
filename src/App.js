@@ -81,11 +81,6 @@ function App() {
   const [globalDetailInvoice, setGlobalDetailInvoice] = useState("");
   const [globalOutstanding, setGlobalOutstanding] = useState("");
 const refInvoice=useRef(null)
-
-
-
-
-
   let history = useHistory();
 
   axios.defaults.headers.common = {
@@ -284,7 +279,7 @@ const refInvoice=useRef(null)
 
               <Route
                 exact
-                path="/invoices/outstanding-balance"
+                path="/client/:clientId/invoices/outstanding-balance"
                 component={OutstandingBalance}
               />
           

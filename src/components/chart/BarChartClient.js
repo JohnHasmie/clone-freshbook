@@ -2,12 +2,12 @@ import ReactApexChart from "react-apexcharts";
 import { numberWithDot } from "../Utils";
 // import barChart from "./configs/barChart";
 
-function BarChartClient({data}) {
+function BarChartClient({data,filterOutstanding}) {
   const barChart = {
 
     series: [{
       name: 'Overdue',
-      data: [],
+      data: [data?.outstanding_overdue?.total],
       color:"#EC8192"
     },{
       name: 'Outstanding',
@@ -53,11 +53,18 @@ function BarChartClient({data}) {
         },
       },
       tooltip: {
-        y: {
-          formatter: function (val) {
-            return numberWithDot(val)
-          }
-        }
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              let currency = filterOutstanding.currency === "USD" ? "$" : "£";
+              let dataTooltip= numberWithDot(Math.round(
+                val * 100
+              ) / 100)
+  
+              return currency + dataTooltip;
+            },
+          },
+        },
       },
       fill: {
         opacity: 1
