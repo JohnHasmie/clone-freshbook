@@ -11,6 +11,7 @@ import {
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import React, { useState } from "react";
+import { CSVLink } from "react-csv";
 import { useHistory } from "react-router-dom";
 import ReactToPrint from "react-to-print";
 
@@ -48,6 +49,48 @@ export default function MoreAction({  myRef ,excelRefetch}) {
           </div>
         </Menu.Item>
 {typeof(myRef) === 'object'?
+  <Menu.Item key="print" onClick={()=>history.push(`/invoices/${myRef.id}/print`)}>
+  <div>
+    <PrinterOutlined />
+    <span tw="cursor-pointer">Print</span>
+  </div>
+</Menu.Item>
+
+:<ReactToPrint
+          trigger={() => (
+            <Menu.Item key="print">
+              <div>
+                <PrinterOutlined />
+                <span tw="cursor-pointer">Print</span>
+              </div>
+            </Menu.Item>
+          )}
+          content={() => myRef.current}
+        />}
+      </Menu>
+    </div>
+  );
+}
+
+export function MoreActionCSV({  myRef ,csvReport}) {
+  const history = useHistory();
+
+  console.log(myRef.current,"Type");
+  return (
+    <div>
+      <Menu>
+        <Menu.Item key="export" >
+          <div>
+            <VerticalAlignBottomOutlined  />
+            <CSVLink
+              tw="cursor-pointer"
+              {...csvReport}
+            >
+              Export
+            </CSVLink>
+          </div>
+        </Menu.Item>
+{!myRef.current?
   <Menu.Item key="print" onClick={()=>history.push(`/invoices/${myRef.id}/print`)}>
   <div>
     <PrinterOutlined />

@@ -1,16 +1,13 @@
 import { DownOutlined, LeftOutlined } from "@ant-design/icons";
 import {
   Button,
-  Checkbox,
   Col,
   DatePicker,
   Divider,
   Form,
-  Input,
   Popover,
   Row,
   Select,
-  Typography,
 } from "antd";
 import React, { useState, useContext, useEffect,useRef } from "react";
 import { useHistory } from "react-router-dom";
@@ -18,7 +15,7 @@ import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
-import MoreAction from "../../components/Reports/MoreAction";
+import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
 import SendEmail from "../../components/Reports/SendEmail";
 import { bell, toggler } from "../../components/Icons";
 import ButtonCustom from "../../components/Button/index";
@@ -28,20 +25,21 @@ import { numberWithDot } from "../../components/Utils";
 import moment from "moment";
 import AppContext from "../../components/context/AppContext";
 
+
 const dateFormat = "DD/MM/YYYY";
 
 export default function AccountBalance() {
   const [open, setOpen] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [filter, setFilter] = useState({
-    start_at: "11/10/2022",
-    finish_at: "11/12/2023",
+    start_at: "",
+    finish_at: "",
     currency: "USD",
   });
   const myRef=useRef(null)
-  const { setting } = useContext(AppContext);
-  const [newSetting, setNewSetting] = useState(
-    JSON.parse(localStorage.getItem("newSetting")) || { data: "" }
+  const { user } = useContext(AppContext);
+  const [newUser, setNewUser] = useState(
+    JSON.parse(localStorage.getItem("newUser")) || { data: "" }
   );
   const [form] = Form.useForm();
   const handleClickChange = (open) => {
@@ -127,7 +125,8 @@ export default function AccountBalance() {
                 }
                 placeholder="Start"
                 // value={moment(filter.start_at, dateFormat)}
-                defaultValue={moment(new Date(filter.start_at), dateFormat)}
+                defaultValue={filter.start_at === "" ? "" :moment(new Date(filter.start_at), dateFormat)}
+
                 format={dateFormat}
               />
             </Form.Item>
@@ -140,7 +139,7 @@ export default function AccountBalance() {
                   setFilter({ ...filter, finish_at: dateString })
                 }
                 placeholder="End"
-                defaultValue={moment(new Date(filter.finish_at), dateFormat)}
+                defaultValue={filter.finish_at === "" ? "" :moment(new Date(filter.finish_at), dateFormat)}
 
                 format={dateFormat}
               />
@@ -195,9 +194,93 @@ export default function AccountBalance() {
         .then((res) => res.data?.data)
   );
   useEffect(() => {
-    setting && localStorage.setItem("newSetting", JSON.stringify(setting));
-  }, [setting]);
+    user && localStorage.setItem("newUser", JSON.stringify(user));
+  }, [user]);
 
+
+
+// const headers = [
+//   { label: "First Name", key: "firstName" },
+//   { label: "Last Name", key: "lastName" },
+//   { label: "Email", key: "email" },
+//   { label: "Age", key: "age" }
+// ];
+
+// const data = [
+//   { firstName: "Warren", lastName: "Morrow", email: "sokyt@mailinator.com", age: "36" },
+//   { firstName: "Gwendolyn", lastName: "Galloway", email: "weciz@mailinator.com", age: "76" },
+//   { firstName: "Astra", lastName: "Wyatt", email: "quvyn@mailinator.com", age: "57" },
+//   { firstName: "Jasmine", lastName: "Wong", email: "toxazoc@mailinator.com", age: "42" },
+//   { firstName: "Brooke", lastName: "Mcconnell", email: "vyry@mailinator.com", age: "56" },
+//   { firstName: "Christen", lastName: "Haney", email: "pagevolal@mailinator.com", age: "23" },
+//   { firstName: "Tate", lastName: "Vega", email: "dycubo@mailinator.com", age: "87" },
+//   { firstName: "Amber", lastName: "Brady", email: "vyconixy@mailinator.com", age: "78" },
+//   { firstName: "Philip", lastName: "Whitfield", email: "velyfi@mailinator.com", age: "22" },
+//   { firstName: "Kitra", lastName: "Hammond", email: "fiwiloqu@mailinator.com", age: "35" },
+//   { firstName: "Charity", lastName: "Mathews", email: "fubigonero@mailinator.com", age: "63" }
+// ];
+  // Function to convert data to vertical format
+  // const convertToVertical = (data) => {
+  //   let verticalData = [];
+  //   data.forEach((item) => {
+  //     for (let key in item) {
+  //       verticalData.push({ header: key, value: item[key] });
+  //     }
+  //   });
+  //   return verticalData;
+  // }
+
+  // const verticalData = convertToVertical(data);
+  const data =statusBalance === "success" && [    [`Balance Sheet: ${user?.data?.company_name || newUser?.data?.company_name}`, '', '', '', '', '', '', '', ''],
+    ['Date', `${moment(new Date()).format("YYYY/MM/DD")}`, 'Currency', '', '', '', '', '', ''],
+    ['Assets', '', '', '', '', '', '', '', ''],
+    ['Cash & Bank', '', '', '', '', '', '', '', ''],
+    ['Cash', '', '', '', '', '', '', '', ''],
+    ['Petty Cash',  dataBalance?.cash_and_bank?.petty_cash !== null &&
+      numberWithDot(
+        dataBalance?.cash_and_bank?.petty_cash
+      ), filter.currency, '', '', '', '', '', ''],
+    ['Cash Total',  dataBalance?.cash_and_bank?.total !== null &&
+      numberWithDot(dataBalance?.cash_and_bank?.total), filter.currency, '', '', '', '', '', ''],
+    ['Total Cash & Bank', dataBalance?.cash_and_bank?.total !== null &&
+    numberWithDot(dataBalance?.cash_and_bank?.total), filter.currency, '', '', '', '', '', ''],
+    ['Current Asset', '', '', '', '', '', '', '', ''],
+    ['Accounts Receivable', dataBalance?.current_asset?.accounts_receivable !==
+    null &&
+    numberWithDot(
+      dataBalance?.current_asset?.accounts_receivable
+    ), '', '', '', '', '', '', ''],
+    ['Accounts Receivable (general)', dataBalance?.current_asset?.accounts_receivable !==
+    null &&
+    numberWithDot(
+      dataBalance?.current_asset?.accounts_receivable
+    ), filter.currency, '', '', '', '', '', ''],
+    ['Accounts Receivable Total', '65000.00', filter.currency, '', '', '', '', '', ''],
+    ['Total Current Asset', dataBalance?.current_asset?.total !== null &&
+    numberWithDot(dataBalance?.current_asset?.total), filter.currency, '', '', '', '', '',''],
+    ['Total Assets', dataBalance?.total_assets !== null &&
+    numberWithDot(dataBalance?.total_assets), filter.currency, '', '', '', '', '',''],
+      ['Liabilities and Equity', filter.start_at, '', '', '', '', '', '', ''],
+    [' Current Liability	', '', '', '', '', '', '', '', ''],
+    ['Customer Credit', '', '', '', '', '', '', '', ''],
+    ['Customer Credit (general)', '', filter.currency, '', '', '', '', '', ''],
+    ['Customer Credit Total', '', filter.currency, '', '', '', '', '', ''],
+    ['Total Current Liability', '', filter.currency, '', '', '', '', '', ''],
+    ['Equity', '', '', '', '', '', '', '', ''],
+    ['Net Income', dataBalance?.income?.net_income !== null &&
+    numberWithDot(dataBalance?.income?.net_income), filter.currency, '', '', '', '', '', ''],
+    ['Total Equity', dataBalance?.income?.total_equity !== null &&
+    numberWithDot(dataBalance?.income?.total_equity), filter.currency, '', '', '', '', '', ''],
+    ['Total Liabilities and Equity', dataBalance?.income?.total_equity !== null &&
+    numberWithDot(dataBalance?.income?.total_equity), filter.currency, '', '', '', '', '',''],
+
+  ]
+
+const csvReport = {
+  data: data,
+  // headers: headers,
+  filename: 'balance_sheet.csv'
+};
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -227,16 +310,16 @@ export default function AccountBalance() {
           </span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover
-            placement="bottom"
-            content={<MoreAction  myRef={myRef} />}
-            trigger="click"
-          >
-            <ButtonMore tw="w-full">
-              <span>More Actions</span>
-              <DownOutlined />
-            </ButtonMore>
-          </Popover>
+        {statusBalance === "success" && <Popover
+          placement="bottom"
+          content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />}
+          trigger="click"
+        >
+          <ButtonMore tw="w-full">
+            <span>More Actions</span>
+            <DownOutlined />
+          </ButtonMore>
+        </Popover>}
           <Popover
             placement="bottom"
             content={<SendEmail hide={hide} />}
@@ -258,7 +341,7 @@ export default function AccountBalance() {
             <div tw="grid">
               <span tw="text-xs">
                 {" "}
-                {setting?.data?.company_name || newSetting?.data?.company_name}
+                {user?.data?.company_name || newUser?.data?.company_name}
               </span>
               <span tw="text-xs">
                 {" "}
@@ -417,7 +500,8 @@ export default function AccountBalance() {
                         <td tw="text-right grid pt-3">
                           {" "}
                           <span tw="font-bold">
-                            {dataBalance?.income?.total_equity}
+                            {dataBalance?.income?.total_equity !== null &&
+                              numberWithDot(dataBalance?.income?.total_equity)}
                           </span>
                           <span tw="font-light text-xs">{filter.currency}</span>
                         </td>
@@ -429,6 +513,7 @@ export default function AccountBalance() {
             )}
           </CardReporting>
       </div>
+
         <Filter
           Filtering={FilterAccountBalance}
           setOpen={setOpen}

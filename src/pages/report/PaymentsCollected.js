@@ -16,7 +16,7 @@ import CardReporting from "../../components/CardReporting";
 import { bell, toggler } from "../../components/Icons";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
-import MoreAction from "../../components/Reports/MoreAction";
+import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
 import SendEmail from "../../components/Reports/SendEmail";
 import ButtonCustom from "../../components/Button/index";
 import axios from "axios";
@@ -35,9 +35,9 @@ export default function PaymentsCollected() {
     currency: "USD",
   });
   const [form] = Form.useForm();
-  const [newSetting, setNewSetting] = useState(JSON.parse(localStorage.getItem("newSetting")) || {data:""});
+  const [newUser, setNewUser] = useState(JSON.parse(localStorage.getItem("newUser")) || {data:""});
 
-  const { setting } = useContext(AppContext);
+  const { user } = useContext(AppContext);
 
   const myRef = useRef(null);
   const { data: dataPayment, status: statusPayment } = useQuery(
@@ -258,9 +258,39 @@ export default function PaymentsCollected() {
     // </div>
   );
   useEffect(() => {
-    setting &&
-      localStorage.setItem("newSetting",JSON.stringify(setting))
-  }, [setting]);
+    user &&
+      localStorage.setItem("newUser",JSON.stringify(user))
+  }, [user]);
+  const headers = [
+    { label: "Date", key: "date" },
+    { label: "Client Name", key: "clientName" },
+    { label: "Method", key: "method" },
+    { label: "Description", key: "description" },
+    { label: "Payment For", key: "paymentFor" },
+    { label: "Number", key: "number" },
+
+    { label: "Amount", key: "amount" },
+
+    { label: "Currency", key: "currency" },
+
+
+  ];
+
+  const data =statusPayment === "success" && dataPayment?.data?.data?.map((item,i)=>(
+    { date: moment(item.payment_at).format("MM/DD/YYYY"), clientName: item.client.first_name +" " +item.client.last_name, method: item.payment, 
+    description:"",paymentFor:"Invoice",number:item.invoice.code,
+    amount: item.amount !== null &&
+    numberWithDot(
+      Math.round(item.amount * 100) / 100
+    ),currency: filter?.currency })
+  )
+  
+  ;
+  const csvReport = {
+    data: data,
+    headers: headers,
+    filename: 'payments_collected.csv'
+  };
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -292,7 +322,8 @@ export default function PaymentsCollected() {
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <Popover
             placement="bottom"
-            content={<MoreAction myRef={myRef} />}
+            content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />}
+
             trigger="click"
           >
             <ButtonMore tw="w-full">
@@ -320,7 +351,7 @@ export default function PaymentsCollected() {
         <CardReporting >
           <h1 tw="text-blueDefault">Payments Collected</h1>
           <div tw="my-3 flex flex-col">
-            <span tw="text-sm text-gray-600">        {setting?.data?.company_name || newSetting?.data?.company_name}</span>
+            <span tw="text-sm text-gray-600">        {user?.data?.company_name || newUser?.data?.company_name}</span>
             <span tw="text-sm text-gray-600">Total Billed </span>
             <span tw="text-sm text-gray-600"> As of {moment(new Date()).format("MMMM DD, YYYY")}</span>
           </div>
