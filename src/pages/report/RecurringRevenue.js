@@ -6,7 +6,7 @@ import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
-import MoreAction from "../../components/Reports/MoreAction";
+import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
 import SendEmail from "../../components/Reports/SendEmail";
 import { bell, toggler } from '../../components/Icons';
 import ButtonCustom from '../../components/Button/index';
@@ -14,6 +14,7 @@ import AppContext from "../../components/context/AppContext";
 import moment from "moment";
 import { useQuery } from "react-query";
 import axios from "axios";
+import { numberWithDot } from "../../components/Utils";
 export default function RecurringRevenue() {
   const { Title } = Typography;
 const dateFormat = "DD/MM/YYYY";
@@ -22,8 +23,9 @@ const dateFormat = "DD/MM/YYYY";
   const [clicked, setClicked] = useState(false);
   const [newUser, setNewUser] = useState(JSON.parse(localStorage.getItem("newUser")) || {data:""});
   const [filter, setFilter] = useState({
-    start_at:"",
-    finish_at:"",
+    start_at:moment().subtract(12, 'months').format('YYYY-MM-DD'),
+    finish_at:new Date(),
+    client_id:"",
     currency: "USD",
   });
   const [localFilter, setLocalFilter] = useState({
@@ -42,17 +44,32 @@ const dateFormat = "DD/MM/YYYY";
 
   let history = useHistory();
   const onFinish = (values) => {
-    setFilter(localFilter)
+    console.log("valuee",values)
+    setFilter(values)
+    setOpen(false)
   };
-console.log("filter,",filter);
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+  const { data: dataClients, status } = useQuery(
+    ["clients"],
+    async (key) =>
+      axios
+        .get("clients", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
   const FilterRecurringRevenue = (
     <div>
-      <div tw="flex justify-between ">
+      <div tw="flex justify-between mt-5">
         <Title level={3}>Filters</Title>
-        <p tw="text-base text-primary">Reset All</p>
+        <p tw="text-base text-primary cursor-pointer" onClick={()=>setFilter({
+    start_at:moment().subtract(12, 'months').format('YYYY-MM-DD'),
+    finish_at:new Date(),
+    client_id:"",
+    currency: "USD",
+  })}>Reset All</p>
       </div>
       <span tw="text-black ">DATE RANGE</span>
       <Form
@@ -62,62 +79,56 @@ console.log("filter,",filter);
         size={"large"}
         tw="mt-5"
         fields={[
-          {name:["start_at"],
-        value: localFilter.start_at  && moment(localFilter.start_at, dateFormat) 
-        },
-        {name:["finish_at"],
-        value: localFilter.finish_at && moment(localFilter.finish_at, dateFormat) 
-        },
-        {name:["currency"],
-        value:localFilter.currency
-        }
+          { name: ["start_at"], value:  filter.start_at
+          ? moment(new Date(filter.start_at), dateFormat)
+          : "" },
+          { name: ["finish_at"], value: filter.finish_at
+          ? moment(new Date(filter.finish_at), dateFormat)
+          : "" },
+          {
+            name: ["client_id"],
+            value: filter?.client_id,
+          },
+  
+          {
+            name: ["currency"],
+            value: filter?.currency,
+          },
         ]}
       >
         <Row gutter={24}>
-          <Col span={24}>
-          <Form.Item
-                    name="start_at"
-                
-                  >
-
-                    <DatePicker
-                      onChange={(date, dateString) =>
-                        setLocalFilter({ ...localFilter, start_at: dateString })
-                      }
-                      placeholder="start"
-                      tw="rounded-md"
-                   
-                      format={dateFormat}
-                    />
-                  </Form.Item>
+        <Col span={24}>
+            <Form.Item name="start_at">
+              <DatePicker
+                tw="w-full rounded-md"
+         
+                format={dateFormat}
+              />
+            </Form.Item>
           </Col>
           <Col span={24}>
-          <Form.Item
-                    name="finish_at"
-                
-                  >
-
-                    <DatePicker
-                      onChange={(date, dateString) =>
-                        setLocalFilter({ ...localFilter, finish_at: dateString })
-                      }
-                      placeholder="finish"
-
-                      tw="rounded-md"
-                     
-                      format={dateFormat}
-                    />
-                  </Form.Item>
+            <Form.Item name="finish_at">
+              <DatePicker
+                tw="w-full rounded-md"
+         
+                format={dateFormat}
+              />
+            </Form.Item>
           </Col>
-
           <Col span={24}>
-          <Form.Item    name="currency">
+            <Form.Item label="Clients" name="client_id">
+              <Select
+                options={dataClients?.data?.map(item=>({
+                  value:item?.id,
+                  label:item?.company_name,
+                }))}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+          <Form.Item  label="Currency"   name="currency">
                 <Select
-            
-                 
-                 onChange={(e) =>
-                  setLocalFilter({ ...localFilter, currency: e })
-                }
+           
                 options={[
                   {
                     value: "USD",
@@ -142,22 +153,25 @@ console.log("filter,",filter);
       </Form>
     </div>
   );
-  const { data: dataRecurring, status: statusRecurring } = useQuery(
-    ["balance-sheet", filter],
+
+  const { data: dataRevenue, status: statusRevenue } = useQuery(
+    ["revenue-annual", filter],
     async (key) =>
       axios
-        .get("reports/payment-collection", {
+        .get("reports/revenue/annual", {
           params: key.queryKey[1],
         })
         .then((res) => res.data)
   );
-  const items = Array.from({length: 12-dataRecurring?.data?.data?.length}, (_, index) => (index + 1)*0);
-  console.log(items,"recurring");
   useEffect(() => {
     user &&
       localStorage.setItem("newUser",JSON.stringify(user))
   }, [user]);
-
+  const csvReport = {
+    data: [],
+    headers: [],
+    filename: `recurring_revenue_annual.csv`
+  };
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -185,7 +199,7 @@ console.log("filter,",filter);
             <span tw="capitalize text-4xl font-bold text-black">Recurring Revenue Annual</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={<MoreAction myRef={myRef} />} trigger="click">
+          <Popover placement="bottom" content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}}   />} trigger="click">
             <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />
@@ -205,14 +219,15 @@ console.log("filter,",filter);
           <CardReporting >
             <h1 tw="text-blueDefault">Recurring Revenue Annual</h1>
             <div tw="my-3 flex flex-col">
-            <span tw="text-sm text-gray-600">        {user?.data?.company_name || newUser?.data?.company_name}</span>
+            <span tw="text-sm text-gray-600">{user?.data?.company_name || newUser?.data?.company_name}</span>
 
               <span tw="text-sm text-gray-600">
                 Recurring Revenue Annual - Billed 
               </span>
-            <span tw="text-sm text-gray-600"> As of {moment(new Date()).format("MMMM DD, YYYY")}</span>
+              <span tw="text-sm text-gray-600">For {moment(new Date(filter.start_at)).format("MMM DD, YYYY")} - {moment(new Date(filter.finish_at)).format("MMM DD, YYYY")}</span>
+
             </div>
-            {statusRecurring === "loading" && (
+            {statusRevenue === "loading" && (
             <div
               role="status"
               tw="flex flex-col w-full h-full items-center justify-center"
@@ -235,7 +250,7 @@ console.log("filter,",filter);
               <span className="sr-only">Loading...</span>
             </div>
           )}
-          {statusRecurring === "success" &&  <div tw="overflow-x-auto ">
+          {statusRevenue === "success" &&  <div tw="overflow-x-auto ">
               <table style={{ minWidth: "1000px" }}>
                 <thead>
                   <tr>
@@ -261,24 +276,24 @@ console.log("filter,",filter);
                   <tr tw="text-left text-xs border-b border-dotted border-gray-200">
                     <th tw="py-4">Recurring</th>
 
-                  {dataRecurring?.data?.data?.map((item,i)=>(
-                    <td>{filter?.currency == "GBP" ? '£' : "$"}{item.amount}</td>
+                  {dataRevenue?.data?.record?.map((item,i)=>(
+                    <td>{filter?.currency == "GBP" ? '£' : "$"}{item.recurring && numberWithDot(item.recurring)}</td>
 
                   ))  }
-                {items.map(item=>(
+                {/* {items.map(item=>(
 
-                    <td>{filter?.currency == "GBP" ? '£' : "$"}{item}</td>))}
+                    <td>{filter?.currency == "GBP" ? '£' : "$"}{item}</td>))} */}
                     
                   </tr>
                   <tr tw="text-left text-xs border-b border-dotted  border-gray-200">
                     <th tw="py-4">Non-Recurring Invoices</th>
-                    {dataRecurring?.data?.data?.map((item,i)=>(
-                    <td>{filter?.currency == "GBP" ? '£' : "$"}{item.amount}</td>
+                    {dataRevenue?.data?.record?.map((item,i)=>(
+                    <td>{filter?.currency == "GBP" ? '£' : "$"}{item.non_recurring && numberWithDot(item.non_recurring)}</td>
 
                   ))  }
-                      {items.map(item=>(
+                      {/* {items.map(item=>(
 
-<td>{filter?.currency == "GBP" ? '£' : "$"}{item}</td>))}
+<td>{filter?.currency == "GBP" ? '£' : "$"}{item}</td>))} */}
 
                     
                   </tr>
@@ -286,13 +301,11 @@ console.log("filter,",filter);
                 <tfoot>
                   <tr className="double" tw="font-bold text-xs">
                     <th tw="text-left py-4 ">Total</th>
-                      {dataRecurring?.data?.data?.map((item,i)=>(
-                    <td tw="text-left">{filter?.currency == "GBP" ? '£' : "$"}{item.amount}</td>
+                       {dataRevenue?.data?.record?.map((item,i)=>(
+                    <td tw="text-left">{filter?.currency == "GBP" ? '£' : "$"}{item.total && numberWithDot(item.total)}</td>
 
                   ))  }
-                    {items.map(item=>(
-
-<td tw='text-left'>{filter?.currency == "GBP" ? '£' : "$"}{item}</td>))}
+          
                    
                   </tr>
                 </tfoot>

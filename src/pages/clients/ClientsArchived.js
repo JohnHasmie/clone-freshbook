@@ -63,7 +63,6 @@ export default function ClientsArchived() {
     setClicked(false);
   };
 
-console.log(clientName,"Name");
   const handleOk = () => {
     switch (isType) {
       case "unarchive":
@@ -122,8 +121,8 @@ console.log(clientName,"Name");
       company_name: item.company_name,
       first_name: item.first_name,
       last_name: item.last_name,
-      note: "-",
-      credit: "",
+      note: item.note,
+      credit: item.total_credit,
       total_outstanding: `Rp ${numberWithDot(20000)} IDR`,
     }));
 
@@ -342,7 +341,6 @@ console.log(clientName,"Name");
       },
     }
   );
-
   return (
     <>
       <div tw="w-full md:w-[98%] md:mb-5">

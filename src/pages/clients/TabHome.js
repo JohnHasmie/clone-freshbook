@@ -27,7 +27,7 @@ export default function TabHome() {
         })
         .then((res) => res.data?.data)
   );
-
+console.log(dataOutstanding,"cek")
   return (
     <>
       {" "}
@@ -45,9 +45,9 @@ export default function TabHome() {
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_draft?.total?.toFixed(2) &&
+                {dataOutstanding?.outstanding_draft?.total &&
                   numberWithDot(
-                    dataOutstanding?.outstanding_draft?.total?.toFixed(2)
+                    dataOutstanding?.outstanding_draft?.total
                   )}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">
@@ -69,9 +69,9 @@ export default function TabHome() {
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_overdue?.total?.toFixed(2) &&
+                {dataOutstanding?.outstanding_overdue?.total &&
                   numberWithDot(
-                    dataOutstanding?.outstanding_overdue?.total?.toFixed(2)
+                    dataOutstanding?.outstanding_overdue?.total
                   )}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">
@@ -90,9 +90,9 @@ export default function TabHome() {
             <div>
               <span tw="text-4xl font-bold text-blue-700">
                 {filterOutstanding?.currency === "GBP" ? "£" : "$"}
-                {dataOutstanding?.outstanding_invoices?.total?.toFixed(2) &&
+                {dataOutstanding?.outstanding_invoices?.total&&
                   numberWithDot(
-                    dataOutstanding?.outstanding_invoices?.total?.toFixed(2)
+                    dataOutstanding?.outstanding_invoices?.total
                   )}{" "}
               </span>
               <span tw="text-sm font-bold text-blue-700 ">

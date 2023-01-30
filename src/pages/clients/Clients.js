@@ -269,8 +269,8 @@ export default function Clients() {
       company_name: item.company_name,
       first_name: item.first_name,
       last_name: item.last_name,
-      note: "-",
-      credit: "",
+      note: item.note,
+      credit: item.total_credit,
       total_outstanding: 2000,
     }));
   const defaultFooter = () => (
@@ -427,7 +427,7 @@ export default function Clients() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg mb-20">
-          {/* <TabHome /> */}
+          <TabHome />
           {isToggle ? (
             <div tw=" hidden md:block mt-20">
               <div

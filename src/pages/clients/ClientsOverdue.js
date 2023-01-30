@@ -282,8 +282,8 @@ export default function ClientsOverdue() {
       company_name: item?.company_name,
       first_name: item?.first_name,
       last_name: item?.last_name,
-      note: "-",
-      credit: "",
+      note: item.note,
+      credit: item.total_credit,
       total_outstanding: "2000",
     }));
   // const data =
@@ -293,8 +293,8 @@ export default function ClientsOverdue() {
   //   company_name: item?.client?.company_name,
   //   first_name: item?.client?.first_name,
   //   last_name: item?.client?.last_name,
-  //   note: "-",
-  //   credit: "",
+  //   note: item.note,
+  //   credit: item.total_credit,
   //   total_outstanding: item?.total,
   // }));
   const defaultFooter = () => (

@@ -32,7 +32,7 @@
 //       organization: "",
 //       internal: "",
 
-//       credit: "",
+//       credit: item.total_credit,
 //       outstanding:"",
 //     },
 //   ];
@@ -225,8 +225,8 @@ export default function ClientsDeleted() {
       company_name: item.company_name,
       first_name: item.first_name,
       last_name: item.last_name,
-      note: "-",
-      credit: "",
+      note: item.note,
+      credit: item.total_credit,
       total_outstanding: `Rp ${numberWithDot(20000)} IDR`,
     }));
 
