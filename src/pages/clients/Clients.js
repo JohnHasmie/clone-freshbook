@@ -427,7 +427,7 @@ export default function Clients() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg mb-20">
-          <TabHome />
+          {/* <TabHome /> */}
           {isToggle ? (
             <div tw=" hidden md:block mt-20">
               <div

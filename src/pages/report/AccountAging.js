@@ -17,7 +17,7 @@ import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
-import MoreAction from "../../components/Reports/MoreAction";
+import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
 import SendEmail from "../../components/Reports/SendEmail";
 import { bell, toggler } from "../../components/Icons";
 import ButtonCustom from "../../components/Button/index";
@@ -25,24 +25,26 @@ import AppContext from "../../components/context/AppContext";
 import moment from "moment";
 import { useQuery } from "react-query";
 import axios from "axios";
-import { numberWithDot, truncate } from "../../components/Utils";
+import { getTotalGlobal, numberWithDot, truncate } from "../../components/Utils";
 
 export default function AccountAging() {
   const [open, setOpen] = useState(false);
   const { Title } = Typography;
   const [filterOutstanding, setFilterOutstanding] = useState({
     currency: "USD",
+    group_by:"outstanding",
+   
   });
   const [clicked, setClicked] = useState(false);
   const [newUser, setNewUser] = useState(JSON.parse(localStorage.getItem("newUser")) || {data:""});
 const myRef=useRef()
   const { user } = useContext(AppContext);
 
-  const { data: dataOutstanding, status: statusOutstanding } = useQuery(
-    ["outstanding-listing", filterOutstanding],
+  const { data: dataAccount, status: statusAccount } = useQuery(
+    ["account-aging-listing", filterOutstanding],
     async (key) =>
       axios
-        .get("reports/outstanding-income", {
+        .get("reports/account-aging", {
           params: key.queryKey[1],
         })
         .then((res) => res.data?.data)
@@ -56,7 +58,7 @@ const myRef=useRef()
   };
   let history = useHistory();
   const onFinish = (values) => {
-    setFilterOutstanding({currency:values.currency})
+    setFilterOutstanding({...filterOutstanding,currency:values.currency,group_by:values.group_by})
     setOpen(false)
   };
 
@@ -67,7 +69,7 @@ const myRef=useRef()
     <div tw="mt-3">
       <div tw="flex justify-between ">
         <Title level={3}>Filters</Title>
-        <p tw="text-base text-primary cursor-pointer" onClick={()=>setFilterOutstanding({currency:"USD"})}>Reset All</p>
+        <p tw="text-base text-primary cursor-pointer" onClick={()=>setFilterOutstanding({...filterOutstanding,group_by:"outstanding"})}>Reset All</p>
       </div>
       <span tw="text-black ">AS OF</span>
       <Form
@@ -82,8 +84,8 @@ const myRef=useRef()
             value: 'today',
           },
           {
-            name: ["group"],
-            value: 'outstanding',
+            name: ["group_by"],
+            value: filterOutstanding?.group_by,
           },
           {
             name: ["currency"],
@@ -117,7 +119,7 @@ const myRef=useRef()
             </Form.Item>
           </Col>
           <Col span={24}>
-            <Form.Item label="Group By" name="group">
+            <Form.Item label="Group By" name="group_by">
               <Radio.Group>
                 <Space direction="vertical">
                   <Radio value="outstanding">Outstanding</Radio>
@@ -160,7 +162,11 @@ const myRef=useRef()
       localStorage.setItem("newUser",JSON.stringify(user))
   }, [user]);
 
-  console.log(dataOutstanding?.outstanding_invoice?.data[0]?.client?.company_name,"cek");
+  const csvReport = {
+    data: [],
+    headers: [],
+    filename: `accounts_aging.csv`
+  };
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -190,7 +196,8 @@ const myRef=useRef()
           </span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={<MoreAction myRef={myRef}/>} trigger="click">
+          <Popover placement="bottom" content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />} trigger="click">
+            
             <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />
@@ -218,12 +225,12 @@ const myRef=useRef()
              <span tw="text-sm text-gray-600">
                {user?.data?.company_name || newUser?.data?.company_name}
              </span>
-             <span tw="text-sm text-gray-600">Amounts Outstanding</span>
+             <span tw="text-sm text-gray-600 capitalize">Amounts {filterOutstanding?.group_by}</span>
              <span tw="text-sm text-gray-600">
                As of {moment(new Date()).format("MMMM DD, YYYY")}
              </span>
            </div>
-           {statusOutstanding === "loading" && (
+           {statusAccount === "loading" && (
                      <div
                        role="status"
                        tw="flex flex-col w-full h-full items-center justify-center"
@@ -246,12 +253,12 @@ const myRef=useRef()
                        <span className="sr-only">Loading...</span>
                      </div>
                    )}
-     {statusOutstanding === "success" &&     <div tw="overflow-x-scroll  md:w-full ">
+     {statusAccount === "success" &&     <div tw="overflow-x-scroll  md:w-full ">
              <table tw="overflow-x-scroll">
                <thead>
                  <tr>
                    <th tw="text-left py-4 ">Client</th>
-                   {/* {Object?.keys(dataOutstanding?.side_data)?.map((item, i) => (
+                   {/* {Object?.keys(dataAccount?.side_data)?.map((item, i) => (
                      <th key={i} tw="py-4 ">
                        {item}
                      </th>
@@ -265,48 +272,83 @@ const myRef=useRef()
                    <th tw="py-4  ">Total</th>
                  </tr>
                </thead>
-               <tbody>
+   {dataAccount?.length > 0 && dataAccount?.map((item,i)=>
+   (
+
+           <tbody key={i}>
                  <tr tw="text-right text-sm" style={{ display: "table-row" }}>
                    <th tw="pt-12 text-left ">
                      <span tw="rounded-full border border-orange-500 px-2 py-1 mr-0.5 ">
-                       {dataOutstanding?.outstanding_invoice?.data[0]?.client?.company_name[0]}
+                       {item?.client?.company_name[0]}
                      </span>
-                     <span tw="text-primary">    {dataOutstanding?.outstanding_invoice?.data[0]?.client?.company_name && truncate(dataOutstanding?.outstanding_invoice?.data[0]?.client?.company_name,20)}</span>
+                     <span tw="text-primary">    {item?.client?.company_name && truncate(item?.client?.company_name,20)}</span>
                    </th>
-                   {Object?.keys(dataOutstanding?.side_data)?.filter(x=>x !== "90")?.map((item,i)=>(
-                     <td key={i} tw="py-5  text-primary">{dataOutstanding?.side_data[item] && numberWithDot(dataOutstanding?.side_data[item])}</td>
+                     <td  tw="py-5  text-primary">{item?.account_aging["0_30"] && numberWithDot(item?.account_aging["0_30"])}</td>
     
-                   ))}
-                   <td tw="py-5  text-primary">{dataOutstanding?.side_data["90"] && numberWithDot(dataOutstanding?.side_data["90"])}</td>
+                   <td tw="py-5  text-primary">{item?.account_aging["31-60"] && numberWithDot(item?.account_aging["31-60"])}</td>
+                   <td tw="py-5  text-primary">{item?.account_aging["61-90"] && numberWithDot(item?.account_aging["61-90"])}</td>
+                   <td tw="py-5  text-primary">{item?.account_aging["90"] && numberWithDot(item?.account_aging["90"])}</td>
                    
-                   <td tw="py-5 ">{dataOutstanding?.outstanding_total && numberWithDot(Math.round(dataOutstanding?.outstanding_total* 100
-                                    ) / 100)}</td>
+                   <td tw="py-5 ">{item?.account_aging["total"] && numberWithDot(item?.account_aging["total"])}</td>
                  </tr>
-               </tbody>
-               <tfoot>
+               </tbody>  )
+   )  }
+
+            <tfoot >
                  <tr className="double">
                    <td tw=" text-left font-semibold">Total</td>
-                   {Object?.keys(dataOutstanding?.side_data)?.filter(x=>x !== "90")?.map((item,i)=>(
-                     <td key={i} tw="py-5  text-primary">  {filterOutstanding.currency === "USD"
+  
+                     <td tw="py-5  text-primary">  {filterOutstanding.currency === "USD"
                      ? "$"
-                     : "£"}{dataOutstanding?.side_data[item] && numberWithDot(dataOutstanding?.side_data[item])}</td>
+                     : "£"}{dataAccount?.length > 0 && getTotalGlobal(dataAccount?.map((item)=>
+                      {
+                        const splitAmount = item?.account_aging["0_30"].split(".");
+                        return compareData(splitAmount[0]);
+                      }
+                      ))}</td>
+                           <td tw="py-5  text-primary">  {filterOutstanding.currency === "USD"
+                     ? "$"
+                     : "£"}{dataAccount?.length > 0 && getTotalGlobal(dataAccount?.map((item)=>
+                      {
+                        const splitAmount = item?.account_aging["31_60"].split(".");
+                        return compareData(splitAmount[0]);
+                      }
+                      ))}</td>
+                           <td tw="py-5  text-primary">  {filterOutstanding.currency === "USD"
+                     ? "$"
+                     : "£"}{dataAccount?.length > 0 && getTotalGlobal(dataAccount?.map((item)=>
+                      {
+                        const splitAmount = item?.account_aging["61_90"].split(".");
+                        return compareData(splitAmount[0]);
+                      }
+                      ))}</td>
+                           <td tw="py-5  text-primary">  {filterOutstanding.currency === "USD"
+                     ? "$"
+                     : "£"}{dataAccount?.length > 0 && getTotalGlobal(dataAccount?.map((item)=>
+                      {
+                        const splitAmount = item?.account_aging["90"].split(".");
+                        return compareData(splitAmount[0]);
+                      }
+                      ))}</td>
     
-                   ))}
-                   <td tw="py-5  text-primary">  {filterOutstanding.currency === "USD"
-                                    ? "$"
-                                    : "£"}{dataOutstanding?.side_data["90"] && numberWithDot(dataOutstanding?.side_data["90"])}</td>
-                   
-               
+              
+            
               
                    <td tw="pt-5  flex flex-col items-end ">
                      <span tw="font-semibold ">  {filterOutstanding.currency === "USD"
                                     ? "$"
-                                    : "£"}{dataOutstanding?.outstanding_total && numberWithDot(Math.round(dataOutstanding?.outstanding_total* 100
-                                    ) / 100)}</span>
+                                    : "£"}{dataAccount?.length > 0 && getTotalGlobal(dataAccount?.map((item)=>
+                                      {
+                                        const splitAmount = item?.account_aging["total"].split(".");
+                                        return compareData(splitAmount[0]);
+                                      }
+                                      ))}</span>
                      <span tw="text-gray-600 text-right">{filterOutstanding.currency}</span>
                    </td>
                  </tr>
-               </tfoot>
+         
+               </tfoot> 
+
              </table>
            </div>}
          </CardReporting>
@@ -315,4 +357,14 @@ const myRef=useRef()
       </div>
     </div>
   );
+}
+
+export function compareData(splitAmount){
+  let newData=""
+  if(splitAmount === ""){
+    newData=0
+  }else{
+    newData=parseInt(splitAmount)
+  }
+  return newData
 }

@@ -80,6 +80,7 @@ function App() {
   const [globalDetailClient, setGlobalDetailClient] = useState("");
   const [globalDetailInvoice, setGlobalDetailInvoice] = useState("");
   const [globalOutstanding, setGlobalOutstanding] = useState("");
+  
 const refInvoice=useRef(null)
   let history = useHistory();
 
