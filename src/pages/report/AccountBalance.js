@@ -32,7 +32,7 @@ export default function AccountBalance() {
   const [open, setOpen] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [filter, setFilter] = useState({
-    start_at: "",
+    start_at: new Date(),
     finish_at: "",
     currency: "USD",
   });
@@ -50,8 +50,11 @@ export default function AccountBalance() {
   };
   let history = useHistory();
   const onFinish = (values) => {
-    // console.log(values,"values")
-    setFilter({ ...filter, currency: values.currency });
+    setFilter({
+      start_at: values.start_at._d,
+      finish_at:values.finish_at._d,
+      currency: values.currency === undefined ? "USD" : values.currency,
+    });
     setOpen(false);
   };
 
@@ -77,13 +80,12 @@ export default function AccountBalance() {
         form={form}
         tw="mt-5"
         fields={[
-         {name:["start_at"],
-         value:filter.start_at
-
-         },
-         {name:["finish_at"],
-         value:filter.finish_at
-         },
+          { name: ["start_at"], value:  filter.start_at
+          ? moment(new Date(filter.start_at), dateFormat)
+          : "" },
+          { name: ["finish_at"], value: filter.finish_at
+          ? moment(new Date(filter.finish_at), dateFormat)
+          : "" },
           {
             name: ["currency"],
             value: filter?.currency,
@@ -116,31 +118,20 @@ export default function AccountBalance() {
             </Form.Item>
           </Col> */}
 
-          <Col span={24}>
-            <Form.Item name="start-at">
+<Col span={24}>
+            <Form.Item name="start_at">
               <DatePicker
                 tw="w-full rounded-md"
-                onChange={(date, dateString) =>
-                  setFilter({ ...filter, start_at: dateString })
-                }
-                placeholder="Start"
-                // value={moment(filter.start_at, dateFormat)}
-                defaultValue={filter.start_at === "" ? "" :moment(new Date(filter.start_at), dateFormat)}
-
+             
                 format={dateFormat}
               />
             </Form.Item>
           </Col>
           <Col span={24}>
-            <Form.Item name="end-at">
+            <Form.Item name="finish_at">
               <DatePicker
                 tw="w-full rounded-md"
-                onChange={(date, dateString) =>
-                  setFilter({ ...filter, finish_at: dateString })
-                }
-                placeholder="End"
-                defaultValue={filter.finish_at === "" ? "" :moment(new Date(filter.finish_at), dateFormat)}
-
+               
                 format={dateFormat}
               />
             </Form.Item>
@@ -197,90 +188,79 @@ export default function AccountBalance() {
     user && localStorage.setItem("newUser", JSON.stringify(user));
   }, [user]);
 
+  const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
+    ["export-excel",{...filter,export:true}],
+    async () =>
+      axios
+        .get(`reports/accounting/balance-sheet`, {
+          responseType: "blob",
+        })
+        .then((res) => {
+          const href = URL.createObjectURL(res.data);
 
+      const link = document.createElement("a");
+      link.href = href;
+      link.setAttribute("download", "balance_sheet.xlsx");
+      document.body.appendChild(link);
+      link.click();
 
-// const headers = [
-//   { label: "First Name", key: "firstName" },
-//   { label: "Last Name", key: "lastName" },
-//   { label: "Email", key: "email" },
-//   { label: "Age", key: "age" }
-// ];
+      document.body.removeChild(link);
+      URL.revokeObjectURL(href);
+        }),
+    {
+      enabled: false,
+    }
+  )
+  // const data =statusBalance === "success" && [    [`Balance Sheet: ${user?.data?.company_name || newUser?.data?.company_name}`, '', '', '', '', '', '', '', ''],
+  //   ['Date', `${moment(new Date()).format("YYYY/MM/DD")}`, 'Currency', '', '', '', '', '', ''],
+  //   ['Assets', '', '', '', '', '', '', '', ''],
+  //   ['Cash & Bank', '', '', '', '', '', '', '', ''],
+  //   ['Cash', '', '', '', '', '', '', '', ''],
+  //   ['Petty Cash',  dataBalance?.cash_and_bank?.petty_cash !== null &&
+  //     numberWithDot(
+  //       dataBalance?.cash_and_bank?.petty_cash
+  //     ), filter.currency, '', '', '', '', '', ''],
+  //   ['Cash Total',  dataBalance?.cash_and_bank?.total !== null &&
+  //     numberWithDot(dataBalance?.cash_and_bank?.total), filter.currency, '', '', '', '', '', ''],
+  //   ['Total Cash & Bank', dataBalance?.cash_and_bank?.total !== null &&
+  //   numberWithDot(dataBalance?.cash_and_bank?.total), filter.currency, '', '', '', '', '', ''],
+  //   ['Current Asset', '', '', '', '', '', '', '', ''],
+  //   ['Accounts Receivable', dataBalance?.current_asset?.accounts_receivable !==
+  //   null &&
+  //   numberWithDot(
+  //     dataBalance?.current_asset?.accounts_receivable
+  //   ), '', '', '', '', '', '', ''],
+  //   ['Accounts Receivable (general)', dataBalance?.current_asset?.accounts_receivable !==
+  //   null &&
+  //   numberWithDot(
+  //     dataBalance?.current_asset?.accounts_receivable
+  //   ), filter.currency, '', '', '', '', '', ''],
+  //   ['Accounts Receivable Total', '65000.00', filter.currency, '', '', '', '', '', ''],
+  //   ['Total Current Asset', dataBalance?.current_asset?.total !== null &&
+  //   numberWithDot(dataBalance?.current_asset?.total), filter.currency, '', '', '', '', '',''],
+  //   ['Total Assets', dataBalance?.total_assets !== null &&
+  //   numberWithDot(dataBalance?.total_assets), filter.currency, '', '', '', '', '',''],
+  //     ['Liabilities and Equity', filter.start_at, '', '', '', '', '', '', ''],
+  //   [' Current Liability	', '', '', '', '', '', '', '', ''],
+  //   ['Customer Credit', '', '', '', '', '', '', '', ''],
+  //   ['Customer Credit (general)', '', filter.currency, '', '', '', '', '', ''],
+  //   ['Customer Credit Total', '', filter.currency, '', '', '', '', '', ''],
+  //   ['Total Current Liability', '', filter.currency, '', '', '', '', '', ''],
+  //   ['Equity', '', '', '', '', '', '', '', ''],
+  //   ['Net Income', dataBalance?.income?.net_income !== null &&
+  //   numberWithDot(dataBalance?.income?.net_income), filter.currency, '', '', '', '', '', ''],
+  //   ['Total Equity', dataBalance?.income?.total_equity !== null &&
+  //   numberWithDot(dataBalance?.income?.total_equity), filter.currency, '', '', '', '', '', ''],
+  //   ['Total Liabilities and Equity', dataBalance?.income?.total_equity !== null &&
+  //   numberWithDot(dataBalance?.income?.total_equity), filter.currency, '', '', '', '', '',''],
 
-// const data = [
-//   { firstName: "Warren", lastName: "Morrow", email: "sokyt@mailinator.com", age: "36" },
-//   { firstName: "Gwendolyn", lastName: "Galloway", email: "weciz@mailinator.com", age: "76" },
-//   { firstName: "Astra", lastName: "Wyatt", email: "quvyn@mailinator.com", age: "57" },
-//   { firstName: "Jasmine", lastName: "Wong", email: "toxazoc@mailinator.com", age: "42" },
-//   { firstName: "Brooke", lastName: "Mcconnell", email: "vyry@mailinator.com", age: "56" },
-//   { firstName: "Christen", lastName: "Haney", email: "pagevolal@mailinator.com", age: "23" },
-//   { firstName: "Tate", lastName: "Vega", email: "dycubo@mailinator.com", age: "87" },
-//   { firstName: "Amber", lastName: "Brady", email: "vyconixy@mailinator.com", age: "78" },
-//   { firstName: "Philip", lastName: "Whitfield", email: "velyfi@mailinator.com", age: "22" },
-//   { firstName: "Kitra", lastName: "Hammond", email: "fiwiloqu@mailinator.com", age: "35" },
-//   { firstName: "Charity", lastName: "Mathews", email: "fubigonero@mailinator.com", age: "63" }
-// ];
-  // Function to convert data to vertical format
-  // const convertToVertical = (data) => {
-  //   let verticalData = [];
-  //   data.forEach((item) => {
-  //     for (let key in item) {
-  //       verticalData.push({ header: key, value: item[key] });
-  //     }
-  //   });
-  //   return verticalData;
-  // }
+  // ]
 
-  // const verticalData = convertToVertical(data);
-  const data =statusBalance === "success" && [    [`Balance Sheet: ${user?.data?.company_name || newUser?.data?.company_name}`, '', '', '', '', '', '', '', ''],
-    ['Date', `${moment(new Date()).format("YYYY/MM/DD")}`, 'Currency', '', '', '', '', '', ''],
-    ['Assets', '', '', '', '', '', '', '', ''],
-    ['Cash & Bank', '', '', '', '', '', '', '', ''],
-    ['Cash', '', '', '', '', '', '', '', ''],
-    ['Petty Cash',  dataBalance?.cash_and_bank?.petty_cash !== null &&
-      numberWithDot(
-        dataBalance?.cash_and_bank?.petty_cash
-      ), filter.currency, '', '', '', '', '', ''],
-    ['Cash Total',  dataBalance?.cash_and_bank?.total !== null &&
-      numberWithDot(dataBalance?.cash_and_bank?.total), filter.currency, '', '', '', '', '', ''],
-    ['Total Cash & Bank', dataBalance?.cash_and_bank?.total !== null &&
-    numberWithDot(dataBalance?.cash_and_bank?.total), filter.currency, '', '', '', '', '', ''],
-    ['Current Asset', '', '', '', '', '', '', '', ''],
-    ['Accounts Receivable', dataBalance?.current_asset?.accounts_receivable !==
-    null &&
-    numberWithDot(
-      dataBalance?.current_asset?.accounts_receivable
-    ), '', '', '', '', '', '', ''],
-    ['Accounts Receivable (general)', dataBalance?.current_asset?.accounts_receivable !==
-    null &&
-    numberWithDot(
-      dataBalance?.current_asset?.accounts_receivable
-    ), filter.currency, '', '', '', '', '', ''],
-    ['Accounts Receivable Total', '65000.00', filter.currency, '', '', '', '', '', ''],
-    ['Total Current Asset', dataBalance?.current_asset?.total !== null &&
-    numberWithDot(dataBalance?.current_asset?.total), filter.currency, '', '', '', '', '',''],
-    ['Total Assets', dataBalance?.total_assets !== null &&
-    numberWithDot(dataBalance?.total_assets), filter.currency, '', '', '', '', '',''],
-      ['Liabilities and Equity', filter.start_at, '', '', '', '', '', '', ''],
-    [' Current Liability	', '', '', '', '', '', '', '', ''],
-    ['Customer Credit', '', '', '', '', '', '', '', ''],
-    ['Customer Credit (general)', '', filter.currency, '', '', '', '', '', ''],
-    ['Customer Credit Total', '', filter.currency, '', '', '', '', '', ''],
-    ['Total Current Liability', '', filter.currency, '', '', '', '', '', ''],
-    ['Equity', '', '', '', '', '', '', '', ''],
-    ['Net Income', dataBalance?.income?.net_income !== null &&
-    numberWithDot(dataBalance?.income?.net_income), filter.currency, '', '', '', '', '', ''],
-    ['Total Equity', dataBalance?.income?.total_equity !== null &&
-    numberWithDot(dataBalance?.income?.total_equity), filter.currency, '', '', '', '', '', ''],
-    ['Total Liabilities and Equity', dataBalance?.income?.total_equity !== null &&
-    numberWithDot(dataBalance?.income?.total_equity), filter.currency, '', '', '', '', '',''],
-
-  ]
-
-const csvReport = {
-  data: data,
-  // headers: headers,
-  filename: 'balance_sheet.csv'
-};
+// const csvReport = {
+//   data: data,
+//   // headers: headers,
+//   filename: 'balance_sheet.csv'
+// };
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -312,7 +292,9 @@ const csvReport = {
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
         {statusBalance === "success" && <Popover
           placement="bottom"
-          content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />}
+          // content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />}
+          content={<MoreAction myRef={myRef}  excelRefetch={excelRefetch} />}
+
           trigger="click"
         >
           <ButtonMore tw="w-full">
@@ -345,7 +327,7 @@ const csvReport = {
               </span>
               <span tw="text-xs">
                 {" "}
-                As of {moment(new Date()).format("MMMM DD, YYYY")}
+                As of {moment(filter.start_at).format("MMMM DD, YYYY")}
               </span>
             </div>
             {statusBalance === "loading" && (
@@ -378,7 +360,7 @@ const csvReport = {
                     <thead>
                       <tr>
                         <th tw="text-left py-2 ">Summary</th>
-                        <th tw="text-right py-2 "> {filter.start_at}</th>
+                        <th tw="text-right py-2 "> {moment(filter.start_at).format(dateFormat)}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -391,7 +373,7 @@ const csvReport = {
         
                         <td tw="text-right py-2">
                           {" "}
-                          {dataBalance?.cash_and_bank?.petty_cash !== null &&
+                          {dataBalance?.cash_and_bank?.petty_cash &&
                             numberWithDot(
                               dataBalance?.cash_and_bank?.petty_cash
                             )}{" "}
@@ -403,7 +385,7 @@ const csvReport = {
                         <td tw="text-right grid">
                           {" "}
                           <span tw="font-bold">
-                            {dataBalance?.cash_and_bank?.total !== null &&
+                            {dataBalance?.cash_and_bank?.total  &&
                               numberWithDot(dataBalance?.cash_and_bank?.total)}
                           </span>
                           <span tw="font-light text-xs">{filter.currency}</span>
@@ -419,8 +401,7 @@ const csvReport = {
         
                         <td tw="text-right py-2">
                           {" "}
-                          {dataBalance?.current_asset?.accounts_receivable !==
-                            null &&
+                          {dataBalance?.current_asset?.accounts_receivable  &&
                             numberWithDot(
                               dataBalance?.current_asset?.accounts_receivable
                             )}{" "}
@@ -432,7 +413,7 @@ const csvReport = {
                         <td tw="text-right grid">
                           {" "}
                           <span tw="font-bold">
-                            {dataBalance?.current_asset?.total !== null &&
+                            {dataBalance?.current_asset?.total  &&
                               numberWithDot(dataBalance?.current_asset?.total)}
                           </span>
                           <span tw="font-light text-xs">{filter.currency}</span>
@@ -446,7 +427,7 @@ const csvReport = {
                         <td tw="text-right grid pt-3">
                           {" "}
                           <span tw="font-bold">
-                            {dataBalance?.total_assets !== null &&
+                            {dataBalance?.total_assets  &&
                               numberWithDot(dataBalance?.total_assets)}
                           </span>
                           <span tw="font-light text-xs">{filter.currency}</span>
@@ -461,7 +442,7 @@ const csvReport = {
                     <thead>
                       <tr>
                         <th tw="text-left py-2 ">Liabilities + Equity</th>
-                        <th tw="text-right py-2 "> {filter.start_at}</th>
+                        <th tw="text-right py-2 "> {moment(filter.start_at).format(dateFormat)}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -474,7 +455,7 @@ const csvReport = {
         
                         <td tw="text-right py-2">
                           {" "}
-                          {dataBalance?.income?.net_income !== null &&
+                          {dataBalance?.income?.net_income  &&
                             numberWithDot(dataBalance?.income?.net_income)}{" "}
                         </td>
                       </tr>
@@ -484,7 +465,7 @@ const csvReport = {
                         <td tw="text-right grid">
                           {" "}
                           <span tw="font-bold">
-                            {dataBalance?.income?.total_equity !== null &&
+                            {dataBalance?.income?.total_equity  &&
                               numberWithDot(dataBalance?.income?.total_equity)}
                           </span>
                           <span tw="font-light text-xs">{filter.currency}</span>
@@ -500,7 +481,7 @@ const csvReport = {
                         <td tw="text-right grid pt-3">
                           {" "}
                           <span tw="font-bold">
-                            {dataBalance?.income?.total_equity !== null &&
+                            {dataBalance?.income?.total_equity  &&
                               numberWithDot(dataBalance?.income?.total_equity)}
                           </span>
                           <span tw="font-light text-xs">{filter.currency}</span>

@@ -21,7 +21,6 @@ import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
-import { MoreActionBackend } from "../../components/Reports/MoreAction";
 import SendEmail, { SendEmailRevenue } from "../../components/Reports/SendEmail";
 import { bell, toggler } from '../../components/Icons';
 import ButtonCustom from '../../components/Button/index';
@@ -30,6 +29,7 @@ import axios from "axios";
 import AppContext from "../../components/context/AppContext";
 import moment from "moment";
 import { getTotalGlobal, numberWithDot } from "../../components/Utils";
+import MoreAction from "../../components/Reports/MoreAction";
 const dummyList = [
   { name: "Company Name", total: 6000 },
   { name: "Abc Company", total: 50000 },
@@ -328,7 +328,7 @@ finish_at:moment().endOf('year'),
             <span tw="capitalize text-4xl font-bold">Revenue By Client</span>
           </div>
           <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={<MoreActionBackend myRef={myRef} excelRefetch={excelRefetch}/>} trigger="click">
+          <Popover placement="bottom" content={<MoreAction myRef={myRef} excelRefetch={excelRefetch}/>} trigger="click">
             <ButtonMore tw="w-full">
               <span>More Actions</span>
               <DownOutlined />

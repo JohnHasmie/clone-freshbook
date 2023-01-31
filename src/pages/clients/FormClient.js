@@ -354,6 +354,16 @@ useEffect(() => {
                   <Input  onChange={onChange} name="phone" type="number" />
                 </Form.Item>
               </div>
+              <div tw="col-span-2 w-6/12 hidden">
+                <Form.Item label="Note" name="note">
+                  <Input  onChange={onChange} name="note"  />
+                </Form.Item>
+              </div>
+              <div tw="col-span-2 w-6/12 hidden">
+                <Form.Item label="Credit" name="total_credit">
+                  <Input  onChange={onChange} name="total_credit"  />
+                </Form.Item>
+              </div>
               {isAdd.business_phone ? (
                 <div tw="col-span-2 w-6/12">
                   <Form.Item

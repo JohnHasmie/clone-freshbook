@@ -33,48 +33,6 @@ export default function MoreAction({  myRef ,excelRefetch}) {
     />;
     // window.print()
   };
-  console.log(myRef,"Type");
-  return (
-    <div>
-      <Menu>
-        <Menu.Item key="export" >
-          <div>
-            <VerticalAlignBottomOutlined />
-            <span
-              tw="cursor-pointer"
-              onClick={() => excelRefetch()}
-            >
-              Export
-            </span>
-          </div>
-        </Menu.Item>
-{typeof(myRef) === 'object'?
-  <Menu.Item key="print" onClick={()=>history.push(`/invoices/${myRef.id}/print`)}>
-  <div>
-    <PrinterOutlined />
-    <span tw="cursor-pointer">Print</span>
-  </div>
-</Menu.Item>
-
-:<ReactToPrint
-          trigger={() => (
-            <Menu.Item key="print">
-              <div>
-                <PrinterOutlined />
-                <span tw="cursor-pointer">Print</span>
-              </div>
-            </Menu.Item>
-          )}
-          content={() => myRef.current}
-        />}
-      </Menu>
-    </div>
-  );
-}
-
-export function MoreActionBackend({  myRef ,excelRefetch}) {
-  const history = useHistory();
- 
   return (
     <div>
       <Menu>
@@ -112,6 +70,47 @@ export function MoreActionBackend({  myRef ,excelRefetch}) {
     </div>
   );
 }
+
+// export function MoreActionBackend({  myRef ,excelRefetch}) {
+//   const history = useHistory();
+ 
+//   return (
+//     <div>
+//       <Menu>
+//         <Menu.Item key="export" >
+//           <div>
+//             <VerticalAlignBottomOutlined />
+//             <span
+//               tw="cursor-pointer"
+//               onClick={() => excelRefetch()}
+//             >
+//               Export
+//             </span>
+//           </div>
+//         </Menu.Item>
+// {!myRef.current?
+//   <Menu.Item key="print" onClick={()=>history.push(`/invoices/${myRef.id}/print`)}>
+//   <div>
+//     <PrinterOutlined />
+//     <span tw="cursor-pointer">Print</span>
+//   </div>
+// </Menu.Item>
+
+// :<ReactToPrint
+//           trigger={() => (
+//             <Menu.Item key="print">
+//               <div>
+//                 <PrinterOutlined />
+//                 <span tw="cursor-pointer">Print</span>
+//               </div>
+//             </Menu.Item>
+//           )}
+//           content={() => myRef.current}
+//         />}
+//       </Menu>
+//     </div>
+//   );
+// }
 
 export function MoreActionCSV({  myRef ,csvReport}) {
   const history = useHistory();

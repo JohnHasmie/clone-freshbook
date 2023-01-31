@@ -28,6 +28,14 @@ const dateFormat = "DD/MM/YYYY";
     client_id:"",
     currency: "USD",
   });
+  const[ data,setData] =useState(
+  [
+ 
+
+  ])
+  const [headers,setHeaders] =useState([
+    { label: "Income Summary", key: "income" }
+  ]);
   const [localFilter, setLocalFilter] = useState({
     start_at:"",
     finish_at:"",
@@ -167,9 +175,52 @@ const dateFormat = "DD/MM/YYYY";
     user &&
       localStorage.setItem("newUser",JSON.stringify(user))
   }, [user]);
+
+  let newHeaders=statusRevenue === "success" &&  dataRevenue?.data?.record?.map(item=>({
+    
+    label: item.month, key: item.month,
+
+    }))
+   
+
+
+let newDataRecurring= statusRevenue === "success" && dataRevenue?.data?.record?.map(item=>({
+  income:"Recurring Income",
+  
+  [item.month]:item.recurring,
+
+
+
+  }))
+  let newDataNonRecurring= statusRevenue === "success" && dataRevenue?.data?.record?.map(item=>({
+    income:"Non-Recurring Invoice",
+    [item.month]:item.non_recurring,
+  
+  
+  
+    }))
+    let newDataTotal= statusRevenue === "success" && dataRevenue?.data?.record?.map(item=>({
+  income:"Total",
+
+      [item.month]:item.total,
+    
+    
+    
+      }))
+    
+  useEffect(() => {
+    if(statusRevenue=== "success"){
+      let headersClone=[...headers]
+      setData([{income: "Recurring", ...Object.assign({}, ...newDataRecurring)},{income: "Non-Recurring Invoice", ...Object.assign({}, ...newDataNonRecurring)},{income: "Total", ...Object.assign({}, ...newDataTotal)}])
+headersClone.push(...newHeaders)
+setHeaders(headersClone)
+    }
+  
+  }, [statusRevenue])
+console.log("journey",data);
   const csvReport = {
-    data: [],
-    headers: [],
+    data: data,
+    headers: headers,
     filename: `recurring_revenue_annual.csv`
   };
   return (

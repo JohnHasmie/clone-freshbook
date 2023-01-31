@@ -161,6 +161,11 @@ const myRef=useRef()
     user &&
       localStorage.setItem("newUser",JSON.stringify(user))
   }, [user]);
+    const data =statusAccount === "success" && [    [user?.data?.company_name || newUser?.data?.company_name, '', '', '', '', ''],
+    [`Amount ${filterOutstanding.group_by} (${filterOutstanding.currency})`, '', '', '', '', ''],
+    [`As of`, moment(filterOutstanding.start_at).format("MMMM DD, YYYY") , '', '', '', '', '', '', ''],
+   
+  ]
 
   const csvReport = {
     data: [],
@@ -227,7 +232,7 @@ const myRef=useRef()
              </span>
              <span tw="text-sm text-gray-600 capitalize">Amounts {filterOutstanding?.group_by}</span>
              <span tw="text-sm text-gray-600">
-               As of {moment(new Date()).format("MMMM DD, YYYY")}
+               As of {moment(filterOutstanding.start_at).format("MMMM DD, YYYY")}
              </span>
            </div>
            {statusAccount === "loading" && (

@@ -31,6 +31,24 @@ export default function AccountStatement() {
   const [filter, setFilter] = useState({   
     currency: "USD",
   });
+  const[ data,setData] =useState(
+    [[`Account Statement `
+
+    ]
+   
+  
+    ])
+    const [headers,setHeaders] =useState([
+      { label: "Date", key: "date" },
+      { label: "Description", key: "desc" },
+      { label: "Invoice#", key: "invoice" },
+      { label: "Invoice Due", key: "due" },
+      { label: "Amount", key: "amount" },
+      { label: "Paid", key: "paid" },
+      { label: "Currency", key: "currency" },
+
+
+    ]);
   const myRef = useRef(null);
 
   useEffect(() => {

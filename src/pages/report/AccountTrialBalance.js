@@ -40,8 +40,8 @@ export default function AccountTrialBalance() {
   );
   const [form] = Form.useForm();
   const [filter, setFilter] = useState({
-    start_at: "",
-    finish_at: "",
+    start_at: new Date(),
+    finish_at:moment().endOf('year'),
     currency: "USD",
   });
   const myRef = useRef(null);
@@ -53,7 +53,8 @@ export default function AccountTrialBalance() {
   const onFinish = (values) => {
     // console.log(values,"values")
     setFilter({
-      ...filter,
+      start_at: values.start_at._d,
+      finish_at:values.finish_at._d,
       currency: values.currency === undefined ? "USD" : values.currency,
     });
     setOpen(false);
@@ -72,7 +73,11 @@ export default function AccountTrialBalance() {
         </div> */}
         <span
           tw="text-xs text-primary cursor-pointer"
-          onClick={() => form.resetFields()}
+          onClick={() => setFilter({
+            start_at: new Date(),
+            finish_at:moment().endOf('year'),
+            currency: "USD",
+          })}
         >
           Reset All
         </span>
@@ -85,8 +90,12 @@ export default function AccountTrialBalance() {
         form={form}
         tw="mt-5"
         fields={[
-          { name: ["start_at"], value: filter.start_at },
-          { name: ["finish_at"], value: filter.finish_at },
+          { name: ["start_at"], value:  filter.start_at
+          ? moment(new Date(filter.start_at), dateFormat)
+          : "" },
+          { name: ["finish_at"], value: filter.finish_at
+          ? moment(new Date(filter.finish_at), dateFormat)
+          : "" },
           {
             name: ["currency"],
             value: filter?.currency,
@@ -96,36 +105,19 @@ export default function AccountTrialBalance() {
       >
         <Row gutter={24}>
           <Col span={24}>
-            <Form.Item name="start-at">
+            <Form.Item name="start_at">
               <DatePicker
                 tw="w-full rounded-md"
-                onChange={(date, dateString) =>
-                  setFilter({ ...filter, start_at: dateString })
-                }
-                placeholder="Start"
-                // value={moment(filter.start_at, dateFormat)}
-                defaultValue={
-                  filter.start_at
-                    ? moment(new Date(filter.start_at), dateFormat)
-                    : ""
-                }
+             
                 format={dateFormat}
               />
             </Form.Item>
           </Col>
           <Col span={24}>
-            <Form.Item name="end-at">
+            <Form.Item name="finish_at">
               <DatePicker
                 tw="w-full rounded-md"
-                onChange={(date, dateString) =>
-                  setFilter({ ...filter, finish_at: dateString })
-                }
-                placeholder="End"
-                defaultValue={
-                  filter.finish_at
-                    ? moment(new Date(filter.finish_at), dateFormat)
-                    : ""
-                }
+               
                 format={dateFormat}
               />
             </Form.Item>
@@ -178,6 +170,29 @@ export default function AccountTrialBalance() {
         })
         .then((res) => res.data)
   );
+  const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
+    ["export-excel",{...filter,export:true}],
+    async () =>
+      axios
+        .get(`reports/accounting/trial-balance`, {
+          responseType: "blob",
+        })
+        .then((res) => {
+          const href = URL.createObjectURL(res.data);
+
+      const link = document.createElement("a");
+      link.href = href;
+      link.setAttribute("download", "trial_balance.xlsx");
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(href);
+        }),
+    {
+      enabled: false,
+    }
+  )
   useEffect(() => {
     user && localStorage.setItem("newUser", JSON.stringify(user));
   }, [user]);
@@ -246,7 +261,8 @@ export default function AccountTrialBalance() {
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <Popover
             placement="bottom"
-            content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />}
+          content={<MoreAction myRef={myRef}  excelRefetch={excelRefetch} />}
+
             trigger="click"
           >
             <ButtonMore tw="w-full">
@@ -279,7 +295,7 @@ export default function AccountTrialBalance() {
               </span>
               <span tw="text-xs">
                 {" "}
-                As of {moment(new Date()).format("MMMM DD, YYYY")}
+                For {moment(new Date(filter.start_at)).format("MMM DD, YYYY")} - {moment(new Date(filter.finish_at)).format("MMM DD, YYYY")}
               </span>
             </div>
             {statusTrial === "loading" && (
@@ -320,7 +336,7 @@ export default function AccountTrialBalance() {
                         Sub Account / Parent Account
                       </th>
                       <th tw="py-1 font-bold"> Type / Sub Type</th>
-                      <th tw="py-1 font-bold">Number</th>
+                      <th tw="py-1 font-bold hidden">Number</th>
                       <th tw="py-1 font-bold"> Debit</th>
                       <th tw="py-1 font-bold text-right"> Credit</th>
                     </tr>
@@ -338,7 +354,7 @@ export default function AccountTrialBalance() {
                           <span>Cash & Bank</span>
                         </div>
                       </td>
-                      <td>1000-1</td>
+                      <td tw="hidden">1000-1</td>
                       <td>
                         {dataTrial?.data?.petty_cash !== null &&
                           numberWithDot(
@@ -364,7 +380,7 @@ export default function AccountTrialBalance() {
                           <span>Current Asset</span>
                         </div>
                       </td>
-                      <td>1000-1</td>
+                      <td tw="hidden">1000-1</td>
                       <td>
                         {dataTrial?.data?.accounts_receivable !== null &&
                           numberWithDot(Math.round(dataTrial?.data?.accounts_receivable * 100) / 100)}
@@ -387,7 +403,7 @@ export default function AccountTrialBalance() {
                           <span>Income</span>
                         </div>
                       </td>
-                      <td>1000-1</td>
+                      <td tw="hidden">1000-1</td>
                       <td>
                         {dataTrial?.data?.discounts !== null &&
                           numberWithDot(Math.round(dataTrial?.data?.discounts * 100) / 100)}
@@ -410,7 +426,7 @@ export default function AccountTrialBalance() {
                           <span>Income</span>
                         </div>
                       </td>
-                      <td>1000-1</td>
+                      <td tw="hidden">1000-1</td>
                       <td>-</td>
                       <td tw="text-right">-</td>
                     </tr>
@@ -421,11 +437,13 @@ export default function AccountTrialBalance() {
                         Total Assets
                       </th>
                       <td tw="invisible">hide</td>
-                      <td tw="invisible">hide</td>
                       <td tw="text-left pt-3">
                         <div tw="grid">
                           <span tw="font-bold">
-                            {getTotalGlobal(Object.values(dataTrial?.data))}
+                            {getTotalGlobal(Object.values(dataTrial?.data)?.map((item)=>{
+    const splitAmount=item?.split(".")
+    return parseInt(splitAmount[0]);
+  }))}
                           </span>
                           <span tw="font-light text-sm">{filter.currency}</span>
                         </div>
@@ -433,7 +451,10 @@ export default function AccountTrialBalance() {
                       <td tw="text-right pt-3">
                         <div tw="grid">
                           <span tw="font-bold">
-                            {getTotalGlobal(Object.values(dataTrial?.data))}
+                            {getTotalGlobal(Object.values(dataTrial?.data)?.map((item)=>{
+    const splitAmount=item?.split(".")
+    return parseInt(splitAmount[0]);
+  }))}
                           </span>
                           <span tw="font-light text-sm">{filter.currency}</span>
                         </div>

@@ -28,7 +28,7 @@ export default function DetailReports() {
       path:`/dashboard/reports/account-statement?clientId=${clientId}`,
       desc: (
         <span>
-          A breakdown of Company Name's activity over a period of time
+          A breakdown of {globalDetailClient?.company_name}'s activity over a period of time
         </span>
       ),
     },
@@ -47,7 +47,7 @@ export default function DetailReports() {
       path:`/dashboard/reports/revenue-by-client?clientId=${clientId}`,
 
       desc: (
-        <span>A breakdown of how much revenue Company Name is bringing in</span>
+        <span>A breakdown of how much revenue {globalDetailClient?.company_name} is bringing in</span>
       ),
     },
 
