@@ -1,5 +1,5 @@
 import { DownOutlined, LeftOutlined } from "@ant-design/icons";
-import { Button, Col, Divider, Form, Popover, Row, Select, Typography } from "antd";
+import { Button, Col, Divider, Form, notification, Popover, Row, Select, Typography } from "antd";
 import React, { useState,useContext,useEffect,useRef } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
@@ -7,11 +7,11 @@ import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import { MoreActionCSV } from "../../components/Reports/MoreAction";
-import SendEmail from "../../components/Reports/SendEmail";
+import SendEmail, { SendEmailDefault } from "../../components/Reports/SendEmail";
 import { bell, toggler } from '../../components/Icons';
 import ButtonCustom from '../../components/Button/index';
 import AppContext from "../../components/context/AppContext";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 import moment from "moment";
 import { getTotalGlobal, numberWithDot } from "../../components/Utils";
@@ -158,6 +158,15 @@ export default function AccountStatement() {
         })
         .then((res) => res.data)
   );
+  const { data: dataClients, status } = useQuery(
+    ["clients"],
+    async (key) =>
+      axios
+        .get("clients", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data.data)
+  );
   useEffect(() => {
     user && localStorage.setItem("newUser", JSON.stringify(user));
   }, [user]);
@@ -166,6 +175,29 @@ export default function AccountStatement() {
     headers: [],
     filename: `${dataStatement?.data?.client?.first_name}_${dataStatement?.data?.client?.last_name}_account_statement.csv`
   };
+
+  const mutation = useMutation(
+    async (data) => {
+      return axios.post(`reports/account-statement/send?client_id=${clientId}`, data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        notification.success({
+          message: `Account Statement has been sent`,
+          placement: "topLeft",
+        });
+        hide()
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        console.log(err.response.data.message);
+      },
+    }
+  );
+  
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -199,7 +231,7 @@ export default function AccountStatement() {
               <DownOutlined />
             </ButtonMore>
           </Popover>
-          <Popover placement="bottom" content={<SendEmail hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
+          <Popover placement="bottom" content={<SendEmailDefault hide={hide} dataClients={dataClients} user={newUser} mutation={mutation}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
             <Button tw=" md:ml-2 bg-success text-white px-4  flex justify-center items-center ">
               <span tw="text-lg">Send...</span>
             </Button>
@@ -351,7 +383,7 @@ export default function AccountStatement() {
                     <td>{item?.code}</td>
                     <td>{moment(new Date(item?.due_date)).format("MMM DD, YYYY")}</td>
                     <td>{numberWithDot(item?.total)}</td>
-                    <td>-</td>
+                    <td>{item?.paid_at && moment(new Date(item?.paid_at)).format("MMM DD, YYYY")}</td>
                   </tr> ))}
               
                 </tbody>

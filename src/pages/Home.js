@@ -13,6 +13,7 @@ import BarChart from "../components/chart/BarChart";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { numberWithDot } from "../components/Utils";
+import moment from "moment";
 
 function Home() {
   let history = useHistory();
@@ -26,8 +27,8 @@ function Home() {
   });
   const [filterRecurring, setFilterRecurring] = useState({
     currency: "USD",
-    start_at: "",
-    finish_at: "",
+    start_at: moment().subtract(12, 'months').format('YYYY-MM-DD'),
+    finish_at: new Date(),
   });
   const [clicked, setClicked] = useState(false);
 
@@ -81,6 +82,15 @@ function Home() {
         })
         .then((res) => res.data?.data)
   );
+  const { data: dataRevenue, status: statusRevenue } = useQuery(
+    ["revenue-annual", filterRecurring],
+    async (key) =>
+      axios
+        .get("reports/revenue/annual", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data)
+  );
 
   const { data: dataPayment, status: statusPayment } = useQuery(
     ["balance-sheet", filterPayment],
@@ -94,7 +104,7 @@ function Home() {
   useEffect(() => {
     statusOutstanding == "success" && setGlobalOutstanding(dataOutstanding);
   }, [statusOutstanding]);
-  console.log(dataTotalProfit,"dataTotalProfit");
+  console.log("line home",dataRevenue);
   return (
     <>
       <div className="layout-content" style={{ width: "98%" }}>
@@ -437,7 +447,7 @@ function Home() {
                 marginTop:"2rem"
               }}
             >
-                {statusTotalProfit === "loading" && (
+                {statusRevenue === "loading" && (
                     <div
                       role="status"
                       tw="flex flex-col w-full h-full items-center justify-center"
@@ -460,7 +470,7 @@ function Home() {
                       <span className="sr-only">Loading...</span>
                     </div>
                   )}
-             {statusTotalProfit === "success" && <LineChart dataTotalProfit={dataTotalProfit} filterRecurring={filterRecurring} />}
+             {statusRevenue === "success" && <LineChart dataRevenue={dataRevenue} filterRecurring={filterRecurring} />}
             </Card>
           </Col>
         </Row>

@@ -2,6 +2,7 @@ import { DownOutlined, LeftOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
+  DatePicker,
   Divider,
   Form,
   Popover,
@@ -27,12 +28,15 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import { getTotalGlobal, numberWithDot, truncate } from "../../components/Utils";
 
+const dateFormat = "DD/MM/YYYY";
+
 export default function AccountAging() {
   const [open, setOpen] = useState(false);
   const { Title } = Typography;
   const [filterOutstanding, setFilterOutstanding] = useState({
     currency: "USD",
     group_by:"outstanding",
+    as_of:new Date()
    
   });
   const [clicked, setClicked] = useState(false);
@@ -58,7 +62,7 @@ const myRef=useRef()
   };
   let history = useHistory();
   const onFinish = (values) => {
-    setFilterOutstanding({...filterOutstanding,currency:values.currency,group_by:values.group_by})
+    setFilterOutstanding({as_of:values.as_of._d,currency:values.currency,group_by:values.group_by})
     setOpen(false)
   };
 
@@ -80,8 +84,10 @@ const myRef=useRef()
         tw="mt-5"
         fields={[
           {
-            name: ["time"],
-            value: 'today',
+            name: ["as_of"],
+            value: filterOutstanding.as_of
+            ? moment(new Date(filterOutstanding.as_of), dateFormat)
+            : "",
           },
           {
             name: ["group_by"],
@@ -94,7 +100,7 @@ const myRef=useRef()
         ]}
       >
         <Row gutter={24}>
-          <Col span={24}>
+          {/* <Col span={24}>
             <Form.Item name="time">
               <Select
                 options={[
@@ -115,6 +121,15 @@ const myRef=useRef()
                     label: "End of Last Year",
                   },
                 ]}
+              />
+            </Form.Item>
+          </Col> */}
+          <Col span={24}>
+            <Form.Item name="as_of">
+              <DatePicker
+                tw="w-full rounded-md"
+             
+                format={dateFormat}
               />
             </Form.Item>
           </Col>
@@ -232,7 +247,7 @@ const myRef=useRef()
              </span>
              <span tw="text-sm text-gray-600 capitalize">Amounts {filterOutstanding?.group_by}</span>
              <span tw="text-sm text-gray-600">
-               As of {moment(filterOutstanding.start_at).format("MMMM DD, YYYY")}
+               As of {moment(filterOutstanding.as_of).format("MMMM DD, YYYY")}
              </span>
            </div>
            {statusAccount === "loading" && (

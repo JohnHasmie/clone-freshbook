@@ -24,7 +24,7 @@ export default function DetailReports() {
   const data = [
     {
       icon: <PieChartOutlined />,
-      title: <h1>Account Statement</h1>,
+      title: <h1>Client Account Statement</h1>,
       path:`/dashboard/reports/account-statement?clientId=${clientId}`,
       desc: (
         <span>
