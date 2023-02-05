@@ -1,7 +1,6 @@
 import {
   EditOutlined,
   ExportOutlined,
-  FileDoneOutlined,
   HddOutlined,
   ImportOutlined,
   PrinterOutlined,
@@ -10,29 +9,13 @@ import {
   VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import { CSVLink } from "react-csv";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import ReactToPrint from "react-to-print";
-
-const MyPrintButton = ({ myRef }) => (
-  <ReactToPrint
-    trigger={() => <span tw="cursor-pointer">Print</span>}
-    content={() => myRef.current}
-  />
-);
 
 export default function MoreAction({  myRef ,excelRefetch}) {
   const history = useHistory();
-  const handlePrint = () => {
-    // let a = window.open('', 'Cek')
-    // history.push(urlLink);
-    <ReactToPrint
-      trigger={() => <button>Cetak</button>}
-      content={() => myRef.current}
-    />;
-    // window.print()
-  };
   return (
     <div>
       <Menu>
@@ -70,47 +53,6 @@ export default function MoreAction({  myRef ,excelRefetch}) {
     </div>
   );
 }
-
-// export function MoreActionBackend({  myRef ,excelRefetch}) {
-//   const history = useHistory();
- 
-//   return (
-//     <div>
-//       <Menu>
-//         <Menu.Item key="export" >
-//           <div>
-//             <VerticalAlignBottomOutlined />
-//             <span
-//               tw="cursor-pointer"
-//               onClick={() => excelRefetch()}
-//             >
-//               Export
-//             </span>
-//           </div>
-//         </Menu.Item>
-// {!myRef.current?
-//   <Menu.Item key="print" onClick={()=>history.push(`/invoices/${myRef.id}/print`)}>
-//   <div>
-//     <PrinterOutlined />
-//     <span tw="cursor-pointer">Print</span>
-//   </div>
-// </Menu.Item>
-
-// :<ReactToPrint
-//           trigger={() => (
-//             <Menu.Item key="print">
-//               <div>
-//                 <PrinterOutlined />
-//                 <span tw="cursor-pointer">Print</span>
-//               </div>
-//             </Menu.Item>
-//           )}
-//           content={() => myRef.current}
-//         />}
-//       </Menu>
-//     </div>
-//   );
-// }
 
 export function MoreActionCSV({  myRef ,csvReport}) {
   const history = useHistory();
@@ -199,8 +141,6 @@ export function MoreActionClientsDetail({
   history,
   handleModal,
 }) {
-  const [isGenerate, setIsGenerate] = useState(0);
-
   return (
     <div>
       <Menu>
@@ -217,12 +157,12 @@ export function MoreActionClientsDetail({
             </span>
           </div>
         </Menu.Item>
-        <Menu.Item disabled={isGenerate === 0}>
+        <Menu.Item>
           <div>
             <UsergroupAddOutlined />
-            <span tw="cursor-pointer" onClick={() => console.log("generate")}>
+            <Link to={`/dashboard/reports/account-statement?clientId=${globalDetailClient?.id}`}>
               Generate Statement
-            </span>
+            </Link>
           </div>
         </Menu.Item>
         <Menu.Item onClick={handleModal} key="archive">
