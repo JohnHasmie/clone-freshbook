@@ -271,12 +271,15 @@ export default function Clients() {
       last_name: item.last_name,
       note: item.note,
       credit: item.total_credit,
-      total_outstanding: 2000,
+      total_outstanding: item.total_outstanding,
     }));
   const defaultFooter = () => (
     <div tw="text-right text-base">
       Total Outstanding:{" "}
-      {data && getTotal(data?.map((x) => x.total_outstanding))}{" "}
+      {data && getTotal(data?.map((x) => {
+    const splitAmount=x?.total_outstanding?.split(".")
+    return parseInt(splitAmount[0]);
+  }))}
     </div>
   );
 

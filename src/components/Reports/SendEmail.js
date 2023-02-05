@@ -103,7 +103,7 @@ export default function SendEmail({hide}) {
 }
 
 
-export  function SendEmailRevenue({hide,dataClients,user}) {
+export  function SendEmailDefault({hide,dataClients,user,mutation}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTitle, setIsTitle] = useState("");
   
@@ -132,44 +132,14 @@ export  function SendEmailRevenue({hide,dataClients,user}) {
   }, [pathname]);
 
   const { TextArea } = Input;
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
     mutation.mutate(values)
   };
-  const mutation = useMutation(
-    async (data) => {
-      return axios.post("reports/revenue/mail", data).then((res) => res.data);
-    },
-    {
-      onSuccess: (res) => {
-        notification.success({
-          message: `Revenue By Client has been sent`,
-          placement: "topLeft",
-        });
-        hide()
-      },
-      onError: (err) => {
-        notification.error({
-          message: `An Error Occurred Please Try Again Later`,
-          placement: "topLeft",
-        });
-        console.log(err.response.data.message);
-      },
-    }
-  );
+ 
   return (
     <>
       <CardPopup title={`Email this ${isTitle}`}>

@@ -5,7 +5,7 @@ import { MinusOutlined } from "@ant-design/icons";
 import tw from "twin.macro";
 import { getTotalGlobal, numberWithDot } from "../Utils";
 
-function LineChart({dataTotalProfit,filterRecurring}) {
+function LineChart({dataRevenue,filterRecurring}) {
   const { Title, Paragraph } = Typography;
 
   const numbers = [];
@@ -17,7 +17,7 @@ function LineChart({dataTotalProfit,filterRecurring}) {
     series: [
       {
         name: "Profit",
-        data: dataTotalProfit?.income?.map(item=>item.total_profit),
+        data: dataRevenue?.data?.record?.map(item=>item.recurring),
         offsetY: 0,
       }
   
@@ -72,7 +72,7 @@ function LineChart({dataTotalProfit,filterRecurring}) {
             ],
           },
         },
-        categories: dataTotalProfit?.income?.map(item=>item.month),
+        categories: dataRevenue?.data?.record?.map(item=>item.month),
       },
   
       tooltip: {
@@ -88,10 +88,7 @@ function LineChart({dataTotalProfit,filterRecurring}) {
     <>
       <div tw="flex justify-end">
         <div tw="grid justify-items-end">
-          <div tw="font-bold text-primary text-lg md:text-3xl">{filterRecurring?.currency == "GBP" ? '£' : "$"}{dataTotalProfit?.income && numberWithDot(getTotalGlobal(dataTotalProfit?.income?.map((item)=>{
-            const splitAmount=item?.total_profit
-            return parseInt(splitAmount);
-          })))}</div>
+          <div tw="font-bold text-primary text-lg md:text-3xl">{filterRecurring?.currency == "GBP" ? '£' : "$"}{dataRevenue?.data?.total?.recurring && numberWithDot(dataRevenue?.data?.total?.recurring)}</div>
           <div>this month</div>
         </div>
       </div>
@@ -110,14 +107,14 @@ function LineChart({dataTotalProfit,filterRecurring}) {
 
 export default LineChart;
 
-export function calculateData(data) {
-  const numbers = [];
+// export function calculateData(data) {
+//   const numbers = [];
 
-  for (let i = 1; i <= 12-data.length; i++) {
-    numbers.push(i*0);
-  }
-  const newData=data?.map(item=>item?.profit)
-  newData.push(...numbers)
-return newData
+//   for (let i = 1; i <= 12-data.length; i++) {
+//     numbers.push(i*0);
+//   }
+//   const newData=data?.map(item=>item?.profit)
+//   newData.push(...numbers)
+// return newData
 
-}
+// }

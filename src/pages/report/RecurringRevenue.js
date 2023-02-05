@@ -1,5 +1,5 @@
 import { DownOutlined, LeftOutlined } from "@ant-design/icons";
-import { Button, Col, DatePicker, Divider, Form, Popover, Row, Select, Typography } from "antd";
+import { Button, Col, DatePicker, Divider, Form, notification, Popover, Row, Select, Typography } from "antd";
 import React, { useState,useRef,useContext,useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
@@ -7,12 +7,12 @@ import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
-import SendEmail from "../../components/Reports/SendEmail";
+import SendEmail, { SendEmailDefault } from "../../components/Reports/SendEmail";
 import { bell, toggler } from '../../components/Icons';
 import ButtonCustom from '../../components/Button/index';
 import AppContext from "../../components/context/AppContext";
 import moment from "moment";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 import { numberWithDot } from "../../components/Utils";
 export default function RecurringRevenue() {
@@ -176,6 +176,29 @@ const dateFormat = "DD/MM/YYYY";
       localStorage.setItem("newUser",JSON.stringify(user))
   }, [user]);
 
+
+  const mutation = useMutation(
+    async (data) => {
+      return axios.post("reports/revenue-annual/send", data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        notification.success({
+          message: `Recurring Revenue has been sent`,
+          placement: "topLeft",
+        });
+        hide()
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        console.log(err.response.data.message);
+      },
+    }
+  );
+  
   let newHeaders=statusRevenue === "success" &&  dataRevenue?.data?.record?.map(item=>({
     
     label: item.month, key: item.month,
@@ -256,7 +279,7 @@ console.log("journey",data);
               <DownOutlined />
             </ButtonMore>
           </Popover>
-          <Popover placement="bottom" content={<SendEmail hide={hide}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
+          <Popover placement="bottom" content={<SendEmailDefault hide={hide} dataClients={dataClients} user={newUser} mutation={mutation}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
             <Button tw=" md:ml-2 bg-success text-white px-4  flex justify-center items-center ">
               <span tw="text-lg">Send...</span>
             </Button>

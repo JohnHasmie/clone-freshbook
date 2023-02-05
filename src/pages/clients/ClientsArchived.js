@@ -123,7 +123,8 @@ export default function ClientsArchived() {
       last_name: item.last_name,
       note: item.note,
       credit: item.total_credit,
-      total_outstanding: `Rp ${numberWithDot(20000)} IDR`,
+      total_outstanding:     item.total_outstanding,
+      
     }));
 
     const onSelectChange = (newSelectedRowKeys) => {

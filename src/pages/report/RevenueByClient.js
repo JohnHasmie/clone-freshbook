@@ -10,6 +10,7 @@ import {
   DatePicker,
   Divider,
   Form,
+  notification,
   Popover,
   Row,
   Select,
@@ -21,10 +22,10 @@ import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
-import SendEmail, { SendEmailRevenue } from "../../components/Reports/SendEmail";
+import { SendEmailDefault } from "../../components/Reports/SendEmail";
 import { bell, toggler } from '../../components/Icons';
 import ButtonCustom from '../../components/Button/index';
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 import AppContext from "../../components/context/AppContext";
 import moment from "moment";
@@ -101,6 +102,28 @@ finish_at:moment().endOf('year'),
       enabled: false,
     }
   )
+
+  const mutation = useMutation(
+    async (data) => {
+      return axios.post("reports/revenue/mail", data).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        notification.success({
+          message: `Revenue By Client has been sent`,
+          placement: "topLeft",
+        });
+        hide()
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        console.log(err.response.data.message);
+      },
+    }
+  );
 
   const { data: dataClients, status } = useQuery(
     ["clients"],
@@ -334,7 +357,7 @@ finish_at:moment().endOf('year'),
               <DownOutlined />
             </ButtonMore>
           </Popover>
-          <Popover placement="bottom" content={<SendEmailRevenue hide={hide} dataClients={dataClients} user={newUser}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
+          <Popover placement="bottom" content={<SendEmailDefault hide={hide} dataClients={dataClients} user={newUser} mutation={mutation}/>} trigger="click" visible={clicked}  onVisibleChange={handleClickChange}>
             <Button tw=" md:ml-2 bg-success text-white px-4  flex justify-center items-center ">
               <span tw="text-lg">Send...</span>
             </Button>

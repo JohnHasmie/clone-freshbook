@@ -68,7 +68,11 @@ export default function AccountBalance() {
         {/* <div tw="grid">
             <span tw="text-xs text-primary uppercase">Balance date</span>
         </div> */}
-        <span tw="text-xs text-primary cursor-pointer" onClick={()=>form.resetFields()}>
+        <span tw="text-xs text-primary cursor-pointer" onClick={()=>setFilter({
+    start_at: new Date(),
+    finish_at: "",
+    currency: "USD",
+  })}>
           Reset All
         </span>
       </div>
