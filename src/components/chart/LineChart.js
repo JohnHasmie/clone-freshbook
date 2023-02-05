@@ -6,7 +6,6 @@ import tw from "twin.macro";
 import { getTotalGlobal, numberWithDot } from "../Utils";
 
 function LineChart({dataRevenue,filterRecurring}) {
-  console.log("line",dataRevenue?.data?.record)
   const { Title, Paragraph } = Typography;
 
   const numbers = [];

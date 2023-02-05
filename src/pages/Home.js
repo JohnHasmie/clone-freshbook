@@ -92,6 +92,17 @@ function Home() {
         .then((res) => res.data)
   );
 
+  const { data: dataRevenueStream, status: statusRevenueStream } = useQuery(
+    ["revenue-stream", filterRecurring],
+    async (key) =>
+      axios
+        .get("reports/revenue-stream", {
+          params: key.queryKey[1],
+        })
+        .then((res) => res.data)
+  );
+
+
   const { data: dataPayment, status: statusPayment } = useQuery(
     ["balance-sheet", filterPayment],
     async (key) =>
@@ -104,7 +115,7 @@ function Home() {
   useEffect(() => {
     statusOutstanding == "success" && setGlobalOutstanding(dataOutstanding);
   }, [statusOutstanding]);
-  console.log("line home",dataRevenue);
+  console.log("line home",dataRevenueStream);
   return (
     <>
       <div className="layout-content" style={{ width: "98%" }}>
@@ -532,6 +543,7 @@ function Home() {
                 <DonutsRevenue
                   dataPayment={dataPayment}
                   filterPayment={filterPayment}
+                  dataRevenueStream={dataRevenueStream}
                 />
               )}
               {/* <div 

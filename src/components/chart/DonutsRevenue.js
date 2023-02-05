@@ -7,14 +7,15 @@ import { DonutStyled } from "./DonutChart.style";
 import { getTotalGlobal, numberWithDot } from "../Utils";
 
 
-function DonutsRevenue({dataPayment,filterPayment}) {
+function DonutsRevenue({dataPayment,filterPayment,dataRevenueStream}) {
+  console.log("data",dataRevenueStream);
   const { Title, Paragraph } = Typography;
   const newData=getTotal(dataPayment?.data?.data?.map((item)=>{
     const splitAmount=item?.amount?.split(".")
     return parseInt(splitAmount[0]);
   }))
   const donutsRevenue={
-    series: [newData && newData],
+    series: [dataRevenueStream && numberWithDot(dataRevenueStream?.data?.invoices)],
     options: {
       chart: {
         type: 'donut',
@@ -53,11 +54,11 @@ function DonutsRevenue({dataPayment,filterPayment}) {
        <div tw="text-lg">
        <FileDoneOutlined tw="text-xl mr-2 text-[#9c4aa4]" />
        <span>Invoices</span>
-       <span tw="text-gray-400 ml-2">{filterPayment?.currency == "GBP" ? '£' : "$"}{newData && numberWithDot(newData)}</span>
+       <span tw="text-gray-400 ml-2">{filterPayment?.currency == "GBP" ? '£' : "$"}{dataRevenueStream && numberWithDot(dataRevenueStream?.data?.invoices)}</span>
        </div>
    </div>
           <div tw="flex flex-col justify-start items-end">
-          <div tw="font-bold text-primary text-lg md:text-3xl">{filterPayment?.currency == "GBP" ? '£' : "$"}{newData && numberWithDot(newData)}</div>
+          <div tw="font-bold text-primary text-lg md:text-3xl">{filterPayment?.currency == "GBP" ? '£' : "$"}{dataRevenueStream && numberWithDot(dataRevenueStream?.data?.current_month)}</div>
           <div>this month</div>
       </div>
     </div>
