@@ -194,9 +194,10 @@ export default function AccountBalance() {
 
   const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
     ["export-excel",{...filter,export:true}],
-    async () =>
+    async (key) =>
       axios
         .get(`reports/accounting/balance-sheet`, {
+          params: key.queryKey[1],
           responseType: "blob",
         })
         .then((res) => {
@@ -204,7 +205,7 @@ export default function AccountBalance() {
 
       const link = document.createElement("a");
       link.href = href;
-      link.setAttribute("download", "balance_sheet.xlsx");
+      link.setAttribute("download", "balance_sheet.csv");
       document.body.appendChild(link);
       link.click();
 
