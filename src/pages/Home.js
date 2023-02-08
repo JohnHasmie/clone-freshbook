@@ -115,7 +115,6 @@ function Home() {
   useEffect(() => {
     statusOutstanding == "success" && setGlobalOutstanding(dataOutstanding);
   }, [statusOutstanding]);
-  console.log("line home",dataRevenueStream);
   return (
     <>
       <div className="layout-content" style={{ width: "98%" }}>
@@ -442,7 +441,7 @@ function Home() {
                 onClick={() =>
                   history.push("dashboard/reports/recurring-revenue")
                 }
-                tw="text-base hover:opacity-60"
+                tw="text-base hover:opacity-60 cursor-pointer"
                 role="button"
                 style={{ color: "#0063c1" }}
               >

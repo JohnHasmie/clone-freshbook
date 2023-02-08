@@ -172,9 +172,10 @@ export default function AccountTrialBalance() {
   );
   const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
     ["export-excel",{...filter,export:true}],
-    async () =>
+    async (key) =>
       axios
         .get(`reports/accounting/trial-balance`, {
+          params: key.queryKey[1],
           responseType: "blob",
         })
         .then((res) => {
@@ -182,7 +183,7 @@ export default function AccountTrialBalance() {
 
       const link = document.createElement("a");
       link.href = href;
-      link.setAttribute("download", "trial_balance.xlsx");
+      link.setAttribute("download", "trial_balance.csv");
       document.body.appendChild(link);
       link.click();
 

@@ -32,7 +32,7 @@ export default function PaymentsCollected() {
   const [clicked, setClicked] = useState(false);
   const [filter, setFilter] = useState({
     page: 1,
-    currency: "USD",
+    currency: "GBP",
   });
   const [form] = Form.useForm();
   const [newUser, setNewUser] = useState(JSON.parse(localStorage.getItem("newUser")) || {data:""});
@@ -41,7 +41,7 @@ export default function PaymentsCollected() {
 
   const myRef = useRef(null);
   const { data: dataPayment, status: statusPayment } = useQuery(
-    ["balance-sheet", filter],
+    ["payment-collection", filter],
     async (key) =>
       axios
         .get("reports/payment-collection", {
@@ -123,139 +123,7 @@ export default function PaymentsCollected() {
         </Row>
       </Form>
     </div>
-    // <div>
-    //   <div tw="flex justify-between ">
-    //     <Title level={3}>Filters</Title>
-    //     <p tw="text-base text-primary">Reset All</p>
-    //   </div>
-    //   <span tw="text-black ">DATE RANGE</span>
-    //   <Form
-    //     onFinish={onFinish}
-    //     onFinishFailed={onFinishFailed}
-    //     layout="vertical"
-    //     size={"large"}
-    //     tw="mt-5"
-    //   >
-    //     <Row gutter={24}>
-    //       <Col span={24}>
-    //         <Form.Item name="time">
-    //           <Select
-    //             defaultValue="this-month"
-    //             options={[
-    //               {
-    //                 value: "this-month",
-    //                 label: "This Month",
-    //               },
-    //               {
-    //                 value: "last-month",
-    //                 label: "Last Month",
-    //               },
-    //               {
-    //                 value: "this-calendar-year",
-    //                 label: "This Calendar Year",
-    //               },
-    //               {
-    //                 value: "this-quarter",
-    //                 label: "This Quarter",
-    //               },
-    //               {
-    //                 value: "last-quarter",
-    //                 label: "Last Quarter",
-    //               },
-    //             ]}
-    //           />
-    //         </Form.Item>
-    //       </Col>
-    //       <Col span={24}>
-    //         <Form.Item label="Clients" name="clients">
-    //           <Select
-    //             placeholder="All Clients"
-    //             mode="multiple"
-    //             options={[
-    //               {
-    //                 value: "andre",
-    //                 label: "Andre",
-    //               },
-    //               {
-    //                 value: "company-name",
-    //                 label: "Company Name",
-    //               },
-    //             ]}
-    //           />
-    //         </Form.Item>
-    //       </Col>
-    //       <Col span={24}>
-    //         <Form.Item label="Payment Method" name="payment-method">
-    //           <Select
-    //             placeholder="All Method of Payment"
-    //             mode="multiple"
-    //             options={[
-    //               {
-    //                 value: "2checkout",
-    //                 label: "2 Checkout",
-    //               },
-    //               {
-    //                 value: "ach",
-    //                 label: "ACH",
-    //               },
-    //               {
-    //                 value: "bank-transfer",
-    //                 label: "Bank Transfer",
-    //               },
-    //             ]}
-    //           />
-    //         </Form.Item>
-    //       </Col>
-    //       <Col span={24}>
-    //         <Form.Item label="Payment for" name="payment-for">
-    //           <Select
-    //             defaultValue="all"
-    //             options={[
-    //               {
-    //                 value: "all",
-    //                 label: "All Types",
-    //               },
-    //               {
-    //                 value: "invoices",
-    //                 label: "ACH",
-    //               },
-    //               {
-    //                 value: "bank-transfer",
-    //                 label: "Bank Transfer",
-    //               },
-    //             ]}
-    //           />
-    //         </Form.Item>
-    //       </Col>
-    //       <Col span={24}>
-    //         <Form.Item label="Currency" name="currency">
-    //           <Select
-    //             defaultValue="usd"
-    //             options={[
-    //               {
-    //                 value: "usd",
-    //                 label: "USD - US dollar",
-    //               },
-    //               {
-    //                 value: "{filter.currency}",
-    //                 label: "{filter.currency} - Rupiah",
-    //               },
-    //             ]}
-    //           />
-    //         </Form.Item>
-    //       </Col>
-    //       <Divider />
-    //       <Col span={12}>
-    //         <Button tw="text-lg px-8" onClick={() => setOpen(false)}>
-    //           Close
-    //         </Button>
-    //       </Col>
-    //       <Col span={12}>
-    //         <Button tw="text-lg text-white bg-success px-8">Apply</Button>
-    //       </Col>
-    //     </Row>
-    //   </Form>
-    // </div>
+    
   );
   useEffect(() => {
     user &&
@@ -291,6 +159,31 @@ export default function PaymentsCollected() {
     headers: headers,
     filename: 'payments_collected.csv'
   };
+  const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
+    ["export-csv",{...filter,export:true}],
+    async (key) =>
+      axios
+        .get(`reports/payment-collection`, {
+          params: key.queryKey[1],
+          responseType: "blob",
+        })
+        .then((res) => {
+          const href = URL.createObjectURL(res.data);
+
+          const link = document.createElement("a");
+          link.href = href;
+          link.setAttribute("download", "payment.csv");
+          document.body.appendChild(link);
+          link.click();
+    
+          document.body.removeChild(link);
+          URL.revokeObjectURL(href);
+        })
+        ,
+    {
+      enabled: false,
+    }
+  )
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -320,9 +213,10 @@ export default function PaymentsCollected() {
           </span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover
+        {statusPayment === "success" && <Popover
             placement="bottom"
-            content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />}
+            content={<MoreAction myRef={myRef}  excelRefetch={excelRefetch} />}
+            // content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />}
 
             trigger="click"
           >
@@ -330,7 +224,7 @@ export default function PaymentsCollected() {
               <span>More Actions</span>
               <DownOutlined />
             </ButtonMore>
-          </Popover>
+          </Popover>}
           <Popover
             placement="bottom"
             content={<SendEmail hide={hide} />}
@@ -444,7 +338,7 @@ export default function PaymentsCollected() {
                       <th tw="pb-1 pt-5">Date</th>
                       <th tw="pb-1 pt-5">Client</th>
                       <th tw="pb-1 pt-5">Method</th>
-                      <th tw="pb-1 pt-5">Description</th>
+                      {/* <th tw="pb-1 pt-5">Description</th> */}
                       <th tw="pb-1 pt-5">Payment for</th>
                       <th tw="pb-1 pt-5 text-right">Amount</th>
                     </tr>
@@ -460,7 +354,7 @@ export default function PaymentsCollected() {
                           {item.client.first_name + item.client.last_name}
                         </td>
                         <td tw="pb-1 pt-2">{item.payment}</td>
-                        <td tw="pb-1 pt-2"></td>
+                        {/* <td tw="pb-1 pt-2"></td> */}
                         <td tw="pb-1 pt-2">
                           <div tw="grid text-primary">
                             <span>{item.invoice.code}</span>

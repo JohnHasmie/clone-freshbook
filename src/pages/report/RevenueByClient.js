@@ -81,9 +81,10 @@ finish_at:moment().endOf('year'),
 
   const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
     ["export-csv",{...filter,export:true}],
-    async () =>
+    async (key) =>
       axios
         .get(`reports/revenue`, {
+          params: key.queryKey[1],
           responseType: "blob",
         })
         .then((res) => {
