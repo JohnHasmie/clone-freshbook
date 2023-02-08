@@ -52,7 +52,6 @@ const dateFormat = "DD/MM/YYYY";
 
   let history = useHistory();
   const onFinish = (values) => {
-    console.log("valuee",values)
     setFilter(values)
     setOpen(false)
   };

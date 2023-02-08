@@ -5,6 +5,7 @@ import {
   DatePicker,
   Divider,
   Form,
+  notification,
   Popover,
   Row,
   Select,
@@ -16,11 +17,11 @@ import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
-import SendEmail from "../../components/Reports/SendEmail";
+import SendEmail, { SendEmailDefault } from "../../components/Reports/SendEmail";
 import { bell, toggler } from "../../components/Icons";
 import ButtonCustom from "../../components/Button/index";
 import axios from "axios";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { numberWithDot } from "../../components/Utils";
 import moment from "moment";
 import AppContext from "../../components/context/AppContext";
@@ -191,6 +192,37 @@ export default function AccountBalance() {
   useEffect(() => {
     user && localStorage.setItem("newUser", JSON.stringify(user));
   }, [user]);
+  const { data: dataClients, statusClients } = useQuery(
+    ["clients"],
+    async (key) =>
+      axios
+        .get("clients")
+        .then((res) => res.data.data)
+  );
+  const mutation = useMutation(
+    async (data) => {
+      return axios.post(`reports/accounting/balance-sheet/send`, {...data,...filter}).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        notification.success({
+          message: `Balance Sheet has been sent`,
+          placement: "topLeft",
+        });
+        hide()
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        hide()
+
+        console.log(err.response.data.message);
+      },
+    }
+  );
+
 
   const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
     ["export-excel",{...filter,export:true}],
@@ -216,56 +248,7 @@ export default function AccountBalance() {
       enabled: false,
     }
   )
-  // const data =statusBalance === "success" && [    [`Balance Sheet: ${user?.data?.company_name || newUser?.data?.company_name}`, '', '', '', '', '', '', '', ''],
-  //   ['Date', `${moment(new Date()).format("YYYY/MM/DD")}`, 'Currency', '', '', '', '', '', ''],
-  //   ['Assets', '', '', '', '', '', '', '', ''],
-  //   ['Cash & Bank', '', '', '', '', '', '', '', ''],
-  //   ['Cash', '', '', '', '', '', '', '', ''],
-  //   ['Petty Cash',  dataBalance?.cash_and_bank?.petty_cash !== null &&
-  //     numberWithDot(
-  //       dataBalance?.cash_and_bank?.petty_cash
-  //     ), filter.currency, '', '', '', '', '', ''],
-  //   ['Cash Total',  dataBalance?.cash_and_bank?.total !== null &&
-  //     numberWithDot(dataBalance?.cash_and_bank?.total), filter.currency, '', '', '', '', '', ''],
-  //   ['Total Cash & Bank', dataBalance?.cash_and_bank?.total !== null &&
-  //   numberWithDot(dataBalance?.cash_and_bank?.total), filter.currency, '', '', '', '', '', ''],
-  //   ['Current Asset', '', '', '', '', '', '', '', ''],
-  //   ['Accounts Receivable', dataBalance?.current_asset?.accounts_receivable !==
-  //   null &&
-  //   numberWithDot(
-  //     dataBalance?.current_asset?.accounts_receivable
-  //   ), '', '', '', '', '', '', ''],
-  //   ['Accounts Receivable (general)', dataBalance?.current_asset?.accounts_receivable !==
-  //   null &&
-  //   numberWithDot(
-  //     dataBalance?.current_asset?.accounts_receivable
-  //   ), filter.currency, '', '', '', '', '', ''],
-  //   ['Accounts Receivable Total', '65000.00', filter.currency, '', '', '', '', '', ''],
-  //   ['Total Current Asset', dataBalance?.current_asset?.total !== null &&
-  //   numberWithDot(dataBalance?.current_asset?.total), filter.currency, '', '', '', '', '',''],
-  //   ['Total Assets', dataBalance?.total_assets !== null &&
-  //   numberWithDot(dataBalance?.total_assets), filter.currency, '', '', '', '', '',''],
-  //     ['Liabilities and Equity', filter.start_at, '', '', '', '', '', '', ''],
-  //   [' Current Liability	', '', '', '', '', '', '', '', ''],
-  //   ['Customer Credit', '', '', '', '', '', '', '', ''],
-  //   ['Customer Credit (general)', '', filter.currency, '', '', '', '', '', ''],
-  //   ['Customer Credit Total', '', filter.currency, '', '', '', '', '', ''],
-  //   ['Total Current Liability', '', filter.currency, '', '', '', '', '', ''],
-  //   ['Equity', '', '', '', '', '', '', '', ''],
-  //   ['Net Income', dataBalance?.income?.net_income !== null &&
-  //   numberWithDot(dataBalance?.income?.net_income), filter.currency, '', '', '', '', '', ''],
-  //   ['Total Equity', dataBalance?.income?.total_equity !== null &&
-  //   numberWithDot(dataBalance?.income?.total_equity), filter.currency, '', '', '', '', '', ''],
-  //   ['Total Liabilities and Equity', dataBalance?.income?.total_equity !== null &&
-  //   numberWithDot(dataBalance?.income?.total_equity), filter.currency, '', '', '', '', '',''],
 
-  // ]
-
-// const csvReport = {
-//   data: data,
-//   // headers: headers,
-//   filename: 'balance_sheet.csv'
-// };
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -309,7 +292,14 @@ export default function AccountBalance() {
         </Popover>}
           <Popover
             placement="bottom"
-            content={<SendEmail hide={hide} />}
+            content={
+              <SendEmailDefault
+                hide={hide}
+                dataClients={dataClients}
+                user={newUser}
+                mutation={mutation}
+              />
+            }
             trigger="click"
             visible={clicked}
             onVisibleChange={handleClickChange}
