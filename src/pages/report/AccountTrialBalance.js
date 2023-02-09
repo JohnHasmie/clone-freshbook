@@ -5,6 +5,7 @@ import {
   DatePicker,
   Divider,
   Form,
+  notification,
   Popover,
   Row,
   Select,
@@ -16,10 +17,10 @@ import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
-import SendEmail from "../../components/Reports/SendEmail";
+import SendEmail, { SendEmailDefault } from "../../components/Reports/SendEmail";
 import ButtonCustom from "../../components/Button/index";
 import { bell, toggler } from "../../components/Icons";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 import { getTotalGlobal, numberWithDot } from "../../components/Utils";
 import moment from "moment";
@@ -226,6 +227,36 @@ export default function AccountTrialBalance() {
     { accountNumber: "1001-1", accountSubType: "Income", parentAccountSub: "Revenue: Sales", debit: "0.00",credit: "0.00",currency: filter?.currency },
     { accountNumber: "1001-1", accountSubType: "", parentAccountSub: "Total", debit:   getTotalGlobal(Object.values(dataTrial?.data)),credit: "0.00",currency: filter?.currency },
   ];
+  const { data: dataClients, statusClients } = useQuery(
+    ["clients"],
+    async (key) =>
+      axios
+        .get("clients")
+        .then((res) => res.data.data)
+  );
+  const mutation = useMutation(
+    async (data) => {
+      return axios.post(`reports/accounting/trial-balance/send`, {...data,...filter}).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        notification.success({
+          message: `Account Trial Balance has been sent`,
+          placement: "topLeft",
+        });
+        hide()
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        hide()
+
+        console.log(err.response.data.message);
+      },
+    }
+  );
   const csvReport = {
     data: data,
     headers: headers,
@@ -273,7 +304,15 @@ export default function AccountTrialBalance() {
           </Popover>
           <Popover
             placement="bottom"
-            content={<SendEmail hide={hide} />}
+            // content={<SendEmail hide={hide} />}
+            content={
+              <SendEmailDefault
+                hide={hide}
+                dataClients={dataClients}
+                user={newUser}
+                mutation={mutation}
+              />
+            }
             trigger="click"
             visible={clicked}
             onVisibleChange={handleClickChange}

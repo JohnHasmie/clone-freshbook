@@ -4,6 +4,7 @@ import {
   Col,
   Divider,
   Form,
+  notification,
   Popover,
   Row,
   Select,
@@ -17,10 +18,10 @@ import { bell, toggler } from "../../components/Icons";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
-import SendEmail from "../../components/Reports/SendEmail";
+import SendEmail, { SendEmailDefault } from "../../components/Reports/SendEmail";
 import ButtonCustom from "../../components/Button/index";
 import axios from "axios";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import moment from "moment";
 import { getTotalGlobal, numberWithDot } from "../../components/Utils";
 import AppContext from "../../components/context/AppContext";
@@ -159,6 +160,36 @@ export default function PaymentsCollected() {
     headers: headers,
     filename: 'payments_collected.csv'
   };
+  const { data: dataClients, statusClients } = useQuery(
+    ["clients"],
+    async (key) =>
+      axios
+        .get("clients")
+        .then((res) => res.data.data)
+  );
+  const mutation = useMutation(
+    async (data) => {
+      return axios.post(`reports/accounting/payment-collection/send`, {...data,...filter}).then((res) => res.data);
+    },
+    {
+      onSuccess: (res) => {
+        notification.success({
+          message: `Payments Collected has been sent`,
+          placement: "topLeft",
+        });
+        hide()
+      },
+      onError: (err) => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+        hide()
+
+        console.log(err.response.data.message);
+      },
+    }
+  );
   const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
     ["export-csv",{...filter,export:true}],
     async (key) =>
@@ -227,7 +258,14 @@ export default function PaymentsCollected() {
           </Popover>}
           <Popover
             placement="bottom"
-            content={<SendEmail hide={hide} />}
+            content={
+              <SendEmailDefault
+                hide={hide}
+                dataClients={dataClients}
+                user={newUser}
+                mutation={mutation}
+              />
+            }
             trigger="click"
             visible={clicked}
             onVisibleChange={handleClickChange}

@@ -35,7 +35,7 @@ export default function DetailReports() {
     {
       icon: <FileDoneOutlined />,
       title: <h1>Invoice Details</h1>,
-      path:'/dashboard/reports/invoice-detail',
+      path:`/dashboard/reports/invoice-detail?clientId=${clientId}`,
 
       desc: (
         <span>A summary of the invoices you've sent over a period of time</span>

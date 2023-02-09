@@ -278,17 +278,17 @@ if(!dontThrow){
       newData = {
         ...isForm,
         logo: fileList.length > 0 && fileList[0].url,
-        // items: lines,
-        items: [
-          {
-            id: 1,
-            qty: 2,
-          },
-          {
-            id: 3,
-            qty: 2,
-          },
-        ],
+        items: lines,
+        // items: [
+        //   {
+        //     id: 1,
+        //     qty: 2,
+        //   },
+        //   {
+        //     id: 3,
+        //     qty: 2,
+        //   },
+        // ],
         client_id: isClient,
         ...formRecurring,
         attachments: fileListAttach,
@@ -298,17 +298,17 @@ if(!dontThrow){
         ...isForm,
         logo: fileList.length > 0 && fileList[0].url,
 
-        // items: lines,
-        items: [
-          {
-            id: 1,
-            qty: 2,
-          },
-          {
-            id: 3,
-            qty: 2,
-          },
-        ],
+        items: lines,
+        // items: [
+        //   {
+        //     id: 1,
+        //     qty: 2,
+        //   },
+        //   {
+        //     id: 3,
+        //     qty: 2,
+        //   },
+        // ],
         client_id: isClient,
         attachments: fileListAttach,
       };

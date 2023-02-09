@@ -5,6 +5,7 @@ import {
   DatePicker,
   Divider,
   Form,
+  notification,
   Popover,
   Radio,
   Row,
@@ -19,12 +20,12 @@ import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
 import Filter from "../../components/Reports/Filter";
 import MoreAction, { MoreActionCSV } from "../../components/Reports/MoreAction";
-import SendEmail from "../../components/Reports/SendEmail";
+import SendEmail, { SendEmailDefaultWithCsv } from "../../components/Reports/SendEmail";
 import { bell, toggler } from "../../components/Icons";
 import ButtonCustom from "../../components/Button/index";
 import AppContext from "../../components/context/AppContext";
 import moment from "moment";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 import {
   getTotalGlobal,
@@ -264,6 +265,37 @@ export default function AccountAging() {
       }
     
     }, [statusAccount])
+    const mutation = useMutation(
+      async (data) => {
+        return axios.post(`reports/account-aging/send`, data).then((res) => res.data);
+      },
+      {
+        onSuccess: (res) => {
+          notification.success({
+            message: `Account Aging has been sent`,
+            placement: "topLeft",
+          });
+          hide()
+        },
+        onError: (err) => {
+          notification.error({
+            message: `An Error Occurred Please Try Again Later`,
+            placement: "topLeft",
+          });
+          hide()
+  
+          console.log(err.response.data.message);
+        },
+      }
+    );
+    const { data: dataClients, statusClients } = useQuery(
+      ["clients"],
+      async (key) =>
+        axios
+          .get("clients")
+          .then((res) => res.data.data)
+    );
+  
   const csvReport = data.length > 0 && {
     data: data,
     headers: headers,
@@ -314,7 +346,7 @@ export default function AccountAging() {
           </Popover>}
           <Popover
             placement="bottom"
-            content={<SendEmail hide={hide} />}
+            content={<SendEmailDefaultWithCsv  csv={{ ...csvReport }} hide={hide} dataClients={dataClients} user={newUser} mutation={mutation}/>}
             trigger="click"
             visible={clicked}
             onVisibleChange={handleClickChange}
