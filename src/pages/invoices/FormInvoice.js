@@ -6,6 +6,7 @@ import {
   Divider,
   Form,
   Input,
+  List,
   notification,
   Popover,
   Radio,
@@ -36,13 +37,14 @@ import {
 } from "../report/ReportCustom.style";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { CheckOutlined, LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import AppContext from "../../components/context/AppContext";
 import InvoicesSetting from "./InvoicesSetting";
-import CreateRecurring from "./CreateRecurring";
+import CreateRecurring, { MakeRecurring } from "./CreateRecurring";
 import { DividerCustom } from "../clients/AdvanceSearch.style";
 import FilterDiscount from "./FilterDiscount";
 import SendEmailInvoice from "./SendEmailInvoice";
+
 const dateFormat = "DD/MM/YYYY";
 
 export default function FormInvoice() {
@@ -271,24 +273,13 @@ if(!dontThrow){
     }
   );
   const onFinish = (values) => {
-    form.submit();
-
     let newData = "";
     if (isRecurring) {
       newData = {
         ...isForm,
         logo: fileList.length > 0 && fileList[0].url,
         items: lines,
-        // items: [
-        //   {
-        //     id: 1,
-        //     qty: 2,
-        //   },
-        //   {
-        //     id: 3,
-        //     qty: 2,
-        //   },
-        // ],
+  
         client_id: isClient,
         ...formRecurring,
         attachments: fileListAttach,
@@ -299,16 +290,7 @@ if(!dontThrow){
         logo: fileList.length > 0 && fileList[0].url,
 
         items: lines,
-        // items: [
-        //   {
-        //     id: 1,
-        //     qty: 2,
-        //   },
-        //   {
-        //     id: 3,
-        //     qty: 2,
-        //   },
-        // ],
+  
         client_id: isClient,
         attachments: fileListAttach,
       };
@@ -319,33 +301,79 @@ if(!dontThrow){
       mutation.mutate(newData);
     }
   };
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
   const onFinishRecurring = () => {
     setOpen(false);
   };
-  // const RecurringSettings = (
-  //   <div>
-  //     <div tw="flex justify-between ">
-  //       <Title level={3}>Settings</Title>
-  //     </div>
-  //     <List
-  //       itemLayout="horizontal"
-  //       dataSource={[
-  //         {
-  //           title: "Make Recurring",
-  //           desc: "Bill your clients automatically",
-  //         },
-  //       ]}
-  //       renderItem={(item) => (
-  //         <List.Item>
-  //           <SettingButton>
-  //             <strong>{item.title}</strong>
-  //             <span>{item.desc}</span>
-  //           </SettingButton>
-  //         </List.Item>
-  //       )}
-  //     />
-  //   </div>
-  // );
+  const RecurringSettingsInvoice = (
+    <div>
+      <div tw="flex justify-between ">
+        <Title level={3}>Settings</Title>
+      </div>
+      <List
+        itemLayout="horizontal"
+        dataSource={[
+          {
+            title: "Make Recurring",
+            desc: "Bill your clients automatically",
+          },
+        ]}
+        renderItem={(item) => (
+          <List.Item>
+            <SettingButton>
+              <strong>{item.title}</strong>
+              <span>{item.desc}</span>
+            </SettingButton>
+          </List.Item>
+        )}
+      />
+    </div>
+  );
+  const MakeRecurringSettings = (
+    <div tw="mt-3">
+      <div tw="flex justify-between ">
+        <Title level={3}>Make Recurring
+</Title>
+      </div>
+<p>Convert this invoice into recurring template</p>
+<ul tw="list-disc	">
+  <li><span>Save time by automatically creating invoices from a template</span></li>
+  <li><span>Customize how often invoices are created</span></li>
+  <li><span>Allow clients to pay automatically by saving their credit card</span></li>
+
+</ul>
+      <Form
+        // onFinish={onFinishRecurring}
+        layout="vertical"
+        size={"large"}
+        tw="mt-5"
+     
+      >
+        <Row gutter={24}>
+       
+          <Divider />
+          <Col span={12}>
+            <Button
+              tw="text-lg px-8"
+              onClick={() => {
+                setIsRecurring(false);
+                setOpen(false);
+              }}
+            >
+              Close
+            </Button>
+          </Col>
+          <Col span={12}>
+            <Button onClick={()=>history.push("/invoices/new-recurring-template")} tw="text-lg text-white bg-success px-8">
+              Apply
+            </Button>
+          </Col>
+        </Row>
+      </Form>
+    </div>
+  );
   const RecurringSettings = (
     <div tw="mt-3">
       <div tw="flex justify-between ">
@@ -611,16 +639,16 @@ if(!dontThrow){
           </span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <ButtonMore tw="!py-2" onClick={() => history.goBack()}>
+          <ButtonMore tw="!py-2" onClick={() =>{pathname.includes("recurring") ? history.push("/invoices/recurring-templates") : history.push("/invoices")}}>
             <span>Cancel</span>
           </ButtonMore>
           <Button
             tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center "
-            onClick={onFinish}
+            onClick={()=>form.submit()}
           >
             <span tw="text-lg">Save...</span>
           </Button>
-          {!isRecurring && (
+          {!pathname.includes("recurring") && (
             <Popover
               placement="bottom"
               content={<SendEmailInvoice clientProps={[isClient, setIsClient]} hide={hide} dataUser={dataUser?.user?.company_name} invoiceId={invoiceId} date={isForm?.due_date} total={numberWithDot(localSubTotal-(localSubTotal*isForm.discount/100))} onFinishInvoice={onFinish} setDontThrow={setDontThrow} isInvoiceId={isInvoiceId} />}
@@ -638,9 +666,12 @@ if(!dontThrow){
       <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2">
         <Form
           size="default"
-          layout={"vertical"}
           form={form}
-          // onFinish={onFinish}
+          
+          layout={"vertical"}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+
           tw="md:col-span-9 space-y-5 mb-10 mt-10 md:mt-2"
         >
           <CardDetailInvoice>
@@ -650,6 +681,16 @@ if(!dontThrow){
                alt="profile company"
                tw="w-screen md:w-auto"
              /> */}
+             <Form.Item 
+             name="file"
+             
+             rules={[
+          {
+            required: true,
+            message: 'Please input your image!',
+          },
+        ]}>
+
               <UploadCustom
                 name="file"
                 headers={{
@@ -666,6 +707,8 @@ if(!dontThrow){
               >
                 {fileList.length < 1 && "+ Upload"}
               </UploadCustom>
+             </Form.Item>
+
               <div tw="flex justify-between ">
                 <div tw="flex flex-col items-end text-right ">
                   <span
@@ -899,7 +942,17 @@ if(!dontThrow){
               </div>
             </div>
             <div tw="grid grid-cols-4 gap-5 mb-16">
+            <Form.Item 
+             name="clients"
+             
+             rules={[
+          {
+            required: true,
+            message: 'Please input client!',
+          },
+        ]}>
               <InvoiceHead clientProps={[isClient, setIsClient]} />
+              </Form.Item>
               <div tw="space-y-5 ">
                 <div>
                   {/* <Form.Item
@@ -1112,12 +1165,24 @@ if(!dontThrow){
             </UploadCustom>
           </Card>
         </Form>
-        <CreateRecurring
-          Filtering={RecurringSettings}
+ {pathname.includes("recurring") ?
+  <CreateRecurring
+  Filtering={RecurringSettings}
+  setOpen={setOpen}
+  setIsRecurring={setIsRecurring}
+  open={open}
+/>
+:
+ <MakeRecurring
+          Filtering={MakeRecurringSettings}
           setOpen={setOpen}
           setIsRecurring={setIsRecurring}
           open={open}
         />
+      
+      
+      }
+          {/* <Filter Filtering={RecurringSettingsInvoice} setOpen={setOpen} open={open} /> */}
         {/* <InvoicesSetting open={open} setOpen={setOpen} /> */}
       </div>
     </div>
