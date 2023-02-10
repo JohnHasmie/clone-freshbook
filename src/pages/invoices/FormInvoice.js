@@ -639,7 +639,7 @@ if(!dontThrow){
           </span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <ButtonMore tw="!py-2" onClick={() => history.goBack()}>
+          <ButtonMore tw="!py-2" onClick={() =>{pathname.includes("recurring") ? history.push("/invoices/recurring-templates") : history.push("/invoices")}}>
             <span>Cancel</span>
           </ButtonMore>
           <Button
