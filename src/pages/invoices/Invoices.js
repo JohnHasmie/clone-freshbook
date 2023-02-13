@@ -205,6 +205,8 @@ export default function Invoices() {
       due_date: item.due_date,
       description: item.notes,
       amount: item.total,
+      type: item.type,
+
       status: item.status,
       client_id: item?.client_id,
     }));
@@ -246,6 +248,12 @@ export default function Invoices() {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      render: (text, record) => (
+        <div>
+          <span>{record.description}</span>{" "}
+          <p tw="text-xs capitalize">{record.type}</p>{" "}
+        </div>
+      ),
       sorter: (a, b) => a.description.length - b.description.length,
       width: "30%",
     },
@@ -611,7 +619,7 @@ export default function Invoices() {
     </div>
   );
   const filledValues = Object.values(filter).filter((value) => value);
-  // console.log("filter",filter);
+  console.log("filter",dataInvoices);
   return (
     <>
       <div className="layout-content">

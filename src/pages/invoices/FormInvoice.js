@@ -116,8 +116,8 @@ export default function FormInvoice() {
   const [formRecurring, setFormRecurring] = useState({
     recurring_type: "weekly",
     recurring_next_issue_date: new Date(),
-    date_type: 0,
-    delivery_option: "send_invoice",
+    recurring_max: 0,
+    recurring_delivery_option: "send_invoice",
   });
 
   const [uploadLoading, setUploadLoading] = useState(false);
@@ -195,10 +195,10 @@ export default function FormInvoice() {
     }
   }, [status]);
   useEffect(() => {
-    if (formRecurring.date_type === null) {
+    if (formRecurring.recurring_max === null) {
       setToggleInvoiceNumber(true);
     }
-    if (formRecurring.date_type === 0) {
+    if (formRecurring.recurring_max === 0) {
       setToggleInvoiceNumber(false);
     }
   }, [formRecurring]);
@@ -274,7 +274,8 @@ if(!dontThrow){
   );
   const onFinish = (values) => {
     let newData = "";
-    if (isRecurring) {
+    console.log(formRecurring,"cek");
+    if (pathname.includes("recurring")) {
       newData = {
         ...isForm,
         logo: fileList.length > 0 && fileList[0].url,
@@ -284,6 +285,7 @@ if(!dontThrow){
         ...formRecurring,
         attachments: fileListAttach,
       };
+      console.log("is Recurring");
     } else {
       newData = {
         ...isForm,
@@ -366,7 +368,7 @@ if(!dontThrow){
             </Button>
           </Col>
           <Col span={12}>
-            <Button onClick={()=>history.push("/invoices/new-recurring-template")} tw="text-lg text-white bg-success px-8">
+            <Button onClick={()=>history.push("/recurring-template/new")} tw="text-lg text-white bg-success px-8">
               Apply
             </Button>
           </Col>
@@ -449,10 +451,10 @@ if(!dontThrow){
               onChange={(e) =>
                 setFormRecurring({
                   ...formRecurring,
-                  date_type: e.target.value,
+                  recurring_max: e.target.value,
                 })
               }
-              value={formRecurring.date_type}
+              value={formRecurring.recurring_max}
             >
               <Radio value={0}>Last Invoiced</Radio>
               <Radio value={null}>Issued Date</Radio>
@@ -461,12 +463,12 @@ if(!dontThrow){
                   <span tw="text-xs text-gray-400">Invoices Remaining</span>
                   <Input
                     type="number"
-                    value={formRecurring.date_type}
+                    value={formRecurring.recurring_max}
                     tw="w-20"
                     onChange={(e) =>
                       setFormRecurring({
                         ...formRecurring,
-                        date_type: e.target.value,
+                        recurring_max: e.target.value,
                       })
                     }
                   />
@@ -487,7 +489,7 @@ if(!dontThrow){
                   delivery_option: e.target.value,
                 })
               }
-              value={formRecurring.delivery_option}
+              value={formRecurring.recurring_delivery_option}
             >
               <Radio value={"send_invoice"}>Send invoices automatically</Radio>
               <Radio value={"draft_invoice"}>
@@ -946,10 +948,16 @@ if(!dontThrow){
              name="clients"
              
              rules={[
-          {
-            required: true,
-            message: 'Please input client!',
-          },
+              {
+                message: 'Please input your client',
+                validator: (_, value) => {
+                  if (isClient) {
+                    return Promise.resolve();
+                  } else {
+                    return Promise.reject('Error');
+                  }
+                 }
+               }
         ]}>
               <InvoiceHead clientProps={[isClient, setIsClient]} />
               </Form.Item>

@@ -193,7 +193,7 @@ const refInvoice=useRef(null)
               component={AccountTrialBalance}
             />
             <Route exact path="/invoices/new" component={FormInvoice} />
-            <Route exact path="/invoices/new-recurring-template" component={FormInvoice} />
+            {/* <Route exact path="/invoices/new-recurring-template" component={FormInvoice} /> */}
 
             <Route
                 exact

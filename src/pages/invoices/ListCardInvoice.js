@@ -57,7 +57,7 @@ export default function ListCardInvoice({ invoiceProps }) {
                 </div>
                 <Divider />
                 <span tw="flex justify-end text-sm text-right">
-                  Rp{numberWithDot(item?.total)}
+                  ${numberWithDot(item?.total)}
                 </span>
               </CardInvoice>
             </Link>

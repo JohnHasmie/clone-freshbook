@@ -221,6 +221,7 @@ export default function Invoices() {
         status: item.status,
         frequency: item.recurring.type,
         duration: item.recurring.delivery_option,
+        recurring_max:item.recurring.max_invoice
       }));
 
   const columns = [
@@ -249,7 +250,7 @@ export default function Invoices() {
       dataIndex: "frequency_duration",
       render: (text, record) => (
         <div>
-          <span>{record.frequency}</span> <p tw="text-xs">{record.duration}</p>{" "}
+          <span>{record.frequency}</span> <p tw="text-xs">{record.recurring_max === 0 ? "Infinite" : `${record.recurring_max} Remaining`}</p>{" "}
         </div>
       ),
       sorter: (a, b) => a.frequency.length - b.frequency.length,
@@ -373,6 +374,7 @@ export default function Invoices() {
       </Menu>
     </div>
   );
+  console.log(dataInvoices,"dataInvoices");
   return (
     <>
       <div className="layout-content">
