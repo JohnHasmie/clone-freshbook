@@ -1,5 +1,5 @@
 import {  Menu, notification, Popover, Table } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { Button } from "antd";
 
 import {
@@ -15,6 +15,7 @@ import { numberWithDot } from "../../components/Utils";
 import {  useHistory } from "react-router-dom";
 
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import AppContext from "../../components/context/AppContext";
 
 
 export default function ItemsDeleted() {
@@ -26,6 +27,7 @@ export default function ItemsDeleted() {
     show:"deleted"
   });
   const queryClient = useQueryClient();
+  const { user } = useContext(AppContext);
 
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
@@ -172,13 +174,13 @@ export default function ItemsDeleted() {
       ),
       sorter: (a, b) => a.name.length - b.name.length,
     },
-    {
-      title: "Current Stock",
-      dataIndex: "current",
-      key: "current",
+    // {
+    //   title: "Current Stock",
+    //   dataIndex: "current",
+    //   key: "current",
 
-      sorter: (a, b) => a.current - b.current,
-    },
+    //   sorter: (a, b) => a.current - b.current,
+    // },
 
     {
       title: "Rate",
@@ -186,13 +188,18 @@ export default function ItemsDeleted() {
       dataIndex: "rate",
       render: (text, record) => (
         <div>
-         USD{numberWithDot(record.rate)}
+         {filter.currency === "USD" ? "$" : "£"} {numberWithDot(record.rate)}
         </div>
       ),
       sorter: (a, b) => a.rate.length - b.rate.length,
     },
   ];
-
+  
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   return (
     <>
       <div tw="w-full md:w-[98%]">

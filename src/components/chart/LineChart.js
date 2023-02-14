@@ -1,15 +1,15 @@
+import moment from "moment";
 import ReactApexChart from "react-apexcharts";
-import { Typography } from "antd";
-import { MinusOutlined } from "@ant-design/icons";
 // import lineChart from "./configs/lineChart";
 import tw from "twin.macro";
 import { getTotalGlobal, numberWithDot } from "../Utils";
 
 function LineChart({dataRevenue,filterRecurring}) {
-  const { Title, Paragraph } = Typography;
 
   const numbers = [];
-
+  const currentMonth = moment().format("MMM");
+  const currentMonthData = dataRevenue?.data?.record?.find(item => item.month === currentMonth);
+  
   for (let i = 1; i <= 12; i++) {
     numbers.push(i*0);
   }
@@ -22,6 +22,7 @@ function LineChart({dataRevenue,filterRecurring}) {
       }
   
     ],
+    
   
     options: {
       chart: {
@@ -88,7 +89,7 @@ function LineChart({dataRevenue,filterRecurring}) {
     <>
       <div tw="flex justify-end">
         <div tw="grid justify-items-end">
-          <div tw="font-bold text-primary text-lg md:text-3xl">{filterRecurring?.currency == "GBP" ? '£' : "$"}{dataRevenue?.data?.total?.recurring && numberWithDot(dataRevenue?.data?.total?.recurring)}</div>
+          <div tw="font-bold text-primary text-lg md:text-3xl">{filterRecurring?.currency == "GBP" ? '£' : "$"}{dataRevenue?.data?.total?.recurring && currentMonthData ? numberWithDot(currentMonthData.recurring):0}</div>
           <div>this month</div>
         </div>
       </div>

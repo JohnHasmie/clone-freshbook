@@ -36,6 +36,20 @@ function Home() {
   const handleClickChange = (open) => {
     setClicked(open);
   };
+
+useEffect(() => {
+  if(user){
+  setFilterOutstanding({...filterOutstanding,currency:user?.data?.base_currency})
+  setFilterPayment({...filterPayment,currency:user?.data?.base_currency})
+  setFilterRecurring({...filterRecurring,currency:user?.data?.base_currency})
+
+
+
+}
+}, [user])
+
+
+
   const invoiceList = (
     <div /* tw="border border-[#7f8c9f]" */>
       <Menu>
@@ -115,6 +129,8 @@ function Home() {
   useEffect(() => {
     statusOutstanding == "success" && setGlobalOutstanding(dataOutstanding);
   }, [statusOutstanding]);
+
+  console.log("cek",dataRevenue,dataRevenueStream);
   return (
     <>
       <div className="layout-content" style={{ width: "98%" }}>

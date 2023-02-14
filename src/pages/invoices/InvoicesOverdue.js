@@ -20,7 +20,7 @@ import {
   Popover,
   Tooltip,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import TableCustom from "../../components/Table";
@@ -33,6 +33,7 @@ import { numberWithDot, translateBg } from "../../components/Utils";
 import moment from "moment";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 import FormPayment from "./FormPayment";
+import AppContext from "../../components/context/AppContext";
 
 export default function InvoicesOverdue() {
   const [isType, setIsType] = useState("");
@@ -60,7 +61,12 @@ export default function InvoicesOverdue() {
   const [isModalPayment, setIsModalPayment] = useState(false);
 
   const [invoiceForPayment, setInvoiceForPayment] = useState("");
-
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const handleModal = (type) => {
     switch (type.key) {
       case "archive":
@@ -89,7 +95,6 @@ export default function InvoicesOverdue() {
     }
 
     setClicked(false);
-  
   };
 
   const [searchField, setSearchField] = useState({
@@ -567,7 +572,7 @@ export default function InvoicesOverdue() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg">
-          <TabHome />
+          <TabHome filterOutstanding={filter} />
 
           <div tw="md:mt-20">
             <div tw="grid md:flex  mb-6">

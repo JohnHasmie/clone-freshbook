@@ -5,11 +5,11 @@ import { useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
 import { numberWithDot } from "../../components/Utils";
 
-export default function TabHome() {
+export default function TabHome({filterOutstanding}) {
   const history = useHistory();
-  const [filterOutstanding, setFilterOutstanding] = useState({
-    currency: "USD",
-  });
+  // const [filterOutstanding, setFilterOutstanding] = useState({
+  //   currency: "USD",
+  // });
   let { pathname } = useLocation();
   const handleClick = (type) => {
     if (pathname.includes("clients")) {
@@ -27,7 +27,6 @@ export default function TabHome() {
         })
         .then((res) => res.data?.data)
   );
-console.log(dataOutstanding,"cek")
   return (
     <>
       {" "}

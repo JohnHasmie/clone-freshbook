@@ -6,7 +6,7 @@ import CardInvoice from "../../components/CardInvoice";
 import { numberWithDot, translateBg, truncate } from "../../components/Utils";
 import tw from "twin.macro";
 
-export default function ListCardInvoice({ invoiceProps }) {
+export default function ListCardInvoice({ invoiceProps,filter }) {
   const [dataInvoices, status] = invoiceProps;
   return (
     <>
@@ -57,7 +57,7 @@ export default function ListCardInvoice({ invoiceProps }) {
                 </div>
                 <Divider />
                 <span tw="flex justify-end text-sm text-right">
-                  ${numberWithDot(item?.total)}
+                {filter.currency === "USD" ? "$" : "£"} {numberWithDot(item?.total)}
                 </span>
               </CardInvoice>
             </Link>

@@ -204,9 +204,12 @@ export default function AccountAging() {
     </div>
   );
   useEffect(() => {
-    user && localStorage.setItem("newUser", JSON.stringify(user));
+    if(user){
+      localStorage.setItem("newUser", JSON.stringify(user))
+      setFilterOutstanding({ ...filterOutstanding, currency: user?.data?.base_currency })
+    };
   }, [user]);
- 
+
   let newDataItems =
     statusAccount === "success" &&
     dataAccount?.map((item) => ({
@@ -302,7 +305,7 @@ export default function AccountAging() {
     filename: `accounts_aging.csv`,
   };
 
-  console.log("newData", csvReport);
+  console.log("newData", filterOutstanding);
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">

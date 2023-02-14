@@ -30,7 +30,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState,useContext,useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardInvoice from "../../components/CardInvoice/index";
@@ -47,6 +47,7 @@ import moment from "moment";
 import ListCardInvoice from "./ListCardInvoice";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 import FilterDate from "./FilterDate";
+import AppContext from "../../components/context/AppContext";
 
 export default function Invoices() {
   const { Title } = Typography;
@@ -56,11 +57,14 @@ export default function Invoices() {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
-    type:"recurring",
     mode:"published",
     start_date: "",
     end_date: "",
     date_type: "last_invoice",
+    type:"recurring",
+    show:"template",
+    currency:"USD"
+
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
@@ -70,7 +74,12 @@ export default function Invoices() {
   const [isType, setIsType] = useState("");
   const [isInvoiceId, setIsInvoiceId] = useState("");
   const queryClient = useQueryClient();
-
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const handleModal = (type) => {
     switch (type.key) {
       case "archive":
@@ -209,7 +218,6 @@ export default function Invoices() {
   const data =
     status === "success" &&
     filteredData
-      ?.filter((item) => item.recurring !== null)
       ?.map((item) => ({
         key: item.id,
         client: item.client.company_name,
@@ -287,7 +295,7 @@ export default function Invoices() {
               </Tooltip>
             </div>
           </div>
-          <span>{numberWithDot(record.amount)}</span>{" "}
+          <span>{filter?.currency == "GBP" ? "£" : "$"} {numberWithDot(record.amount)}</span>{" "}
           <span
             tw="text-xs rounded p-1 ml-auto"
             style={{ background: translateBg(record.status) }}
@@ -409,7 +417,7 @@ export default function Invoices() {
                     </div>
                   </div>
                 )}
-                <ListCardInvoice invoiceProps={[dataInvoices, status]} />
+                <ListCardInvoice invoiceProps={[dataInvoices, status]} filter={filter} />
               </div>
             </div>
           ) : (

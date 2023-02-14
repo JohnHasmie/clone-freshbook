@@ -1,123 +1,3 @@
-// import { Checkbox, Table, Tooltip } from "antd";
-// import React, { useState } from "react";
-// import { RightOutlined } from "@ant-design/icons";
-// import tw from "twin.macro";
-
-// import { useHistory } from "react-router-dom";
-// import PaginationFooter from "../../components/layout/PaginationFooter";
-
-// export default function InvoicesArchived() {
-//   const history = useHistory();
-//   const [filter, setFilter] = useState({
-//     limit: 10,
-//     page: 1,
-//     mode: "unarchive",
-//   });
-//   const [checked, setChecked] = useState([]);
-//   const handleCheck = (v) => {
-//     const newChecked = [...checked];
-//     const findById = newChecked.find((x) => x === v);
-//     if (findById) {
-//       const findIndex = checked.indexOf(v);
-//       newChecked.splice(findIndex, 1);
-//     } else {
-//       newChecked.push(v);
-//     }
-//     setChecked(newChecked);
-//   };
-
-//   const data = [];
-//   const handleCheckAll = () => {
-//     const all = data?.map((item) => item.key);
-//     if (data?.length === checked.length) {
-//       setChecked([]);
-//     } else {
-//       setChecked(all);
-//     }
-//   };
-//   const columns = [
-//     {
-//       title: (
-//         <Checkbox
-//           checked={data.length !== 0 && data?.length === checked.length}
-//           disabled={data.length === 0}
-//           className="font-normal"
-//           onChange={handleCheckAll}
-//         />
-//       ),
-//       dataIndex: "checkbox",
-//       key: "checkbox",
-//       width: "5%",
-//     },
-//     {
-//       title: "Client/Invoice Number",
-//       dataIndex: "client_invoice_number",
-//       key: "client_invoice_number",
-//     },
-//     {
-//       title: "Description",
-//       dataIndex: "description",
-//       key: "description",
-//     },
-
-//     {
-//       title: "Issued Date/Due Date",
-//       key: "date",
-//       dataIndex: "date",
-//     },
-
-//     {
-//       title: "Amount / Status",
-//       key: "amount",
-//       dataIndex: "amount",
-//     },
-//   ];
-//   return (
-//     <>
-//       <div tw="w-full md:w-[98%] md:mb-5">
-//         <div
-//           style={{
-//             display: "flex",
-//             justifyContent: "space-between",
-//             marginBottom: "24px",
-//           }}
-//         >
-//           <div tw="flex items-center">
-//             <span
-//               tw="text-xl cursor-pointer font-bold text-primary"
-//               onClick={() => history.push("/clients")}
-//             >
-//               All Clients
-//             </span>
-//             <RightOutlined tw=" ml-2" />
-//             <span tw="text-xl font-bold text-black ml-2">Archived</span>
-//           </div>
-//         </div>
-//         <div className="table-responsive">
-//           <Table
-//             columns={columns}
-//             dataSource={data}
-//             pagination={false}
-//             className="ant-border-space"
-//           />
-//         </div>
-//         <div tw="flex justify-between mt-5">
-//           <div>
-//             <span tw="text-sm text-black font-bold">
-//               1-{data.length - 1} of {data.length - 1}{" "}
-//             </span>
-//           </div>
-
-//           <div>
-//             <PaginationFooter />
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
-
-
 import {
   CaretDownOutlined,
   CloseOutlined,
@@ -149,7 +29,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState,useEffect,useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardInvoice from "../../components/CardInvoice/index";
@@ -166,6 +46,7 @@ import moment from "moment";
 import ListCardInvoice from "./ListCardInvoice";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 import FormPayment from "./FormPayment";
+import AppContext from "../../components/context/AppContext";
 
 export default function InvoicesArchived() {
   const { Title } = Typography;
@@ -185,7 +66,12 @@ export default function InvoicesArchived() {
   const [clicked, setClicked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalPayment, setIsModalPayment] = useState(false);
-
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const handleModal = (type) => {
     switch (type.key) {
       case "unarchive":
@@ -278,7 +164,7 @@ export default function InvoicesArchived() {
 
   const defaultFooter = () => (
     <div tw="text-right text-base">
-      Grand Total:{" "}
+      Grand Total:{filter?.currency == "GBP" ? "£" : "$"}
       {data &&
         getTotal(
           data?.map((x) => {
@@ -372,7 +258,7 @@ export default function InvoicesArchived() {
               </Tooltip>
             </div> */}
           </div>
-          <span>Rp{numberWithDot(record.amount)}</span>{" "}
+          <span>{filter?.currency == "GBP" ? "£" : "$"} {numberWithDot(record.amount)}</span>{" "}
           <span
             tw="text-xs rounded p-1 ml-auto"
             style={{ background: translateBg(record.status) }}

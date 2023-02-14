@@ -217,10 +217,10 @@ export function MoreActionClientsDetail({
             </span>
           </div>
         </Menu.Item>
-        <Menu.Item disabled={isGenerate === 0}>
+        <Menu.Item>
           <div>
             <UsergroupAddOutlined />
-            <span tw="cursor-pointer" onClick={() => console.log("generate")}>
+            <span tw="cursor-pointer" onClick={() =>history.push(`/dashboard/reports/account-statement?clientId=${globalDetailClient?.id}`)}>
               Generate Statement
             </span>
           </div>

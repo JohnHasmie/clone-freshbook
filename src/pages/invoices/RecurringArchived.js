@@ -23,7 +23,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState,useEffect,useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardInvoice from "../../components/CardInvoice/index";
@@ -39,6 +39,7 @@ import { numberWithDot, translateBg } from "../../components/Utils";
 import moment from "moment";
 import ListCardInvoice from "./ListCardInvoice";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import AppContext from "../../components/context/AppContext";
 
 export default function RecurringArchived() {
   const { Title } = Typography;
@@ -52,11 +53,19 @@ export default function RecurringArchived() {
     limit: 10,
     page: 1,
     mode: "archive",
+    type:"recurring",
+    show:"template"
     // status:"send"
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const handleModal = (type) => {
     switch (type.key) {
       case "unarchive":
@@ -133,7 +142,6 @@ export default function RecurringArchived() {
     const data =
     status === "success" &&
     dataInvoices?.data
-      ?.filter((item) => item.recurring !== null)
       ?.map((item) => ({
         key: item.id,
         client: item.client.company_name,
@@ -149,14 +157,16 @@ export default function RecurringArchived() {
 
   const defaultFooter = () => (
     <div tw="text-right text-base">
-      Grand Total:{" "}
+      Grand Total:{" "}{filter?.currency == "GBP" ? "£" : "$"}
       {data &&
         getTotal(
           data?.map((x) => {
             const splitAmount = x.amount.split(".");
             return parseInt(splitAmount[0]);
           })
-        )}{" "}
+        )}    
+        {" "}
+        {filter.currency}
     </div>
   );
 
@@ -223,7 +233,7 @@ export default function RecurringArchived() {
               </Tooltip>
             </div>
           </div>
-          <span>Rp{numberWithDot(record.amount)}</span>{" "}
+          <span>{filter?.currency == "GBP" ? "£" : "$"} {numberWithDot(record.amount)}</span>{" "}
           <span
             tw="text-xs rounded p-1 ml-auto"
             style={{ background: translateBg(record.status) }}
@@ -516,5 +526,5 @@ export function getTotal(outstanding) {
   const sum = outstanding.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
-  return `Rp. ${numberWithDot(sum)} IDR`;
+  return ` ${numberWithDot(sum)}`;
 }

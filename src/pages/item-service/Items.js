@@ -1,5 +1,5 @@
 import { Menu, Modal, notification, Popover, Table, Tooltip } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Button } from "antd";
 import InputSearch from "../../components/InputSearch";
 import {
@@ -14,17 +14,19 @@ import {
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { numberWithDot } from "../../components/Utils";
-import { Link,  useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import EditItem from "./EditItem";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
-import TableCustom from '../../components/Table/index';
+import TableCustom from "../../components/Table/index";
+import AppContext from "../../components/context/AppContext";
 
 const Items = () => {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
   });
+  const { user } = useContext(AppContext);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [clickedRow, setClickedRow] = useState(false);
@@ -38,20 +40,21 @@ const Items = () => {
   const history = useHistory();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isType, setIsType] = useState('');
+  const [isType, setIsType] = useState("");
 
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
-    const dataArchive={
-      ids:selectedRowKeys,
-      client_id:clientId,
-      status:"archive"
-    }
-    if(isType === "delete"){
-    mutation.mutate(selectedRowKeys[0]);}else{
-      mutationArchive.mutate(dataArchive)
+    const dataArchive = {
+      ids: selectedRowKeys,
+      client_id: clientId,
+      status: "archive",
+    };
+    if (isType === "delete") {
+      mutation.mutate(selectedRowKeys[0]);
+    } else {
+      mutationArchive.mutate(dataArchive);
     }
     setIsModalOpen(false);
   };
@@ -60,8 +63,7 @@ const Items = () => {
   };
   const handlePopoverClick = (event) => {
     event.stopPropagation();
-  }
-
+  };
 
   const columns = [
     {
@@ -75,17 +77,46 @@ const Items = () => {
       ),
       sorter: (a, b) => a.name.length - b.name.length,
     },
+    // {
+    //   title: "Current Stock",
+    //   dataIndex: "current",
+    //   key: "current",
+    //   render: (text, record) => (
+    //     <>
+    //       <Popover
+    //         placement="bottom"
+    //         content={
+    //           <EditItem
+    //           handlePopoverClick={handlePopoverClick}
+    //             query="items-by-client"
+    //             id={record.key}
+    //             hide={hideClickRow}
+    //             data={record}
+    //             clientId={record.client_id}
+    //           />
+    //         }
+    //         trigger="click"
+    //         visible={clickedRow && clickedId === record.key}
+    //         // onVisibleChange={() => handleClickRowChange(record.key, record.i)}
+    //       >
+    //         <span>{text}</span>
+    //       </Popover>
+    //     </>
+    //   ),
+    //   sorter: (a, b) => a.current - b.current,
+    // },
+
     {
-      title: "Current Stock",
-      dataIndex: "current",
-      key: "current",
+      title: "Rate",
+      key: "rate",
+      dataIndex: "rate",
       render: (text, record) => (
         <>
           <Popover
             placement="bottom"
             content={
               <EditItem
-              handlePopoverClick={handlePopoverClick}
+                handlePopoverClick={handlePopoverClick}
                 query="items-by-client"
                 id={record.key}
                 hide={hideClickRow}
@@ -95,23 +126,11 @@ const Items = () => {
             }
             trigger="click"
             visible={clickedRow && clickedId === record.key}
-            // onVisibleChange={() => handleClickRowChange(record.key, record.i)}
-          >
-            <span>{text}</span>
-          </Popover>
+          ></Popover>
+          <div>
+            {filter.currency === "USD" ? "$" : "£"} {numberWithDot(record.rate)}
+          </div>
         </>
-      ),
-      sorter: (a, b) => a.current - b.current,
-    },
-
-    {
-      title: "Rate",
-      key: "rate",
-      dataIndex: "rate",
-      render: (text, record) => (
-        <div>
-         USD{numberWithDot(record.rate)}
-        </div>
       ),
       sorter: (a, b) => a.rate.length - b.rate.length,
     },
@@ -145,12 +164,12 @@ const Items = () => {
       desc: item.description,
       current: item.current_stock,
       rate: item.rate,
-      client_id:item.client_id
+      client_id: item.client_id,
     }));
-   // function for archive, waiting from backend
-   const mutationArchive = useMutation(
+  // function for archive, waiting from backend
+  const mutationArchive = useMutation(
     async (data) => {
-      return axios.put(`items/status`,data).then((res) => res.data);
+      return axios.put(`items/status`, data).then((res) => res.data);
     },
     {
       onSuccess: () => {
@@ -196,17 +215,18 @@ const Items = () => {
     }
   );
   const handleModal = (type) => {
-    if(type === "delete"){
-      setIsType('delete')}else{
-        setIsType('archive')
-      }
+    if (type === "delete") {
+      setIsType("delete");
+    } else {
+      setIsType("archive");
+    }
     showModal();
     hide();
   };
 
   const onSelectChange = (newSelectedRowKeys, x, y) => {
     setSelectedRowKeys(newSelectedRowKeys);
-    setClientId(x[0].client_id)
+    setClientId(x[0].client_id);
   };
   const rowSelection = {
     selectedRowKeys,
@@ -220,11 +240,11 @@ const Items = () => {
     if (clickedRow === false) {
       setClickedRow(true);
       setClickedId(id);
-      setMarginResponsive("400px")
+      setMarginResponsive("400px");
     } else {
       setClickedRow(false);
       setClickedId("");
-      setMarginResponsive("")
+      setMarginResponsive("");
     }
   };
   const hideClickRow = () => {
@@ -237,7 +257,7 @@ const Items = () => {
   const bulkList = (
     <div tw="border border-[#7f8c9f]">
       <Menu>
-        <Menu.Item onClick={()=>handleModal("archive")}>
+        <Menu.Item onClick={() => handleModal("archive")}>
           <div>
             <HddOutlined />
             <span>Archive</span>
@@ -245,7 +265,7 @@ const Items = () => {
         </Menu.Item>
 
         <Menu.Item>
-          <div onClick={()=>handleModal("delete")}>
+          <div onClick={() => handleModal("delete")}>
             <RestOutlined />
             <span>Delete</span>
           </div>
@@ -253,8 +273,11 @@ const Items = () => {
       </Menu>
     </div>
   );
-
-
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
 
   return (
     <>
@@ -314,18 +337,18 @@ const Items = () => {
           width={500}
           closable={false}
         >
-          <span tw="text-lg">{`Are you sure you want to ${selectedRowKeys.length > 1 ? selectedRowKeys.length : isType} this?` }</span>
+          <span tw="text-lg">{`Are you sure you want to ${
+            selectedRowKeys.length > 1 ? selectedRowKeys.length : isType
+          } this?`}</span>
         </ModalConfirm>
         <div className="table-responsive">
           <TableCustom
             onRow={(record, rowIndex) => {
               return {
-           
                 onClick: (event) => {
                   setClickedRow(!clickedRow);
                   setClickedId(record.key);
-                  setMarginResponsive("400px")
-                
+                  setMarginResponsive("400px");
                 },
               };
             }}

@@ -20,7 +20,7 @@ import {
   Popover,
   Tooltip,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState,useContext,useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import TableCustom from "../../components/Table";
@@ -33,6 +33,7 @@ import { numberWithDot, translateBg } from "../../components/Utils";
 import moment from "moment";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 import FormPayment from "./FormPayment";
+import AppContext from "../../components/context/AppContext";
 
 export default function InvoicesOutstanding() {
   const [isType, setIsType] = useState("");
@@ -55,7 +56,12 @@ export default function InvoicesOutstanding() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [idRow, setIdRow] = useState("");
-
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalPayment, setIsModalPayment] = useState(false);
 
@@ -567,7 +573,7 @@ export default function InvoicesOutstanding() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg">
-          <TabHome />
+        <TabHome filterOutstanding={filter} />
 
           <div tw="md:mt-20">
             <div tw="grid md:flex  mb-6">

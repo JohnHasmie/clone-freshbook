@@ -323,8 +323,14 @@ finish_at:moment().endOf('year'),
     </div>
   );
   useEffect(() => {
-    user && localStorage.setItem("newUser", JSON.stringify(user));
-  }, [user]);
+    if(user){
+      localStorage.setItem("newUser", JSON.stringify(user))
+      setFilter({ ...filter, currency: user?.data?.base_currency })
+    };
+    if(newUser){
+      setFilter({ ...filter, currency: newUser?.data?.base_currency })
+    };
+  }, [user || newUser]);
   return (
     <div tw="max-w-screen-lg mx-auto">
         <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">

@@ -1,5 +1,5 @@
 import { Checkbox, Menu, notification, Popover, Table } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { Typography } from "antd";
 import { Button } from "antd";
 import Search from "antd/lib/transfer/search";
@@ -13,6 +13,7 @@ import { Link, useHistory } from "react-router-dom";
 import PaginationFooter from "../../components/layout/PaginationFooter";
 import EditItem from "./EditItem";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import AppContext from "../../components/context/AppContext";
 
 const { Title } = Typography;
 
@@ -49,6 +50,7 @@ export default function ItemsArchived() {
     showModal();
     hide();
   };
+  const { user } = useContext(AppContext);
 
   const onSelectChange = (newSelectedRowKeys, x, y) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -187,6 +189,9 @@ export default function ItemsArchived() {
       },
     }
   );
+  const handlePopoverClick = (event) => {
+    event.stopPropagation();
+  };
 
 
   const columns = [
@@ -201,17 +206,46 @@ export default function ItemsArchived() {
       ),
       sorter: (a, b) => a.name.length - b.name.length,
     },
+    // {
+    //   title: "Current Stock",
+    //   dataIndex: "current",
+    //   key: "current",
+    //   render: (text, record) => (
+    //     <>
+    //   <Popover
+    //         placement="bottom"
+    //         content={
+    //           <EditItem
+    //             query="items-archived"
+    //             id={record.key}
+    //             hide={hideClickRow}
+    //             data={record}
+    //             clientId={record.client_id}
+    //           />
+    //         }
+    //         trigger="click"
+    //         visible={clickedRow && clickedId === record.key}
+    //         onVisibleChange={() => handleClickRowChange(record.key, record.i)}
+    //       >
+    //         <span>{text}</span>
+    //       </Popover>
+    //     </>
+    //   ),
+    //   sorter: (a, b) => a.current - b.current,
+    // },
+
     {
-      title: "Current Stock",
-      dataIndex: "current",
-      key: "current",
+      title: "Rate",
+      key: "rate",
+      dataIndex: "rate",
       render: (text, record) => (
         <>
-      <Popover
+            <Popover
             placement="bottom"
             content={
               <EditItem
-                query="items-archived"
+                handlePopoverClick={handlePopoverClick}
+                query="items-by-client"
                 id={record.key}
                 hide={hideClickRow}
                 data={record}
@@ -220,23 +254,11 @@ export default function ItemsArchived() {
             }
             trigger="click"
             visible={clickedRow && clickedId === record.key}
-            onVisibleChange={() => handleClickRowChange(record.key, record.i)}
-          >
-            <span>{text}</span>
-          </Popover>
+          ></Popover>
+          <div>
+            {filter.currency === "USD" ? "$" : "£"} {numberWithDot(record.rate)}
+          </div>
         </>
-      ),
-      sorter: (a, b) => a.current - b.current,
-    },
-
-    {
-      title: "Rate",
-      key: "rate",
-      dataIndex: "rate",
-      render: (text, record) => (
-        <div>
-         USD{numberWithDot(record.rate)}
-        </div>
       ),
       sorter: (a, b) => a.rate.length - b.rate.length,
     },
@@ -253,7 +275,11 @@ export default function ItemsArchived() {
   //   }
   // }, [dataItems?.data?.data, checkIndex, clickedRow]);
 
-
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   return (
     <>
       <div tw="w-full md:w-[98%]" style={{ marginBottom: marginResponsive }}>
@@ -313,7 +339,7 @@ export default function ItemsArchived() {
          onRow={(record, rowIndex) => {
           return {
        
-            onDoubleClick: (event) => {
+            onClick: (event) => {
               setClickedRow(!clickedRow);
               setClickedId(record.key);
               setMarginResponsive("400px")

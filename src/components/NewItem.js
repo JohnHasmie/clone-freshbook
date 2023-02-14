@@ -35,8 +35,8 @@ export default function NewItem({hide}) {
     console.log("Failed:", errorInfo);
   };
   const onFinish = (values) => {
-    console.log("value",values,isStock,isTracking)
-    let newValues={...values,current_stock:isStock,with_tracking:isTracking}
+    console.log("value",values)
+    let newValues={...values,qty:1,current_stock:isStock,with_tracking:isTracking}
     mutation.mutate(newValues);
     form.resetFields();
     
@@ -65,10 +65,10 @@ export default function NewItem({hide}) {
           <Form.Item label="Rate" name="rate" tw="px-2">
             <Input type="number" placeholder="0.00" />
           </Form.Item>
-          <Form.Item label="stock" name="qty" tw="px-2">
+          {/* <Form.Item label="stock" name="qty" tw="px-2">
             <Input  name="qty" type="number"  />
-          </Form.Item>
-          <Form.Item label="Inventory"  tw="px-2 col-span-3 ">
+          </Form.Item> */}
+          {/* <Form.Item label="Inventory"  tw="px-2 col-span-3 ">
                         <Checkbox
                           checked={
                             isTracking
@@ -83,7 +83,7 @@ export default function NewItem({hide}) {
                        
                         </Checkbox>
 
-                        </Form.Item> 
+                        </Form.Item>  */}
 
       
           </div>

@@ -26,7 +26,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardClient from "../../components/CardClient";
@@ -42,6 +42,7 @@ import { numberWithDot, truncate } from "../../components/Utils";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
 import moment from "moment";
 import { useRef } from "react";
+import AppContext from "../../components/context/AppContext";
 
 export default function Email() {
   const { Title } = Typography;
@@ -60,6 +61,12 @@ export default function Email() {
     show: "",
     keyword: "",
   });
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const [searchField, setSearchField] = useState({
     company_name: "",
     name: "",
@@ -271,7 +278,7 @@ export default function Email() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg mb-20">
-          <TabHome />
+          <TabHome filterOutstanding={filter} />
           {isToggle ? (
             <div tw=" hidden md:block mt-20">
               <div

@@ -21,14 +21,18 @@ import { numberWithDot } from "../Utils";
 
 export default function ClientInfo({ clientId }) {
   const [filterInvoice, setFilterInvoice] = useState("usd");
-  const { setGlobalDetailClient } = useContext(AppContext);
+  const { setGlobalDetailClient,user } = useContext(AppContext);
   const [clicked, setClicked] = useState(false);
 
   const [filterOutstanding, setFilterOutstanding] = useState({
     currency: "USD",
     client_id:clientId
   });
-
+  useEffect(() => {
+    if (user) {
+      setFilterOutstanding({ ...filterOutstanding, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const history = useHistory();
   const handleClickChange = (open) => {
     console.log(open, "open");
@@ -82,7 +86,6 @@ export default function ClientInfo({ clientId }) {
       </Menu>
     </div>
   );
-  console.log(detailClient?.client?.first_name,"outstanding");
   return (
     <Row gutter={24} tw="mb-1.5 max-w-full">
       <Col span={8}>

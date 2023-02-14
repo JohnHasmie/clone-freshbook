@@ -2,6 +2,7 @@ import { DownOutlined, LeftOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
+  DatePicker,
   Divider,
   Form,
   notification,
@@ -27,6 +28,7 @@ import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 import moment from "moment";
 import { getTotalGlobal, numberWithDot } from "../../components/Utils";
+const dateFormat = "DD/MM/YYYY";
 
 export default function AccountStatement() {
   const [open, setOpen] = useState(false);
@@ -42,6 +44,8 @@ export default function AccountStatement() {
   const clientId = searchParams.get("clientId");
   const [filter, setFilter] = useState({
     currency: "USD",
+    start_date:moment().startOf('year').format("MM/DD/YYYY"),
+ end_date:moment().endOf('year').format("MM/DD/YYYY"),
   });
   const [data, setData] = useState([]);
   const [headers, setHeaders] = useState([
@@ -59,6 +63,7 @@ export default function AccountStatement() {
     clientId && setFilter({ ...filter, client_id: clientId });
   }, [clientId]);
 
+ 
   const handleClickChange = (open) => {
     setClicked(open);
   };
@@ -67,7 +72,8 @@ export default function AccountStatement() {
   };
   const onFinish = (values) => {
     setFilter({
-      ...filter,
+      start_at: values.start_at._d,
+      finish_at:values.finish_at._d,
       currency: values.currency === undefined ? "USD" : values.currency,
     });
     setOpen(false);
@@ -95,6 +101,12 @@ export default function AccountStatement() {
         size={"large"}
         tw="mt-5"
         fields={[
+          { name: ["start_at"], value:  filter.start_at
+          ? moment(new Date(filter.start_at), dateFormat)
+          : "" },
+          { name: ["finish_at"], value: filter.finish_at
+          ? moment(new Date(filter.finish_at), dateFormat)
+          : "" },
           {
             name: ["currency"],
             value: filter?.currency,
@@ -102,7 +114,7 @@ export default function AccountStatement() {
         ]}
       >
         <Row gutter={24}>
-          <Col span={24}>
+          {/* <Col span={24}>
             <Form.Item name="time">
               <Select
                 defaultValue="this-year"
@@ -126,8 +138,25 @@ export default function AccountStatement() {
                 ]}
               />
             </Form.Item>
+          </Col> */}
+<Col span={24}>
+            <Form.Item name="start_at">
+              <DatePicker
+                tw="w-full rounded-md"
+             
+                format={dateFormat}
+              />
+            </Form.Item>
           </Col>
-
+          <Col span={24}>
+            <Form.Item name="finish_at">
+              <DatePicker
+                tw="w-full rounded-md"
+               
+                format={dateFormat}
+              />
+            </Form.Item>
+          </Col>
           <Col span={24}>
             <Form.Item label="Currency" name="currency">
               <Select
@@ -168,6 +197,15 @@ export default function AccountStatement() {
         })
         .then((res) => res.data)
   );
+  useEffect(() => {
+    if(user){
+      localStorage.setItem("newUser", JSON.stringify(user))
+      setFilter({ ...filter, currency: user?.data?.base_currency })
+    };
+    if(newUser){
+      setFilter({ ...filter, currency: newUser?.data?.base_currency })
+    };
+  }, [user || newUser]);
   const { data: dataClients, status } = useQuery(["clients"], async (key) =>
     axios
       .get("clients", {
@@ -200,28 +238,63 @@ export default function AccountStatement() {
       "",
       "",
     ],
-    ["","","","","","",""],
-    ["Summary","","","","","",""],
-    ["Invoiced Total",dataStatement?.data?.data?.invoice,filter.currency,"","","",""],
-    ["Paid Total",dataStatement?.data?.data?.paid,filter.currency,"","","",""],
-    ["Available Credit",dataStatement?.data?.data?.credit,filter.currency,"","","",""],
-    ["Account Balance",dataStatement?.data?.data &&
-    getTotalData(
-      Object.values(dataStatement?.data?.data)?.map(
-        (item) => {
-          const splitAmount = item?.split(".");
-          return parseInt(splitAmount[0]);
-        }
-      )
-    ),filter.currency,"","","",""],
-    ["Date","Description","Invoice#","Invoice Due","Amount","Paid","Currency"],
-
-
-
+    ["", "", "", "", "", "", ""],
+    ["Summary", "", "", "", "", "", ""],
+    [
+      "Invoiced Total",
+      dataStatement?.data?.data?.invoice,
+      filter.currency,
+      "",
+      "",
+      "",
+      "",
+    ],
+    [
+      "Paid Total",
+      dataStatement?.data?.data?.paid,
+      filter.currency,
+      "",
+      "",
+      "",
+      "",
+    ],
+    [
+      "Available Credit",
+      dataStatement?.data?.data?.credit,
+      filter.currency,
+      "",
+      "",
+      "",
+      "",
+    ],
+    [
+      "Account Balance",
+      dataStatement?.data?.data &&
+        getTotalData(
+          Object.values(dataStatement?.data?.data)?.map((item) => {
+            const splitAmount = item?.split(".");
+            return parseInt(splitAmount[0]);
+          })
+        ),
+      filter.currency,
+      "",
+      "",
+      "",
+      "",
+    ],
+    [
+      "Date",
+      "Description",
+      "Invoice#",
+      "Invoice Due",
+      "Amount",
+      "Paid",
+      "Currency",
+    ],
   ];
-  useEffect(() => {
-    user && localStorage.setItem("newUser", JSON.stringify(user));
-  }, [user]);
+  // useEffect(() => {
+  //   user && localStorage.setItem("newUser", JSON.stringify(user));
+  // }, [user]);
   useEffect(() => {
     if (statusStatement === "success") {
       setData([...newDataHeaders, ...newDataItems]);
@@ -256,6 +329,8 @@ export default function AccountStatement() {
       },
     }
   );
+  console.log("filter",newUser)
+
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -280,7 +355,9 @@ export default function AccountStatement() {
           </button>
         </div>
         <div tw="flex items-center">
-          <span tw="capitalize text-4xl font-bold">Account Statement</span>
+          <span tw="capitalize text-black text-4xl font-bold">
+            Account Statement
+          </span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <Popover
@@ -321,14 +398,7 @@ export default function AccountStatement() {
           <CardReporting>
             <h1 tw="text-blueDefault">Account Statement</h1>
             <p>
-              For{" "}
-              {moment(new Date(new Date().getFullYear(), 0, 1)).format(
-                "MMM DD, YYYY"
-              )}{" "}
-              -{" "}
-              {moment(new Date(new Date().getFullYear(), 11, 31)).format(
-                "MMM DD, YYYY"
-              )}
+            For {moment(new Date(filter.start_at)).format("MMM DD, YYYY")} - {moment(new Date(filter.finish_at)).format("MMM DD, YYYY")}
             </p>
             <div tw="flex justify-between items-end">
               {statusStatement === "loading" && (
@@ -525,5 +595,5 @@ export function getTotalData(outstanding) {
   const sum = outstanding.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
-  return sum
+  return sum;
 }

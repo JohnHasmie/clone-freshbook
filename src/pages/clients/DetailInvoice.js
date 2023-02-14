@@ -1,5 +1,5 @@
 import { Button, Menu, Modal, notification, Popover, Tooltip } from "antd";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState,useEffect } from "react";
 
 import ClientInfo from "../../components/ClientsComponent/ClientInfo";
 import ClientTabs from "../../components/ClientsComponent/ClientTabs";
@@ -32,17 +32,22 @@ export default function DetailInvoice() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { clientId } = useParams();
-  const { globalDetailClient } = useContext(AppContext);
+  const { globalDetailClient,user } = useContext(AppContext);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const history=useHistory()
   const [isType, setIsType] = useState('');
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
+    show:"invoice"
   });
   const queryClient = useQueryClient();
 
-
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -251,7 +256,7 @@ export default function DetailInvoice() {
               </Tooltip>
             </div>
           </div>
-          <span>Rp{numberWithDot(record.amount)}</span>{" "}
+          <span>{filter?.currency == "GBP" ? '£' : "$"}{numberWithDot(record.amount)}</span>{" "}
           <span tw="text-xs rounded p-1 ml-auto" style={{background:translateBg(record.status)}}>{record.status} </span>
          
         </div>

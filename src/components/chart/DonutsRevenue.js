@@ -8,7 +8,6 @@ import { getTotalGlobal, numberWithDot } from "../Utils";
 
 
 function DonutsRevenue({dataPayment,filterPayment,dataRevenueStream}) {
-  console.log("data",dataRevenueStream);
   const { Title, Paragraph } = Typography;
   const newData=getTotal(dataPayment?.data?.data?.map((item)=>{
     const splitAmount=item?.amount?.split(".")

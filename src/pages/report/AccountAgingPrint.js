@@ -41,9 +41,9 @@ export default function AccountAgingPrint() {
   }, [pathname])
   
   const [clicked, setClicked] = useState(false);
-  const [newSetting, setNewSetting] = useState(JSON.parse(localStorage.getItem("newSetting")) || {data:""});
+  const [newUser, setNewUser] = useState(JSON.parse(localStorage.getItem("newUser")) || {data:""});
 
-  const { setting } = useContext(AppContext);
+  const { user } = useContext(AppContext);
 
   const { data: dataOutstanding, status: statusOutstanding } = useQuery(
     ["outstanding-listing", filterOutstanding],
@@ -163,9 +163,12 @@ export default function AccountAgingPrint() {
     </div>
   );
   useEffect(() => {
-    setting &&
-      localStorage.setItem("newSetting",JSON.stringify(setting))
-  }, [setting]);
+    if(user){
+      localStorage.setItem("newUser", JSON.stringify(user))
+      setFilterOutstanding({ ...filterOutstanding, currency: user?.data?.base_currency })
+    };
+  }, [user]);
+
   return (
     <div tw="max-w-screen-lg mx-auto">
       {/* <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -220,7 +223,7 @@ export default function AccountAgingPrint() {
           <h1 tw="text-blueDefault">Accounts Aging</h1>
           <div tw="my-3 flex flex-col">
             <span tw="text-sm text-gray-600">
-              {setting?.data?.company_name || newSetting?.data?.company_name}
+              {user?.data?.company_name || newUser?.data?.company_name}
             </span>
             <span tw="text-sm text-gray-600">Amounts Outstanding</span>
             <span tw="text-sm text-gray-600">

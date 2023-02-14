@@ -1,239 +1,3 @@
-// import { Checkbox, Table, Tooltip } from "antd";
-// import React, { useState } from "react";
-// import { RightOutlined } from "@ant-design/icons";
-// import tw from "twin.macro";
-
-// import { useHistory } from "react-router-dom";
-// import PaginationFooter from "../../components/layout/PaginationFooter";
-
-// export default function InvoicesDeleted() {
-//   const history = useHistory();
-
-//   const [checked, setChecked] = useState([]);
-//   const handleCheck = (v) => {
-//     const newChecked = [...checked];
-//     const findById = newChecked.find((x) => x === v);
-//     if (findById) {
-//       const findIndex = checked.indexOf(v);
-//       newChecked.splice(findIndex, 1);
-//     } else {
-//       newChecked.push(v);
-//     }
-//     setChecked(newChecked);
-//   };
-
-//   const data = [];
-//   const handleCheckAll = () => {
-//     const all = data?.map((item) => item.key);
-//     if (data?.length === checked.length) {
-//       setChecked([]);
-//     } else {
-//       setChecked(all);
-//     }
-//   };
-
-//   const columns = [
-//     {
-//       title: (
-//         <Checkbox
-//           checked={data.length !== 0 && data?.length === checked.length}
-//           disabled={data.length === 0}
-//           className="font-normal"
-//           onChange={handleCheckAll}
-//         />
-//       ),
-//       dataIndex: "checkbox",
-//       key: "checkbox",
-//       width: "5%",
-//     },
-//     {
-//       title: "Client/Invoice Number",
-//       dataIndex: "client_invoice_number",
-//       key: "client_invoice_number",
-//     },
-//     {
-//       title: "Description",
-//       dataIndex: "description",
-//       key: "description",
-//     },
-
-//     {
-//       title: "Issued Date/Due Date",
-//       key: "date",
-//       dataIndex: "date",
-//     },
-
-//     {
-//       title: "Amount / Status",
-//       key: "amount",
-//       dataIndex: "amount",
-//     },
-//   ];
-
-//   return (
-//     <>
-//       <div tw="w-full md:w-[98%] md:mb-5">
-//         <div
-//           style={{
-//             display: "flex",
-//             justifyContent: "space-between",
-//             marginBottom: "24px",
-//           }}
-//         >
-//           <div tw="flex items-center">
-//             <span
-//               tw="text-xl cursor-pointer font-bold text-primary"
-//               onClick={() => history.push("/clients")}
-//             >
-//               All Clients
-//             </span>
-//             <RightOutlined tw=" ml-2" />
-//             <span tw="text-xl font-bold text-black ml-2">Deleted</span>
-//           </div>
-//         </div>
-//         <div className="table-responsive">
-//           <Table
-//             columns={columns}
-//             dataSource={data}
-//             pagination={false}
-//             className="ant-border-space"
-//           />
-//         </div>
-//         <div tw="flex justify-between mt-5">
-//           <div>
-//             <span tw="text-sm text-black font-bold">
-//               1-{data.length - 1} of {data.length - 1}{" "}
-//             </span>
-//           </div>
-// {/*
-//           <div>
-//             <PaginationFooter />
-//           </div> */}
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
-
-// import { Checkbox, Table, Tooltip } from "antd";
-// import React, { useState } from "react";
-// import { RightOutlined } from "@ant-design/icons";
-// import tw from "twin.macro";
-
-// import { useHistory } from "react-router-dom";
-// import PaginationFooter from "../../components/layout/PaginationFooter";
-
-// export default function InvoicesArchived() {
-//   const history = useHistory();
-//   const [filter, setFilter] = useState({
-//     limit: 10,
-//     page: 1,
-//     mode: "unarchive",
-//   });
-//   const [checked, setChecked] = useState([]);
-//   const handleCheck = (v) => {
-//     const newChecked = [...checked];
-//     const findById = newChecked.find((x) => x === v);
-//     if (findById) {
-//       const findIndex = checked.indexOf(v);
-//       newChecked.splice(findIndex, 1);
-//     } else {
-//       newChecked.push(v);
-//     }
-//     setChecked(newChecked);
-//   };
-
-//   const data = [];
-//   const handleCheckAll = () => {
-//     const all = data?.map((item) => item.key);
-//     if (data?.length === checked.length) {
-//       setChecked([]);
-//     } else {
-//       setChecked(all);
-//     }
-//   };
-//   const columns = [
-//     {
-//       title: (
-//         <Checkbox
-//           checked={data.length !== 0 && data?.length === checked.length}
-//           disabled={data.length === 0}
-//           className="font-normal"
-//           onChange={handleCheckAll}
-//         />
-//       ),
-//       dataIndex: "checkbox",
-//       key: "checkbox",
-//       width: "5%",
-//     },
-//     {
-//       title: "Client/Invoice Number",
-//       dataIndex: "client_invoice_number",
-//       key: "client_invoice_number",
-//     },
-//     {
-//       title: "Description",
-//       dataIndex: "description",
-//       key: "description",
-//     },
-
-//     {
-//       title: "Issued Date/Due Date",
-//       key: "date",
-//       dataIndex: "date",
-//     },
-
-//     {
-//       title: "Amount / Status",
-//       key: "amount",
-//       dataIndex: "amount",
-//     },
-//   ];
-//   return (
-//     <>
-//       <div tw="w-full md:w-[98%] md:mb-5">
-//         <div
-//           style={{
-//             display: "flex",
-//             justifyContent: "space-between",
-//             marginBottom: "24px",
-//           }}
-//         >
-//           <div tw="flex items-center">
-//             <span
-//               tw="text-xl cursor-pointer font-bold text-primary"
-//               onClick={() => history.push("/clients")}
-//             >
-//               All Clients
-//             </span>
-//             <RightOutlined tw=" ml-2" />
-//             <span tw="text-xl font-bold text-black ml-2">Archived</span>
-//           </div>
-//         </div>
-//         <div className="table-responsive">
-//           <Table
-//             columns={columns}
-//             dataSource={data}
-//             pagination={false}
-//             className="ant-border-space"
-//           />
-//         </div>
-//         <div tw="flex justify-between mt-5">
-//           <div>
-//             <span tw="text-sm text-black font-bold">
-//               1-{data.length - 1} of {data.length - 1}{" "}
-//             </span>
-//           </div>
-
-//           <div>
-//             <PaginationFooter />
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
-
 import {
   CaretDownOutlined,
   CloseOutlined,
@@ -264,7 +28,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useState,useContext,useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardInvoice from "../../components/CardInvoice/index";
@@ -280,6 +44,7 @@ import { numberWithDot, translateBg } from "../../components/Utils";
 import moment from "moment";
 import ListCardInvoice from "./ListCardInvoice";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import AppContext from "../../components/context/AppContext";
 
 export default function RecurringDeleted() {
   const { Title } = Typography;
@@ -293,10 +58,17 @@ export default function RecurringDeleted() {
     limit: 10,
     page: 1,
     show: "deleted",
-  });
+    type:"recurring",
+      });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const handleModal = (type) => {
     switch (type.key) {
       case "undelete":
@@ -383,21 +155,22 @@ export default function RecurringDeleted() {
 
   const defaultFooter = () => (
     <div tw="text-right text-base">
-      Grand Total:{" "}
+      Grand Total:{" "}{filter?.currency == "GBP" ? "£" : "$"}
       {data &&
         getTotal(
           data?.map((x) => {
             const splitAmount = x.amount.split(".");
             return parseInt(splitAmount[0]);
           })
-        )}{" "}
+        )}    
+        {" "}
+        {filter.currency}
     </div>
   );
 
   const data =
     status === "success" &&
     filteredData
-      ?.filter((item) => item.recurring !== null)
       ?.map((item) => ({
         key: item.id,
         client: item.client.company_name,
@@ -449,7 +222,7 @@ export default function RecurringDeleted() {
       render: (text, record) => (
         <div tw="grid">
        
-          <span>Rp{numberWithDot(record.amount)}</span>{" "}
+          <span>{filter?.currency == "GBP" ? "£" : "$"} {numberWithDot(record.amount)}</span>{" "}
           <span
             tw="text-xs rounded p-1 ml-auto"
             style={{ background: translateBg(record.status) }}
@@ -675,5 +448,5 @@ export function getTotal(outstanding) {
   const sum = outstanding.reduce((accumulator, value) => {
     return accumulator + value;
   }, 0);
-  return `Rp. ${numberWithDot(sum)} IDR`;
+  return ` ${numberWithDot(sum)}`;
 }

@@ -39,6 +39,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import { numberWithDot, truncate } from "../../components/Utils";
 import { ModalConfirm } from "../../components/ModalConfirm.style";
+import AppContext from "../../components/context/AppContext";
 
 export default function Clients() {
   const { Title } = Typography;
@@ -53,7 +54,8 @@ export default function Clients() {
     email:"",
     keyword:"",
     contact_name:"",
-    type:"all"
+    type:"all",
+    currency:"USD"
   });
   const [searchField, setSearchField] = useState({
     company_name: "",
@@ -68,7 +70,12 @@ export default function Clients() {
   });
   const [keywordSearch, setKeywordSearch] = useState("");
   const [typeSearch, setTypeSearch] = useState("");
-
+  const { user } = useContext(AppContext);
+  useEffect(() => {
+    if (user) {
+      setFilter({ ...filter, currency: user?.data?.base_currency });
+    }
+  }, [user]);
   const queryClient = useQueryClient();
 
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -275,7 +282,7 @@ export default function Clients() {
     }));
   const defaultFooter = () => (
     <div tw="text-right text-base">
-      Total Outstanding:{" "}
+      Total Outstanding: {filter.currency === "USD" ? "$" : "£"}{" "}
       {data && getTotal(data?.map((x) => {
     const splitAmount=x?.total_outstanding?.split(".")
     return parseInt(splitAmount[0]);
@@ -430,7 +437,7 @@ export default function Clients() {
     <>
       <div className="layout-content">
         <div tw="max-w-screen-lg mb-20">
-          <TabHome />
+          <TabHome filterOutstanding={filter}/>
           {isToggle ? (
             <div tw=" hidden md:block mt-20">
               <div
@@ -571,7 +578,7 @@ export default function Clients() {
                   tw="inline-flex rounded-r-full border border-gray-300 justify-center items-center w-36"
                 >
                   <UnorderedListOutlined />
-                  <span tw="text-xs ml-2 text-primary">{filledValues.length > 4 ? filledValues.length - 4 + " filter applied" : "Advanced Search"} </span>
+                  <span tw="text-xs ml-2 text-primary">{filledValues.length > 5 ? filledValues.length - 4 + " filter applied" : "Advanced Search"} </span>
                   <CaretDownOutlined tw="ml-1" />
                 </div>
               </div>

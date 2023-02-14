@@ -175,10 +175,11 @@ export default function FormAdvanceSearch({
           </Form.Item>
         </div>
         <div tw="col-span-2 flex items-end ">
-          <Form.Item tw="flex w-96" label="Keyword Search" name="keyword">
+          <Form.Item tw="flex w-auto" label="Keyword Search" name="keyword">
             <InputKeyword
               type="text"
               name="keyword"
+              tw="w-full md:w-96"
               // value={localSearch.keyword}
               // onChange={onChange}
               placeholder="Keyword or Number"
