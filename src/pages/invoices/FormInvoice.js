@@ -37,7 +37,11 @@ import {
 } from "../report/ReportCustom.style";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
-import { CheckOutlined, LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import AppContext from "../../components/context/AppContext";
 import InvoicesSetting from "./InvoicesSetting";
 import CreateRecurring, { MakeRecurring } from "./CreateRecurring";
@@ -51,7 +55,6 @@ export default function FormInvoice() {
   const [open, setOpen] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [isInvoiceId, setIsInvoiceId] = useState("");
-
 
   const next29day = moment().add(30, "days");
 
@@ -72,8 +75,9 @@ export default function FormInvoice() {
   const [toggleInvoiceNumber, setToggleInvoiceNumber] = useState("");
 
   const handleClickChange = (open) => {
-    if (isClient){
-    setClicked(open);}
+    if (isClient) {
+      setClicked(open);
+    }
   };
   const hide = () => {
     setClicked(false);
@@ -131,7 +135,6 @@ export default function FormInvoice() {
   const [fileList, setFileList] = useState([]);
 
   const queryClient = useQueryClient();
-
   const { data: detailInvoice, status } = useQuery(
     ["invoice-detail", filter],
     async (key) =>
@@ -159,7 +162,7 @@ export default function FormInvoice() {
         zip: dataUser?.user?.zip,
         country: dataUser?.user?.country,
       });
-  }, [statusUser]);
+  }, [statusUser, dataUser]);
   useEffect(() => {
     if (status === "success") {
       setIsForm({
@@ -170,13 +173,12 @@ export default function FormInvoice() {
         issued_at: detailInvoice.issued_at,
         due_date: detailInvoice.due_date,
         discount: detailInvoice.discount,
-        
 
         reference: detailInvoice.references,
       });
-      setFileListAttach(detailInvoice.attachments)
-      if(detailInvoice?.logo !== "0"){
-        setFileList([{id:1,url:detailInvoice?.logo}])
+      setFileListAttach(detailInvoice.attachments);
+      if (detailInvoice?.logo !== "0") {
+        setFileList([{ id: 1, url: detailInvoice?.logo }]);
       }
       if (detailInvoice?.items_detail !== null) {
         const newLines = detailInvoice?.items_detail?.map((x) => {
@@ -193,7 +195,7 @@ export default function FormInvoice() {
       }
       setIsClient(detailInvoice.client_id);
     }
-  }, [status]);
+  }, [status, detailInvoice]);
   useEffect(() => {
     if (formRecurring.recurring_max === null) {
       setToggleInvoiceNumber(true);
@@ -212,15 +214,15 @@ export default function FormInvoice() {
     },
     {
       onSuccess: (res) => {
-        setIsInvoiceId(res?.data?.invoice?.id)
+        setIsInvoiceId(res?.data?.invoice?.id);
         queryClient.invalidateQueries("invoices-listing");
         notification.success({
           message: `Invoice has been saved`,
           placement: "topLeft",
         });
-        if(!dontThrow){
-
-          history.push("/invoices");}
+        if (!dontThrow) {
+          history.push("/invoices");
+        }
       },
       onError: (err) => {
         notification.error({
@@ -243,9 +245,9 @@ export default function FormInvoice() {
           message: `Invoice has been updated`,
           placement: "topLeft",
         });
-if(!dontThrow){
-
-        history.push("/invoices");}
+        if (!dontThrow) {
+          history.push("/invoices");
+        }
       },
       onError: (err) => {
         switch (err?.response?.status) {
@@ -274,25 +276,23 @@ if(!dontThrow){
   );
   const onFinish = (values) => {
     let newData = "";
-    console.log(formRecurring,"cek");
     if (pathname.includes("recurring")) {
       newData = {
         ...isForm,
         logo: fileList.length > 0 && fileList[0].url,
         items: lines,
-  
+
         client_id: isClient,
         ...formRecurring,
         attachments: fileListAttach,
       };
-      console.log("is Recurring");
     } else {
       newData = {
         ...isForm,
         logo: fileList.length > 0 && fileList[0].url,
 
         items: lines,
-  
+
         client_id: isClient,
         attachments: fileListAttach,
       };
@@ -304,7 +304,7 @@ if(!dontThrow){
     }
   };
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    console.log("Failed:", errorInfo);
   };
   const onFinishRecurring = () => {
     setOpen(false);
@@ -336,25 +336,31 @@ if(!dontThrow){
   const MakeRecurringSettings = (
     <div tw="mt-3">
       <div tw="flex justify-between ">
-        <Title level={3}>Make Recurring
-</Title>
+        <Title level={3}>Make Recurring</Title>
       </div>
-<p>Convert this invoice into recurring template</p>
-<ul tw="list-disc	">
-  <li><span>Save time by automatically creating invoices from a template</span></li>
-  <li><span>Customize how often invoices are created</span></li>
-  <li><span>Allow clients to pay automatically by saving their credit card</span></li>
-
-</ul>
+      <p>Convert this invoice into recurring template</p>
+      <ul tw="list-disc	">
+        <li>
+          <span>
+            Save time by automatically creating invoices from a template
+          </span>
+        </li>
+        <li>
+          <span>Customize how often invoices are created</span>
+        </li>
+        <li>
+          <span>
+            Allow clients to pay automatically by saving their credit card
+          </span>
+        </li>
+      </ul>
       <Form
         // onFinish={onFinishRecurring}
         layout="vertical"
         size={"large"}
         tw="mt-5"
-     
       >
         <Row gutter={24}>
-       
           <Divider />
           <Col span={12}>
             <Button
@@ -368,7 +374,10 @@ if(!dontThrow){
             </Button>
           </Col>
           <Col span={12}>
-            <Button onClick={()=>history.push("/recurring-template/new")} tw="text-lg text-white bg-success px-8">
+            <Button
+              onClick={() => history.push("/recurring-template/new")}
+              tw="text-lg text-white bg-success px-8"
+            >
               Apply
             </Button>
           </Col>
@@ -486,7 +495,7 @@ if(!dontThrow){
               onChange={(e) =>
                 setFormRecurring({
                   ...formRecurring,
-                  delivery_option: e.target.value,
+                  recurring_delivery_option: e.target.value,
                 })
               }
               value={formRecurring.recurring_delivery_option}
@@ -618,8 +627,6 @@ if(!dontThrow){
     setLocalSubTotal(totalItems);
   }, [lines]);
 
-
-
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
@@ -641,24 +648,48 @@ if(!dontThrow){
           </span>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <ButtonMore tw="!py-2" onClick={() =>{pathname.includes("recurring") ? history.push("/invoices/recurring-templates") : history.push("/invoices")}}>
+          <ButtonMore
+            tw="!py-2"
+            onClick={() => {
+              pathname.includes("recurring")
+                ? history.push("/invoices/recurring-templates")
+                : history.push("/invoices");
+            }}
+          >
             <span>Cancel</span>
           </ButtonMore>
           <Button
             tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center "
-            onClick={()=>form.submit()}
+            onClick={() => form.submit()}
           >
             <span tw="text-lg">Save...</span>
           </Button>
           {!pathname.includes("recurring") && (
             <Popover
               placement="bottom"
-              content={<SendEmailInvoice clientProps={[isClient, setIsClient]} hide={hide} dataUser={dataUser?.user?.company_name} invoiceId={invoiceId} date={isForm?.due_date} total={numberWithDot(localSubTotal-(localSubTotal*isForm.discount/100))} onFinishInvoice={onFinish} setDontThrow={setDontThrow} isInvoiceId={isInvoiceId} />}
+              content={
+                <SendEmailInvoice
+                  clientProps={[isClient, setIsClient]}
+                  hide={hide}
+                  dataUser={dataUser?.user?.company_name}
+                  invoiceId={invoiceId}
+                  date={isForm?.due_date}
+                  total={numberWithDot(
+                    localSubTotal - (localSubTotal * isForm.discount) / 100
+                  )}
+                  onFinishInvoice={onFinish}
+                  setDontThrow={setDontThrow}
+                  isInvoiceId={isInvoiceId}
+                />
+              }
               trigger="click"
               visible={clicked}
               onVisibleChange={handleClickChange}
             >
-              <Button tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled={!isClient}>
+              <Button
+                tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!isClient}
+              >
                 <span tw="text-lg">Send To...</span>
               </Button>
             </Popover>
@@ -669,11 +700,9 @@ if(!dontThrow){
         <Form
           size="default"
           form={form}
-          
           layout={"vertical"}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
-
           tw="md:col-span-9 space-y-5 mb-10 mt-10 md:mt-2"
         >
           <CardDetailInvoice>
@@ -683,33 +712,34 @@ if(!dontThrow){
                alt="profile company"
                tw="w-screen md:w-auto"
              /> */}
-             <Form.Item 
-             name="file"
-             
-             rules={[
-          {
-            required: true,
-            message: 'Please input your image!',
-          },
-        ]}>
-
-              <UploadCustom
+              <Form.Item
                 name="file"
-                headers={{
-                  Authorization: `Bearer ${token?.token}`,
-                  "Content-Type": "multipart/form-data",
-                }}
-                action="upload"
-                customRequest={actionUploadLogo}
-                beforeUpload={beforeUpload}
-                listType="picture-card"
-                fileList={fileList}
-                // onChange={onChange}
-                onPreview={onPreview}
+                rules={
+                  fileList.length < 1 && [
+                    {
+                      required: true,
+                      message: "Please input your image!",
+                    },
+                  ]
+                }
               >
-                {fileList.length < 1 && "+ Upload"}
-              </UploadCustom>
-             </Form.Item>
+                <UploadCustom
+                  name="file"
+                  headers={{
+                    Authorization: `Bearer ${token?.token}`,
+                    "Content-Type": "multipart/form-data",
+                  }}
+                  action="upload"
+                  customRequest={actionUploadLogo}
+                  beforeUpload={beforeUpload}
+                  listType="picture-card"
+                  fileList={fileList}
+                  // onChange={onChange}
+                  onPreview={onPreview}
+                >
+                  {fileList.length < 1 && "+ Upload"}
+                </UploadCustom>
+              </Form.Item>
 
               <div tw="flex justify-between ">
                 <div tw="flex flex-col items-end text-right ">
@@ -944,22 +974,22 @@ if(!dontThrow){
               </div>
             </div>
             <div tw="grid grid-cols-4 gap-5 mb-16">
-            <Form.Item 
-             name="clients"
-             
-             rules={[
-              {
-                message: 'Please input your client',
-                validator: (_, value) => {
-                  if (isClient) {
-                    return Promise.resolve();
-                  } else {
-                    return Promise.reject('Error');
-                  }
-                 }
-               }
-        ]}>
-              <InvoiceHead clientProps={[isClient, setIsClient]} />
+              <Form.Item
+                name="clients"
+                rules={[
+                  {
+                    message: "Please input your client",
+                    validator: (_, value) => {
+                      if (isClient) {
+                        return Promise.resolve();
+                      } else {
+                        return Promise.reject("Error");
+                      }
+                    },
+                  },
+                ]}
+              >
+                <InvoiceHead clientProps={[isClient, setIsClient]} />
               </Form.Item>
               <div tw="space-y-5 ">
                 <div>
@@ -978,7 +1008,8 @@ if(!dontThrow){
                       setIsForm({ ...isForm, issued_at: dateString })
                     }
                     value={
-                      isForm.issued_at !== new Date() && moment(new Date(isForm.issued_at), dateFormat)
+                      isForm.issued_at !== new Date() &&
+                      moment(new Date(isForm.issued_at), dateFormat)
                     }
                     format={dateFormat}
                   />
@@ -1039,7 +1070,9 @@ if(!dontThrow){
               <div tw="text-right">
                 <h3 tw="text-gray-400">Amount Due</h3>
                 <span tw="font-medium text-3xl ">
-                {numberWithDot(localSubTotal-(localSubTotal*isForm.discount/100))}
+                  {numberWithDot(
+                    localSubTotal - (localSubTotal * isForm.discount) / 100
+                  )}
                   {/* {lines.length > 0 &&
                     getTotal(
                       lines?.map((x) => {
@@ -1075,10 +1108,16 @@ if(!dontThrow){
                         visible={clicked2}
                         onVisibleChange={handleClickChange2}
                       >
-                    {isForm.discount ? isForm.discount + "%" + "Discount":  "Add Discount"}
+                        {isForm.discount
+                          ? isForm.discount + "%" + "Discount"
+                          : "Add Discount"}
                       </Popover>
                     </td>
-                    <td> {isForm.discount &&  "- "+ localSubTotal*isForm.discount/100}</td>
+                    <td>
+                      {" "}
+                      {isForm.discount &&
+                        "- " + (localSubTotal * isForm.discount) / 100}
+                    </td>
                   </tr>
                   <tr tw="border-b  border-gray-300 text-right">
                     <td>Tax</td>
@@ -1095,7 +1134,9 @@ if(!dontThrow){
                             return parseInt(splitAmount[0]);
                           })
                         )}{" "} */}
-                        {numberWithDot(localSubTotal-(localSubTotal*isForm.discount/100))}
+                      {numberWithDot(
+                        localSubTotal - (localSubTotal * isForm.discount) / 100
+                      )}
                     </td>
                   </tr>
                   <tr tw="text-right">
@@ -1109,7 +1150,10 @@ if(!dontThrow){
 
                     <td tw=" grid gap-0 items-end ">
                       <span tw="font-semibold ">
-                      {numberWithDot(localSubTotal-(localSubTotal*isForm.discount/100))}
+                        {numberWithDot(
+                          localSubTotal -
+                            (localSubTotal * isForm.discount) / 100
+                        )}
 
                         {/* {lines.length > 0 &&
                           getTotal(
@@ -1173,24 +1217,22 @@ if(!dontThrow){
             </UploadCustom>
           </Card>
         </Form>
- {pathname.includes("recurring") ?
-  <CreateRecurring
-  Filtering={RecurringSettings}
-  setOpen={setOpen}
-  setIsRecurring={setIsRecurring}
-  open={open}
-/>
-:
- <MakeRecurring
-          Filtering={MakeRecurringSettings}
-          setOpen={setOpen}
-          setIsRecurring={setIsRecurring}
-          open={open}
-        />
-      
-      
-      }
-          {/* <Filter Filtering={RecurringSettingsInvoice} setOpen={setOpen} open={open} /> */}
+        {pathname.includes("recurring") ? (
+          <CreateRecurring
+            Filtering={RecurringSettings}
+            setOpen={setOpen}
+            setIsRecurring={setIsRecurring}
+            open={open}
+          />
+        ) : (
+          <MakeRecurring
+            Filtering={MakeRecurringSettings}
+            setOpen={setOpen}
+            setIsRecurring={setIsRecurring}
+            open={open}
+          />
+        )}
+        {/* <Filter Filtering={RecurringSettingsInvoice} setOpen={setOpen} open={open} /> */}
         {/* <InvoicesSetting open={open} setOpen={setOpen} /> */}
       </div>
     </div>

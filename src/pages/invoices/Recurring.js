@@ -312,7 +312,7 @@ export default function Invoices() {
     e.stopPropagation();
     switch (type) {
       case "edit":
-        history.push(`/invoices/${record.key}/edit`);
+        history.push(`/recurring-template/${record.key}/edit`);
         break;
       case "duplicate":
         history.push(`/invoices/${record.key}/edit`);

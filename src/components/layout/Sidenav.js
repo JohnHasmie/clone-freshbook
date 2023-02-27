@@ -13,13 +13,14 @@ import tw from "twin.macro";
 import axios from "axios";
 import { useQuery } from "react-query";
 import AppContext from "../context/AppContext";
-import { unsetClientCredential } from "../../hooks/useAuth";
+import useAuth, { unsetClientCredential } from "../../hooks/useAuth";
 
 function Sidenav({ color }) {
   const { Title } = Typography;
   const [visible, setVisible] = useState(false);
   const [clicked, setClicked] = useState(false);
   const { setUser, setSetting } = useContext(AppContext);
+  const { role } = useAuth();
 
   const handleClickChange = (open) => {
     setClicked(open);
@@ -235,9 +236,10 @@ function Sidenav({ color }) {
   }
   const content = (
     <Menu theme="light" mode="inline" style={{ width: "300px" }}>
-      <Menu.Item className="menu-border">
+      <Menu.Item className="menu-border" >
         <NavLink
           tw="text-base"
+          
           onClick={() => {
             hide();
           }}
@@ -399,7 +401,7 @@ function Sidenav({ color }) {
       </div>
       <hr />
       <Menu theme="light" mode="inline">
-        <Menu.Item key="1">
+        <Menu.Item key="dashboard">
           <NavLink to="/dashboard">
             <span className="" style={{ marginRight: "10px" }}>
               {dashboard}
@@ -407,7 +409,7 @@ function Sidenav({ color }) {
             <span className="text-light">Dashboard</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="2">
+        <Menu.Item key="clients" style={{display:role !== "user" ? "" : "none"}}>
           <NavLink to="/clients">
             <span className="" style={{ marginRight: "10px" }}>
               {billing}
@@ -416,7 +418,7 @@ function Sidenav({ color }) {
           </NavLink>
         </Menu.Item>
 
-        <Menu.Item key="3">
+        <Menu.Item key="invoices">
           <NavLink to="/invoices">
             <span className="" style={{ marginRight: "10px" }}>
               {tables}
@@ -426,8 +428,8 @@ function Sidenav({ color }) {
         </Menu.Item>
       </Menu>
       <hr />
-      <Menu theme="light" mode="inline">
-        <Menu.Item key="4">
+      <Menu theme="light" mode="inline" style={{display:role !== "user" ? "" : "none"}}>
+        <Menu.Item key="accounting">
           <NavLink to="/accounting">
             <span className="text-light">Accounting</span>
           </NavLink>

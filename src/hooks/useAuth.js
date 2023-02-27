@@ -6,6 +6,8 @@ import { useEffect, useState } from "react"
 export default function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(null)
   const authData = localStorage.getItem("auth-data")
+  const roleData = localStorage.getItem("role")
+const role=roleData
   const token = JSON.parse(authData)?.token
 
   useEffect(() => {
@@ -16,7 +18,7 @@ export default function useAuth() {
     }
   }, [isAuthenticated, authData])
 
-  return { isAuthenticated, token }
+  return { isAuthenticated, token,role }
 }
 
 /**
@@ -48,6 +50,7 @@ export function unsetClientCredential() {
     try {
       localStorage.removeItem("auth-data")
       localStorage.removeItem("isLogin")
+      localStorage.removeItem("role")
       resolve("Auth data has been removed")
     } catch (error) {
       reject("Something went wrong")

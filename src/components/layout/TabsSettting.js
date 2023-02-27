@@ -2,9 +2,11 @@ import { Col, Row, Tabs } from "antd";
 import React from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import tw from "twin.macro";
+import useAuth from "../../hooks/useAuth";
 
 export default function TabsSettting() {
   const { pathname } = useLocation();
+const { role } = useAuth();
 
   const history = useHistory();
   const handleClick = (key) => {
@@ -23,7 +25,7 @@ export default function TabsSettting() {
           >
             <Tabs.TabPane tab="Account" key="/global-settings" />
 
-            <Tabs.TabPane tab="Business" key="/global-settings/business" />
+            {role === "admin" && <Tabs.TabPane tab="Business" key="/global-settings/business" />}
 
             <Tabs.TabPane
               tab="Email Notifications"

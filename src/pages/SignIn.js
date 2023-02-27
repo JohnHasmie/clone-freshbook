@@ -96,6 +96,7 @@ export default class SignIn extends Component {
           setClientCredential(response?.data?.data?.token).then(() => {
             window.location.href = "/dashboard";
           });
+          localStorage.setItem("role",response?.data?.data?.user?.roles[0]?.name)
         })
         .catch((error) => {
           console.log(error,"error");

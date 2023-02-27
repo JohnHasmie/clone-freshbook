@@ -26,7 +26,7 @@ export default function MoreAction({  myRef ,excelRefetch}) {
               tw="cursor-pointer"
               onClick={() => excelRefetch()}
             >
-              Export
+              Export to PDF
             </span>
           </div>
         </Menu.Item>
@@ -67,7 +67,7 @@ export function MoreActionCSV({  myRef ,csvReport}) {
               tw="cursor-pointer"
               {...csvReport}
             >
-              Export
+              Export to PDF
             </CSVLink>
           </div>
         </Menu.Item>

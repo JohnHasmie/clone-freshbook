@@ -68,13 +68,14 @@ import AccountAgingPrint from "./pages/report/AccountAgingPrint";
 import AccountBalancePrint from "./pages/report/AccountBalancePrint";
 import InvoicePrint from "./pages/invoices/InvoicePrint";
 import ExportExcel from "./components/layout/TextExcel";
+import withAdminRedirect from "./components/WithAdminRedirect";
 
 const queryClient = new QueryClient();
 
 function App() {
   let { pathname } = useLocation();
   const { isAuthenticated } = useAuth();
-  const { token } = useAuth();
+  const { token,role } = useAuth();
   const [user, setUser] = useState("");
   const [setting, setSetting] = useState("");
   const [globalDetailClient, setGlobalDetailClient] = useState("");
@@ -117,7 +118,7 @@ const refInvoice=useRef(null)
       return Promise.reject(error);
     }
   );
-  
+  console.log("user",role)
   return (
     <div className="App">
       <QueryClientProvider client={queryClient}>
@@ -145,52 +146,52 @@ const refInvoice=useRef(null)
             <Route
               exact
               path="/dashboard/reports/account-aging"
-              component={AccountAging}
+              component={withAdminRedirect(AccountAging)}
             />
              <Route
               exact
               path="/dashboard/reports/account-aging/print"
-              component={AccountAgingPrint}
+              component={withAdminRedirect(AccountAgingPrint)}
             />
             <Route
               exact
               path="/dashboard/reports/recurring-revenue"
-              component={RecurringRevenue}
+              component={withAdminRedirect(RecurringRevenue)}
             />
             <Route
               exact
               path="/dashboard/reports/revenue-by-client"
-              component={RevenueByClient}
+              component={withAdminRedirect(RevenueByClient)}
             />
             <Route
               exact
               path="/dashboard/reports/payments-collected"
-              component={PaymentsCollected}
+              component={withAdminRedirect(PaymentsCollected)}
             />
             <Route
               exact
               path="/dashboard/reports/account-statement"
-              component={AccountStatement}
+              component={withAdminRedirect(AccountStatement)}
             />
             <Route
               exact
               path="/dashboard/reports/invoice-detail"
-              component={InvoiceDetail}
+              component={withAdminRedirect(InvoiceDetail)}
             />
             <Route
               exact
               path="/dashboard/reports/balance"
-              component={AccountBalance}
+              component={withAdminRedirect(AccountBalance)}
             />
                <Route
               exact
               path="/dashboard/reports/balance/print"
-              component={AccountBalancePrint}
+              component={withAdminRedirect(AccountBalancePrint)}
             />
             <Route
               exact
               path="/dashboard/reports/trial-balance"
-              component={AccountTrialBalance}
+              component={withAdminRedirect(AccountTrialBalance)}
             />
             <Route exact path="/invoices/new" component={FormInvoice} />
             {/* <Route exact path="/invoices/new-recurring-template" component={FormInvoice} /> */}
@@ -214,11 +215,11 @@ const refInvoice=useRef(null)
             <Main>
               <Route exact path="/dashboard" component={Home} />
 
-              <Route exact path="/clients" component={Clients} />
-              <Route exact path="/clients/archived" component={ClientsArchived} />
-              <Route exact path="/clients/deleted" component={ClientsDeleted} />
-              <Route exact path="/clients/draft" component={ClientsDraft} />
-              <Route exact path="/clients/overdue" component={ClientsOverdue} />
+              <Route exact path="/clients" component={withAdminRedirect(Clients)} />
+              <Route exact path="/clients/archived" component={withAdminRedirect(ClientsArchived)} />
+              <Route exact path="/clients/deleted" component={withAdminRedirect(ClientsDeleted)} />
+              <Route exact path="/clients/draft" component={withAdminRedirect(ClientsDraft)} />
+              <Route exact path="/clients/overdue" component={withAdminRedirect(ClientsOverdue)} />
               <Route
                 exact
                 path="/clients/outstanding"
@@ -290,7 +291,7 @@ const refInvoice=useRef(null)
               <Route
                 exact
                 path="/global-settings/business"
-                component={Business}
+                component={withAdminRedirect(Business)}
               />
               <Route
                 exact
@@ -301,7 +302,7 @@ const refInvoice=useRef(null)
               <Route exact path="/items/archived" component={ItemsArchived} />
               <Route exact path="/items/deleted" component={ItemsDeleted} />
 
-              <Route exact path="/accounting" component={Accounting} />
+              <Route exact path="/accounting" component={withAdminRedirect(Accounting)} />
 
 
               <Route exact path="/tables" component={Tables} />
