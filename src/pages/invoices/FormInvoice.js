@@ -176,6 +176,10 @@ export default function FormInvoice() {
 
         reference: detailInvoice.references,
       });
+      setFormRecurring({...formRecurring,recurring_type: detailInvoice.recurring.type,
+      recurring_next_issue_date: detailInvoice.recurring.next_issued_at,
+      recurring_max: detailInvoice.recurring.max_invoice,
+      recurring_delivery_option: detailInvoice.recurring.delivery_option,})
       setFileListAttach(detailInvoice.attachments);
       if (detailInvoice?.logo !== "0") {
         setFileList([{ id: 1, url: detailInvoice?.logo }]);
@@ -197,7 +201,7 @@ export default function FormInvoice() {
     }
   }, [status, detailInvoice]);
   useEffect(() => {
-    if (formRecurring.recurring_max === null) {
+    if (formRecurring.recurring_max !== 0) {
       setToggleInvoiceNumber(true);
     }
     if (formRecurring.recurring_max === 0) {
@@ -626,6 +630,7 @@ export default function FormInvoice() {
     );
     setLocalSubTotal(totalItems);
   }, [lines]);
+  console.log("detailInvoice",detailInvoice);
 
   return (
     <div tw="max-w-screen-lg mx-auto">
