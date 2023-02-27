@@ -87,6 +87,27 @@ function Header({
       enabled: false,
     }
   )
+  const { status: pdfStatus, refetch: pdfRefetch } = useQuery(
+    "downloadPDF",
+    async () =>
+      axios
+        .get('clients/export', {
+          responseType: "blob",
+        })
+        .then((res) => {
+          const url = window.URL.createObjectURL(new Blob([res.data]))
+          const link = document.createElement("a")
+          link.href = url
+          link.setAttribute("download", `clients.pdf`)
+          document.body.appendChild(link)
+          link.click()
+
+          return res.data
+        }),
+    {
+      enabled: false,
+    }
+  )
   // const fetchData = async () => {
   //   const response = await axios.get('clients/export')
   //   const data = await response.json()

@@ -171,30 +171,52 @@ export default function AccountTrialBalance() {
         })
         .then((res) => res.data)
   );
-  const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
+  // const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
+  //   ["export-excel",{...filter,export:true}],
+  //   async (key) =>
+  //     axios
+  //       .get(`reports/accounting/trial-balance`, {
+  //         params: key.queryKey[1],
+  //         responseType: "blob",
+  //       })
+  //       .then((res) => {
+  //         const href = URL.createObjectURL(res.data);
+
+  //     const link = document.createElement("a");
+  //     link.href = href;
+  //     link.setAttribute("download", "trial_balance.csv");
+  //     document.body.appendChild(link);
+  //     link.click();
+
+  //     document.body.removeChild(link);
+  //     URL.revokeObjectURL(href);
+  //       }),
+  //   {
+  //     enabled: false,
+  //   }
+  // )
+  const { status: pdfStatus, refetch: pdfRefetch } = useQuery(
     ["export-excel",{...filter,export:true}],
-    async (key) =>
-      axios
-        .get(`reports/accounting/trial-balance`, {
+  async (key) =>
+    axios
+      .get(`reports/accounting/trial-balance`, {
           params: key.queryKey[1],
-          responseType: "blob",
-        })
-        .then((res) => {
-          const href = URL.createObjectURL(res.data);
+             responseType: "blob",
+           })
+      .then((res) => {
+        const url = window.URL.createObjectURL(new Blob([res.data]))
+        const link = document.createElement("a")
+        link.href = url
+        link.setAttribute("download", `trial_balance.pdf`)
+        document.body.appendChild(link)
+        link.click()
 
-      const link = document.createElement("a");
-      link.href = href;
-      link.setAttribute("download", "trial_balance.csv");
-      document.body.appendChild(link);
-      link.click();
-
-      document.body.removeChild(link);
-      URL.revokeObjectURL(href);
-        }),
-    {
-      enabled: false,
-    }
-  )
+        return res.data
+      }),
+  {
+    enabled: false,
+  }
+)
   useEffect(() => {
     if(user){
       localStorage.setItem("newUser", JSON.stringify(user))
@@ -300,7 +322,7 @@ export default function AccountTrialBalance() {
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
           <Popover
             placement="bottom"
-          content={<MoreAction myRef={myRef}  excelRefetch={excelRefetch} />}
+          content={<MoreAction myRef={myRef}  excelRefetch={pdfRefetch} />}
 
             trigger="click"
           >

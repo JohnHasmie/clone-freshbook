@@ -32,6 +32,8 @@ import axios from "axios";
 import AppContext from "../../components/context/AppContext";
 import { numberWithDot } from "../../components/Utils";
 import moment from "moment";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 const dateFormat = "DD/MM/YYYY";
 
 export default function InvoiceDetail() {
@@ -94,6 +96,14 @@ export default function InvoiceDetail() {
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
+  };
+  const generatePdf = () => {
+    const doc = new jsPDF();
+
+    doc.autoTable({ head: [],
+    body:[]});
+
+    doc.save('invoice_detail.pdf');
   };
   const FilterInvoiceDetail = (
     <div>
@@ -354,7 +364,7 @@ export default function InvoiceDetail() {
           <Popover
             placement="bottom"
             content={
-              <MoreActionCSV myRef={myRef} csvReport={{ ...csvReport }} />
+              <MoreActionCSV myRef={myRef} csvReport={{ ...csvReport }} generatePdf={generatePdf} />
             }
             trigger="click"
           >

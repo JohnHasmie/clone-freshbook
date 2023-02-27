@@ -54,7 +54,7 @@ export default function MoreAction({  myRef ,excelRefetch}) {
   );
 }
 
-export function MoreActionCSV({  myRef ,csvReport}) {
+export function MoreActionCSV({  myRef ,csvReport,generatePdf}) {
   const history = useHistory();
 
   return (
@@ -63,12 +63,18 @@ export function MoreActionCSV({  myRef ,csvReport}) {
         <Menu.Item key="export" >
           <div>
             <VerticalAlignBottomOutlined  />
-            <CSVLink
+            {/* <CSVLink
               tw="cursor-pointer"
               {...csvReport}
             >
               Export to PDF
-            </CSVLink>
+            </CSVLink> */}
+            <span
+              tw="cursor-pointer bg-transparent"
+              onClick={()=>generatePdf()}
+            >
+              Export to PDF
+            </span>
           </div>
         </Menu.Item>
 {!myRef.current?

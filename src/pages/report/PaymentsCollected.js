@@ -195,31 +195,53 @@ export default function PaymentsCollected() {
       },
     }
   );
-  const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
-    ["export-csv",{...filter,export:true}],
-    async (key) =>
-      axios
-        .get(`reports/payment-collection`, {
-          params: key.queryKey[1],
-          responseType: "blob",
-        })
-        .then((res) => {
-          const href = URL.createObjectURL(res.data);
+  // const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
+  //   ["export-csv",{...filter,export:true}],
+  //   async (key) =>
+  //     axios
+  //       .get(`reports/payment-collection`, {
+  //         params: key.queryKey[1],
+  //         responseType: "blob",
+  //       })
+  //       .then((res) => {
+  //         const href = URL.createObjectURL(res.data);
 
-          const link = document.createElement("a");
-          link.href = href;
-          link.setAttribute("download", "payment.csv");
-          document.body.appendChild(link);
-          link.click();
+  //         const link = document.createElement("a");
+  //         link.href = href;
+  //         link.setAttribute("download", "payment.csv");
+  //         document.body.appendChild(link);
+  //         link.click();
     
-          document.body.removeChild(link);
-          URL.revokeObjectURL(href);
-        })
-        ,
-    {
-      enabled: false,
-    }
-  )
+  //         document.body.removeChild(link);
+  //         URL.revokeObjectURL(href);
+  //       })
+  //       ,
+  //   {
+  //     enabled: false,
+  //   }
+  // )
+  const { status: pdfStatus, refetch: pdfRefetch } = useQuery(
+    ["export-excel",{...filter,export:true}],
+  async (key) =>
+    axios
+      .get(`reports/payment-collection`, {
+          params: key.queryKey[1],
+             responseType: "blob",
+           })
+      .then((res) => {
+        const url = window.URL.createObjectURL(new Blob([res.data]))
+        const link = document.createElement("a")
+        link.href = url
+        link.setAttribute("download", `payment.pdf`)
+        document.body.appendChild(link)
+        link.click()
+
+        return res.data
+      }),
+  {
+    enabled: false,
+  }
+)
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -251,7 +273,7 @@ export default function PaymentsCollected() {
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
         {statusPayment === "success" && <Popover
             placement="bottom"
-            content={<MoreAction myRef={myRef}  excelRefetch={excelRefetch} />}
+            content={<MoreAction myRef={myRef}  excelRefetch={pdfRefetch} />}
             // content={<MoreActionCSV myRef={myRef}  csvReport={{...csvReport}} />}
 
             trigger="click"

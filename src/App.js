@@ -67,7 +67,6 @@ import FormInvoice from "./pages/invoices/FormInvoice";
 import AccountAgingPrint from "./pages/report/AccountAgingPrint";
 import AccountBalancePrint from "./pages/report/AccountBalancePrint";
 import InvoicePrint from "./pages/invoices/InvoicePrint";
-import ExportExcel from "./components/layout/TextExcel";
 import withAdminRedirect from "./components/WithAdminRedirect";
 
 const queryClient = new QueryClient();
@@ -140,7 +139,7 @@ const refInvoice=useRef(null)
           <Switch>
             <Route path="/sign-up" component={SignUp} />
             <Route path="/sign-in" component={SignIn} />
-            <Route path="/excel" component={ExportExcel} />
+            {/* <Route path="/excel" component={ExportExcel} /> */}
 
 
             <Route

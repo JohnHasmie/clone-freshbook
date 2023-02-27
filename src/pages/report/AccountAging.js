@@ -27,6 +27,8 @@ import AppContext from "../../components/context/AppContext";
 import moment from "moment";
 import { useMutation, useQuery } from "react-query";
 import axios from "axios";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import {
   getTotalGlobal,
   numberWithDot,
@@ -47,13 +49,21 @@ export default function AccountAging() {
   const [newUser, setNewUser] = useState(
     JSON.parse(localStorage.getItem("newUser")) || { data: "" }
   );
+  // const [headers, setHeaders] = useState([
+  //   { label: "Client", key: "client" },
+  //   { label: "0-30 Days", key: "0_30" },
+  //   { label: "31-60 Days", key: "31_60" },
+  //   { label: "61-90 Days", key: "61_90" },
+  //   { label: "91+ Days", key: "91" },
+  //   { label: "Total", key: "total" },
+  // ]);
   const [headers, setHeaders] = useState([
-    { label: "Client", key: "client" },
-    { label: "0-30 Days", key: "0_30" },
-    { label: "31-60 Days", key: "31_60" },
-    { label: "61-90 Days", key: "61_90" },
-    { label: "91+ Days", key: "91" },
-    { label: "Total", key: "total" },
+    "Client",
+    "0-30 Days",
+    "31-60 Days",
+    "61-90 Days",
+    "91+ Days",
+    "Total",
   ]);
   const[ data,setData] =useState(
     [
@@ -212,14 +222,14 @@ export default function AccountAging() {
 
   let newDataItems =
     statusAccount === "success" &&
-    dataAccount?.map((item) => ({
-      client:item?.client?.company_name,
-      "0_30": item?.account_aging["0_30"],
-      "31_60": item?.account_aging["31_60"],
-      "61_90": item?.account_aging["61_90"],
-      90: item?.account_aging["90"],
-      total: item?.account_aging["total"],
-    }));
+    dataAccount?.map((item) => ([
+    item?.client?.company_name,
+     item?.account_aging["0_30"],
+    item?.account_aging["31_60"],
+item?.account_aging["61_90"],
+item?.account_aging["90"],
+     item?.account_aging["total"],
+    ]));
     let newDataTotal =
     statusAccount === "success" &&
     {
@@ -304,8 +314,15 @@ export default function AccountAging() {
     headers: headers,
     filename: `accounts_aging.csv`,
   };
+  const generatePdf = () => {
+    const doc = new jsPDF();
 
-  console.log("newData", filterOutstanding);
+    doc.autoTable({ head: [headers],
+    body:data});
+
+    doc.save('accounts_aging.pdf');
+  };
+
   return (
     <div tw="max-w-screen-lg mx-auto">
       <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5">
@@ -338,7 +355,7 @@ export default function AccountAging() {
         {statusAccount === "success" && data.length > 0 &&  <Popover
             placement="bottom"
             content={
-              <MoreActionCSV myRef={myRef} csvReport={{ ...csvReport }} />
+              <MoreActionCSV myRef={myRef} csvReport={{ ...csvReport }} generatePdf={generatePdf} />
             }
             trigger="click"
           >

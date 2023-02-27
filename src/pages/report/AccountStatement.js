@@ -28,6 +28,8 @@ import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 import moment from "moment";
 import { getTotalGlobal, numberWithDot } from "../../components/Utils";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 const dateFormat = "DD/MM/YYYY";
 
 export default function AccountStatement() {
@@ -59,9 +61,9 @@ export default function AccountStatement() {
   ]);
   const myRef = useRef(null);
 
-  useEffect(() => {
-    clientId && setFilter({ ...filter, client_id: clientId });
-  }, [clientId]);
+//   useEffect(() => {
+// setFilter({ ...filter, client_id: clientId });
+//   }, [clientId]);
 
  
   const handleClickChange = (open) => {
@@ -200,10 +202,10 @@ export default function AccountStatement() {
   useEffect(() => {
     if(user){
       localStorage.setItem("newUser", JSON.stringify(user))
-      setFilter({ ...filter, currency: user?.data?.base_currency })
+      setFilter({ ...filter, currency: user?.data?.base_currency,client_id:clientId })
     };
     if(newUser){
-      setFilter({ ...filter, currency: newUser?.data?.base_currency })
+      setFilter({ ...filter, currency: newUser?.data?.base_currency,client_id:clientId })
     };
   }, [user || newUser]);
   const { data: dataClients, status } = useQuery(["clients"], async (key) =>
@@ -305,6 +307,14 @@ export default function AccountStatement() {
     // headers: headers,
     filename: `${dataStatement?.data?.client?.first_name}_${dataStatement?.data?.client?.last_name}_account_statement.csv`,
   };
+  const generatePdf = () => {
+    const doc = new jsPDF();
+
+    doc.autoTable({
+    body:data});
+
+    doc.save(`${dataStatement?.data?.client?.first_name}_${dataStatement?.data?.client?.last_name}_account_statement.pdf`);
+  };
 
   const mutation = useMutation(
     async (data) => {
@@ -329,7 +339,7 @@ export default function AccountStatement() {
       },
     }
   );
-  console.log("filter",newUser)
+  console.log("filter",clientId,filter)
 
   return (
     <div tw="max-w-screen-lg mx-auto">
@@ -363,7 +373,7 @@ export default function AccountStatement() {
           <Popover
             placement="bottom"
             content={
-              <MoreActionCSV myRef={myRef} csvReport={{ ...csvReport }} />
+              <MoreActionCSV myRef={myRef} csvReport={{ ...csvReport }}  generatePdf={generatePdf}/>
             }
             trigger="click"
           >
