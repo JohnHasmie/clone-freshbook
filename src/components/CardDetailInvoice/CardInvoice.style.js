@@ -2,7 +2,7 @@ import { Button, Card } from "antd";
 import tw, { styled, css } from "twin.macro";
 
 export const StyledCardDetailInvoice = styled(Card)(({ hidden }) => [
-    tw`  border-gray-200 rounded-lg md:min-h-[50rem] md:min-w-[40rem]`,
+    tw`border-gray-200 rounded-lg md:min-h-[50rem] md:min-w-[40rem]`,
     css`
    
         && {

@@ -14,7 +14,6 @@ export default function AccordionInvoice() {
   };
   const [message, setMessage] = useState("");
   const { globalDetailInvoice } = useContext(AppContext);
-  console.log(globalDetailInvoice?.status,"cek");
   const onFinish=(values)=>{
     console.log("cek atas",message);
     mutation.mutate({invoice_id:globalDetailInvoice?.id,
@@ -22,12 +21,10 @@ export default function AccordionInvoice() {
     })
   }
   const queryClient = useQueryClient();
-console.log(globalDetailInvoice);
   const { data: dataComment, status: statusComment } = useQuery(
     "comment-listing",
     () => axios.get(`invoices/${globalDetailInvoice?.id}/comments?limit=11`).then((res) => res.data?.data)
   );
-console.log(dataComment,"data Commment");
   const mutation = useMutation(
     async (data) => {
       return axios.post("invoices/comments", data).then((res) => res.data);

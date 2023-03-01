@@ -5,8 +5,8 @@ import {
   RestOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { Button,  Card,  Menu, notification, Popover, } from "antd";
-import React, { useState, useContext, useEffect ,useRef} from "react";
+import { Button, Card, Menu, notification, Popover } from "antd";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import TableCustom from "../../components/Table";
 import CardDetailInvoice from "../../components/CardDetailInvoice";
@@ -17,9 +17,9 @@ import AppContext from "../../components/context/AppContext";
 import moment from "moment";
 import { numberWithDot } from "../../components/Utils";
 import PopupPayment from "./PopupPayment";
+import jsPDF from "jspdf";
 
 export default function Detail() {
-
   const [clicked, setClicked] = useState(false);
   const [clickedList, setClickedList] = useState(false);
 
@@ -29,32 +29,29 @@ export default function Detail() {
   const [clickedRow, setClickedRow] = useState(false);
   const queryClient = useQueryClient();
 
-
   const [clickedId, setClickedId] = useState("");
   const [marginResponsive, setMarginResponsive] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const [filteayment, setFilteayment] = useState({
     payment_method: 1,
-    client_id:'',
-    limit:10,
-    status:'',
-    invoice_id:'',
-
+    client_id: "",
+    limit: 10,
+    status: "",
+    invoice_id: "",
   });
   const { invoiceId } = useParams();
-  const {pathname}= useLocation()  
-  const {  setGlobalDetailInvoice,user,setting,refInvoice } =
+  const { pathname } = useLocation();
+  const { setGlobalDetailInvoice, user, setting, refInvoice } =
     useContext(AppContext);
 
   const handleClickChange = (open) => {
     setClicked(open);
   };
-  console.log(refInvoice,"ref");
   const handleClickChangeList = (open) => {
     setClickedList(open);
   };
- 
+
   const hide = () => {
     setClicked(false);
   };
@@ -62,11 +59,11 @@ export default function Detail() {
     if (clickedRow === false) {
       setClickedRow(true);
       setClickedId(id);
-      setMarginResponsive("400px")
+      setMarginResponsive("400px");
     } else {
       setClickedRow(false);
       setClickedId("");
-      setMarginResponsive("")
+      setMarginResponsive("");
     }
   };
   const hideClickRow = (e) => {
@@ -86,13 +83,15 @@ export default function Detail() {
   useEffect(() => {
     if (status === "success") {
       setGlobalDetailInvoice(detailInvoice);
-   setFilteayment({...filteayment,invoice_id:invoiceId,client_id:detailInvoice.client_id})
-
+      setFilteayment({
+        ...filteayment,
+        invoice_id: invoiceId,
+        client_id: detailInvoice.client_id,
+      });
     }
   }, [status]);
 
-
-  const { data: listPayment, status:statusListPayment } = useQuery(
+  const { data: listPayment, status: statusListPayment } = useQuery(
     ["payment-listing", filteayment],
     async (key) =>
       axios
@@ -104,18 +103,17 @@ export default function Detail() {
 
   const history = useHistory();
 
-
-  const data = statusListPayment === "success" &&
-  listPayment?.data?.map((item,i)=>({
-    key:item.id,
-    payment_at:item.payment_at,
-    payment_method:item.payment_method.name,
-    note:item.note,
-    amount:item.amount,
-    method_id:item.payment_method.id,
-    status:item.status
-  }))
- 
+  const data =
+    statusListPayment === "success" &&
+    listPayment?.data?.map((item, i) => ({
+      key: item.id,
+      payment_at: item.payment_at,
+      payment_method: item.payment_method.name,
+      note: item.note,
+      amount: item.amount,
+      method_id: item.payment_method.id,
+      status: item.status,
+    }));
 
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -127,28 +125,28 @@ export default function Detail() {
   const hasSelected = selectedRowKeys.length > 0;
   const mutationDelete = useMutation(
     async (data) => {
-      return axios.delete(`payments/${selectedRowKeys[0]}`).then((res) => res.data);
+      return axios
+        .delete(`payments/${selectedRowKeys[0]}`)
+        .then((res) => res.data);
     },
     {
       onSuccess: (res) => {
         queryClient.invalidateQueries("payment-listing");
-        setClickedList(false)
-        setSelectedRowKeys([])
+        setClickedList(false);
+        setSelectedRowKeys([]);
 
         notification.success({
           message: `A payment was deleted`,
           // description:'This information will appear on your invoice',
           placement: "topLeft",
         });
-        
-
       },
       onError: (err) => {
         notification.error({
           message: `An Error Occurred Please Try Again Later`,
           placement: "topLeft",
         });
-        setClickedList(false)
+        setClickedList(false);
 
         console.log(err.response.data.message);
       },
@@ -158,25 +156,36 @@ export default function Detail() {
   const bulkList = (
     <div>
       <Menu>
-        <Menu.Item key="edit" onClick={()=>{
-          setClickedRow(!clickedRow);
-          setClickedId(selectedRowKeys[0]);
-          setMarginResponsive("400px")
-          setClickedList(false)
-        }} disabled={selectedRowKeys.length > 1}>
+        <Menu.Item
+          key="edit"
+          onClick={() => {
+            setClickedRow(!clickedRow);
+            setClickedId(selectedRowKeys[0]);
+            setMarginResponsive("400px");
+            setClickedList(false);
+          }}
+          disabled={selectedRowKeys.length > 1}
+        >
           <div>
             <EditOutlined />
             <span>Edit</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="refund" /* onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} */ disabled>
+        <Menu.Item
+          key="refund"
+          /* onClick={()=>history.push(`clients/${selectedRowKeys[0]}/edit`)} */ disabled
+        >
           <div>
             <UndoOutlined />
             <span>Refund</span>
           </div>
         </Menu.Item>
 
-        <Menu.Item key="delete" onClick={()=>mutationDelete.mutate()} disabled={selectedRowKeys.length > 1}>
+        <Menu.Item
+          key="delete"
+          onClick={() => mutationDelete.mutate()}
+          disabled={selectedRowKeys.length > 1}
+        >
           <div>
             <RestOutlined />
             <span>Delete</span>
@@ -186,17 +195,13 @@ export default function Detail() {
     </div>
   );
 
- 
   const columns = [
-   
     {
       title: "Client / Invoice Number",
       dataIndex: "payment_at",
       key: "payment_at",
       render: (text, record) => (
-        <span >
-          {moment(record.payment_at).format("MM/DD/YYYY")}
-          </span>
+        <span>{moment(record.payment_at).format("MM/DD/YYYY")}</span>
       ),
       sorter: (a, b) => a.payment_at - b.payment_at,
     },
@@ -205,7 +210,6 @@ export default function Detail() {
       dataIndex: "payment_method",
       key: "payment_method",
       sorter: (a, b) => a.payment_method.length - b.payment_method.length,
-
     },
     {
       title: "Internal Notes",
@@ -232,26 +236,25 @@ export default function Detail() {
         </>
       ),
       sorter: (a, b) => a.note?.length - b.note?.length,
-
     },
 
-  
     {
       title: "Line Total",
       key: "amount",
       dataIndex: "amount",
-      render: (text, record) => (
-       <span> {numberWithDot(record.amount)}
-        </span>
-      ),
+      render: (text, record) => <span> {numberWithDot(record.amount)}</span>,
       sorter: (a, b) => a.amount - b.amount,
     },
   ];
-console.log(detailInvoice,"invoice");
+
+ 
   return (
     <>
       <div className="layout-content">
-        <div tw="grid grid-cols-1 md:grid-cols-12 justify-items-center max-w-screen-sm" style={{ marginBottom: marginResponsive }}>
+        <div
+          tw="grid grid-cols-1 md:grid-cols-12 justify-items-center max-w-screen-sm"
+          style={{ marginBottom: marginResponsive }}
+        >
           <div tw="md:col-span-12 mb-10 ">
             {/* <p>
               {" "}
@@ -289,54 +292,44 @@ console.log(detailInvoice,"invoice");
               </div>
             )}
             {status === "success" && (
-<>
-              <CardDetailInvoice ref={refInvoice}>
-                <div tw="grid gap-2 md:flex justify-between mb-10">
-                 {detailInvoice?.logo !== null ?
-                 <img
-                 src={detailInvoice?.logo}
-                 alt="profile company"
-                 tw="w-52 h-52"
-               />:
-                 <img
-                    src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"
-                    alt="profile company"
-                    tw="w-52 h-52"
-                  />
-                }
-                     <div tw="flex justify-between ">
-               <div tw="flex flex-col items-end mr-5">
-         
-                 <span
-            
-                 >{user?.data?.company_name}</span>
-                 <span
-              
-                 >{user?.data?.phone}</span>
-               </div>
-               <div tw="flex flex-col items-end">
-                 <span
-                  
-                 >{user?.data?.address}</span>
-                 {/* <span
+              <div ref={refInvoice}>
+                <CardDetailInvoice>
+                  <div tw="grid gap-2 md:flex justify-between mb-10"  >
+                    {/* {detailInvoice.logo  ? (
+                      <img
+                        src={detailInvoice?.logo}
+                        alt="profile company"
+                        tw="w-52 h-52"
+                      />
+                    ) : ( */}
+                      <img
+                        src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"
+                        alt="profile company"
+                        tw="w-52 h-52"
+                      />
+                    {/* )} */}
+                    <div tw="flex justify-between"  >
+                      <div tw="flex flex-col items-end mr-5">
+                        <span>{user?.data?.company_name}</span>
+                        <span>{user?.data?.phone}</span>
+                      </div>
+                      <div tw="flex flex-col items-end">
+                        <span>{user?.data?.address}</span>
+                        {/* <span
           
                  >line_address_2</span> */}
-                 <div tw="flex">
-                   <span
-                  
-                   >{user?.data?.city}</span>
-                   <span>,</span>
-                   {/* <span
+                        <div tw="flex">
+                          <span>{user?.data?.city}</span>
+                          <span>,</span>
+                          {/* <span
                 
                    >State</span> */}
-                 </div>
-        
-                 <span
-                 
-                 >{user?.data?.zip}</span>
-        
-                <span>{user?.data?.country}</span>
-                 {/* <div tw="flex">
+                        </div>
+
+                        <span>{user?.data?.zip}</span>
+
+                        <span>{user?.data?.country}</span>
+                        {/* <div tw="flex">
                    <span
            
                    >TAX NAME</span>
@@ -345,210 +338,228 @@ console.log(detailInvoice,"invoice");
                  
                    >TAX NUMBER</span>
                  </div> */}
-               </div>
-             </div>
-                </div>
-                <div tw="grid grid-cols-4 mb-16">
-             <div className="flex flex-col">
-             <span tw="text-gray-400">Billed To</span>
-                    <span tw="text-xs w-28">{detailInvoice?.client.first_name} {detailInvoice?.client.last_name}</span>
-                    <span tw="text-xs w-28">{detailInvoice?.client.company_name}</span>
-                    <span tw="text-xs">{detailInvoice?.client.address}</span>
-                    <span tw="text-xs">{detailInvoice?.client.city}</span>
-                    <span tw="text-xs">{detailInvoice?.client.zip}</span>
-                    <span tw="text-xs">{detailInvoice?.client.country}</span>
-             </div>
-             <div tw="space-y-5 ">
-               <div>
-                 <h4 tw="text-gray-400">Date of Issue</h4>
-        
-                 <span>
-                 {moment(detailInvoice?.issued_at).format(`DD/MM/YYYY`)}
-                  </span>
-               </div>
-        
-               <div>
-                 <h4 tw="text-gray-400">Due Date</h4>
-               <span>{moment(detailInvoice?.due_date).format(`DD/MM/YYYY`)}</span>
-               </div>
-             </div>
-             <div tw="space-y-5 ">
-               <div>
-                 <h4 tw="text-gray-400">Invoice Number</h4>
-        
-                 <span tw="text-xs">{detailInvoice?.code}</span>
-               </div>
-        
-               <div>
-                 <h4 tw="text-gray-400">Reference</h4>
-                 <span
-     
-                   
-                 >{detailInvoice?.references}</span>
-               </div>
-             </div>
-             <div tw="text-right">
-               <h3 tw="text-gray-400">Amount Due </h3>
-               <span tw="font-medium text-3xl ">
-               {numberWithDot(detailInvoice?.total)}
-               </span>
-             </div>
-           </div>
- 
+                      </div>
+                    </div>
+                  </div>
+                  <div tw="grid grid-cols-4 mb-16">
+                    <div className="flex flex-col">
+                      <span tw="text-gray-400">Billed To</span>
+                      <span tw="text-xs w-28">
+                        {detailInvoice?.client.first_name}{" "}
+                        {detailInvoice?.client.last_name}
+                      </span>
+                      <span tw="text-xs w-28">
+                        {detailInvoice?.client.company_name}
+                      </span>
+                      <span tw="text-xs">{detailInvoice?.client.address}</span>
+                      <span tw="text-xs">{detailInvoice?.client.city}</span>
+                      <span tw="text-xs">{detailInvoice?.client.zip}</span>
+                      <span tw="text-xs">{detailInvoice?.client.country}</span>
+                    </div>
+                    <div tw="space-y-5 ">
+                      <div>
+                        <h4 tw="text-gray-400">Date of Issue</h4>
 
-                <table>
-                  <tbody>
-                    <tr tw="border-t-4 border-gray-600 text-sm text-gray-500 text-right font-bold">
-                      <th tw="text-left  py-2">Description</th>
-                      <th>Rate</th>
-                      <th tw="invisible">hide</th>
-                      <th>Qty</th>
-                      <th>Line Total</th>
-                    </tr>
-               
-                  {detailInvoice?.items_detail.length > 0 && detailInvoice?.items_detail?.map((detail,i)=>
-                  (
-                  <tr key={i} tw="border-b text-sm  border-gray-300 text-right">
-                      <th tw="grid text-left py-2">
-                        <span>{detail.name}</span>
-                        <span tw="text-xs">
-                         {detail.description}
+                        <span>
+                          {moment(detailInvoice?.issued_at).format(
+                            `DD/MM/YYYY`
+                          )}
                         </span>
-                      </th>
-                      <td>{numberWithDot(detail.rate)}</td>
-                      <td></td>
-                      <td>{detail.pivot.qty}</td>
+                      </div>
 
-                      <td>{numberWithDot(detail.pivot.total)}</td>
-                    </tr> ))}
-                  </tbody>
-                </table>
+                      <div>
+                        <h4 tw="text-gray-400">Due Date</h4>
+                        <span>
+                          {moment(detailInvoice?.due_date).format(`DD/MM/YYYY`)}
+                        </span>
+                      </div>
+                    </div>
+                    <div tw="space-y-5 ">
+                      <div>
+                        <h4 tw="text-gray-400">Invoice Number</h4>
 
-                <div tw="grid grid-cols-12 mt-10 mb-20">
-                  <div tw="col-span-8"></div>
+                        <span tw="text-xs">{detailInvoice?.code}</span>
+                      </div>
 
-                  <table tw="col-span-4">
+                      <div>
+                        <h4 tw="text-gray-400">Reference</h4>
+                        <span>{detailInvoice?.references}</span>
+                      </div>
+                    </div>
+                    <div tw="text-right">
+                      <h3 tw="text-gray-400">Amount Due </h3>
+                      <span tw="font-medium text-3xl ">
+                        {numberWithDot(detailInvoice?.total)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <table>
                     <tbody>
-                      <tr tw="text-right">
-                        <td>Subtotal</td>
-                        <td>{detailInvoice?.subtotal !== null && numberWithDot(detailInvoice?.subtotal)}</td>
+                      <tr tw="border-t-4 border-gray-600 text-sm text-gray-500 text-right font-bold">
+                        <th tw="text-left  py-2">Description</th>
+                        <th>Rate</th>
+                        <th tw="invisible">hide</th>
+                        <th>Qty</th>
+                        <th>Line Total</th>
                       </tr>
-                      <tr tw="border-b  border-gray-300 text-right">
-                        <td>Tax</td>
-                        <td>0.00</td>
-                      </tr>
-                      <tr tw="text-right ">
-                        <td tw="pt-1">Total</td>
-                        <td>{numberWithDot(detailInvoice?.total)}</td>
-                      </tr>
-                      <tr tw="text-right">
-                        <td>Amount Paid</td>
-                        <td>0.00</td>
-                      </tr>
+
+                      {detailInvoice?.items_detail.length > 0 &&
+                        detailInvoice?.items_detail?.map((detail, i) => (
+                          <tr
+                            key={i}
+                            tw="border-b text-sm  border-gray-300 text-right"
+                          >
+                            <th tw="grid text-left py-2">
+                              <span>{detail.name}</span>
+                              <span tw="text-xs">{detail.description}</span>
+                            </th>
+                            <td>{numberWithDot(detail.rate)}</td>
+                            <td></td>
+                            <td>{detail.pivot.qty}</td>
+
+                            <td>{numberWithDot(detail.pivot.total)}</td>
+                          </tr>
+                        ))}
                     </tbody>
-                    <tfoot>
-                      <tr className="double">
-                        <td tw=" text-right align-top text-gray-400">
-                          Amount Due
-                        </td>
-
-                        <td tw=" grid gap-0 items-end ">
-                          <span tw="font-semibold ">{numberWithDot(detailInvoice?.total)}</span>
-                          {/* <span tw="text-gray-600 text-right">IDR</span> */}
-                        </td>
-                      </tr>
-                    </tfoot>
                   </table>
-                </div>
-              </CardDetailInvoice>
-           {detailInvoice?.attachments?.length > 0 &&   <Card tw="border-gray-200 rounded-lg p-5 mt-5">
-          {detailInvoice?.attachments?.map((item,i)=>(
 
-           <img
-           key={i}
-                src={item.url}
-                tw="rounded-lg w-48 h-48"
-                alt={item.name}
-                /> ))}
-                </Card>}
+                  <div tw="grid grid-cols-12 mt-10 mb-20">
+                    <div tw="col-span-8"></div>
 
-</>
+                    <table tw="col-span-4">
+                      <tbody>
+                        <tr tw="text-right">
+                          <td>Subtotal</td>
+                          <td>
+                            {detailInvoice?.subtotal !== null &&
+                              numberWithDot(detailInvoice?.subtotal)}
+                          </td>
+                        </tr>
+                        <tr tw="border-b  border-gray-300 text-right">
+                          <td>Tax</td>
+                          <td>0.00</td>
+                        </tr>
+                        <tr tw="text-right ">
+                          <td tw="pt-1">Total</td>
+                          <td>{numberWithDot(detailInvoice?.total)}</td>
+                        </tr>
+                        <tr tw="text-right">
+                          <td>Amount Paid</td>
+                          <td>0.00</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr className="double">
+                          <td tw=" text-right align-top text-gray-400">
+                            Amount Due
+                          </td>
 
+                          <td tw=" grid gap-0 items-end ">
+                            <span tw="font-semibold ">
+                              {numberWithDot(detailInvoice?.total)}
+                            </span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </CardDetailInvoice>
+                {detailInvoice?.attachments?.length > 0 && (
+                  <Card tw="border-gray-200 rounded-lg p-5 mt-5">
+                    {detailInvoice?.attachments?.map((item, i) => (
+                      <img
+                        key={i}
+                        src={item.url}
+                        tw="rounded-lg w-48 h-48"
+                        alt={item.name}
+                      />
+                    ))}
+                  </Card>
+                )}
+              </div>
             )}
-       { !pathname.includes('recurring') && <>
-             <div tw="mt-20 w-auto">
-               <div tw="flex items-center ">
-                 <span tw="text-xl font-bold text-black">
-                   All Payment for Invoices {detailInvoice?.code}{" "}
-                 </span>
-                 <Popover
-                   placement="top"
-                   content={<PopupPayment hide={hide} id={0} data={null} invoiceId={detailInvoice?.id} />}
-                   trigger="click"
-                   visible={clicked}
-                   onVisibleChange={handleClickChange}
-                 >
-                   <PlusOutlined tw="mx-2 text-white bg-success text-xl flex items-center py-1.5 px-2  rounded-md font-bold cursor-pointer " />
-                 </Popover>
-                 {hasSelected ? (
-                   <>
-                     <Popover
-                       placement="bottom"
-                       content={bulkList}
-                       trigger="click"
-                       visible={clickedList}
-                       onVisibleChange={handleClickChangeList}
-                     >
-                       <div className="flex items-center justify-center">
-                         <Button>
-                           <span tw="mr-2">More Actions</span>
-                           <DownOutlined />
-                         </Button>
-                       </div>
-                     </Popover>
-                   </>
-                 ) : (
-                   <>
-                     <Popover
-                       tw="invisible"
-                       placement="bottom"
-                       content={bulkList}
-                       trigger="click"
-                     >
-                       <div className="flex items-center justify-center">
-                         <Button>
-                           <span tw="mr-2">More Actions</span>
-                           <DownOutlined />
-                         </Button>
-                       </div>
-                     </Popover>
-                   </>
-                 )}
-               </div>
-             </div>
-             <div className="table-responsive">
-               <TableCustom
-                 tw="mb-10 w-20"
-                 onRow={(record, rowIndex) => {
-                   return {
-                
-                     onDoubleClick: (event) => {
-                       event.preventDefault()
-                       setClickedRow(!clickedRow);
-                       setClickedId(record.key);
-                       setMarginResponsive("400px")
-                     
-                     },
-                   };
-                 }}
-                 rowSelection={rowSelection}
-                 columns={columns}
-                 dataSource={data}
-                 pagination={false}
-                 className="ant-border-space"
-               />
-             </div>
-         </>}
+            {!pathname.includes("recurring") && (
+              <>
+                <div tw="mt-20 w-auto">
+                  <div tw="flex items-center ">
+                    <span tw="text-xl font-bold text-black">
+                      All Payment for Invoices {detailInvoice?.code}{" "}
+                    </span>
+                    <Popover
+                      placement="top"
+                      content={
+                        <PopupPayment
+                          hide={hide}
+                          id={0}
+                          data={null}
+                          invoiceId={detailInvoice?.id}
+                        />
+                      }
+                      trigger="click"
+                      visible={clicked}
+                      onVisibleChange={handleClickChange}
+                    >
+                      <PlusOutlined tw="mx-2 text-white bg-success text-xl flex items-center py-1.5 px-2  rounded-md font-bold cursor-pointer " />
+                    </Popover>
+                    {hasSelected ? (
+                      <>
+                        <Popover
+                          placement="bottom"
+                          content={bulkList}
+                          trigger="click"
+                          visible={clickedList}
+                          onVisibleChange={handleClickChangeList}
+                        >
+                          <div className="flex items-center justify-center">
+                            <Button>
+                              <span tw="mr-2">More Actions</span>
+                              <DownOutlined />
+                            </Button>
+                          </div>
+                        </Popover>
+                      </>
+                    ) : (
+                      <>
+                        <Popover
+                          tw="invisible"
+                          placement="bottom"
+                          content={bulkList}
+                          trigger="click"
+                        >
+                          <div className="flex items-center justify-center">
+                            <Button>
+                              <span tw="mr-2">More Actions</span>
+                              <DownOutlined />
+                            </Button>
+                          </div>
+                        </Popover>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="table-responsive">
+                  <TableCustom
+                    tw="mb-10 w-20"
+                    onRow={(record, rowIndex) => {
+                      return {
+                        onDoubleClick: (event) => {
+                          event.preventDefault();
+                          setClickedRow(!clickedRow);
+                          setClickedId(record.key);
+                          setMarginResponsive("400px");
+                        },
+                      };
+                    }}
+                    rowSelection={rowSelection}
+                    columns={columns}
+                    dataSource={data}
+                    pagination={false}
+                    className="ant-border-space"
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

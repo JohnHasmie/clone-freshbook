@@ -10,7 +10,7 @@ import ButtonCustom from "../Button";
 import tw from "twin.macro";
 import ButtonMore from "../Reports/ButtonMore";
 
-import MoreAction from "../Reports/MoreAction";
+import MoreAction, { MoreActionInvoice } from "../Reports/MoreAction";
 import InvoiceSetting from "../../pages/invoices/InvoiceSetting";
 import AppContext from "../context/AppContext";
 import { useQuery } from "react-query";
@@ -83,6 +83,7 @@ const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
     enabled: false,
   }
 )
+console.log("data",globalDetailInvoice?.code)
   return (
     <div tw="md:ml-24">
    {globalDetailInvoice &&   <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2">
@@ -113,7 +114,7 @@ const { isFetching: excelIsFetching, refetch: excelRefetch } = useQuery(
           </Popover>
         </div>
         <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <Popover placement="bottom" content={<MoreAction myRef={{id:globalDetailInvoice?.id}} excelRefetch={excelRefetch} />} trigger="click">
+          <Popover placement="bottom" content={<MoreActionInvoice myRef={{id:globalDetailInvoice?.id,current:""}} refInvoice={refInvoice} code={globalDetailInvoice?.code} />} trigger="click">
             <ButtonMore >
               <span>More Actions</span>
               <DownOutlined />

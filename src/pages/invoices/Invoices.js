@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 import {
   Button,
+  Card,
   Form,
   Menu,
   Modal,
@@ -27,7 +28,7 @@ import {
   Tooltip,
   Typography,
 } from "antd";
-import React, { useState, useRef,useContext,useEffect } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import CardInvoice from "../../components/CardInvoice/index";
@@ -46,6 +47,8 @@ import { ModalConfirm } from "../../components/ModalConfirm.style";
 import FormPayment from "./FormPayment";
 import _ from "lodash";
 import AppContext from "../../components/context/AppContext";
+import jsPDF from "jspdf";
+import CardDetailInvoice from "../../components/CardDetailInvoice";
 
 export default function Invoices() {
   const { Title } = Typography;
@@ -56,6 +59,8 @@ export default function Invoices() {
 
   const [form] = Form.useForm();
   const history = useHistory();
+  const myRef = useRef(null);
+
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
@@ -64,7 +69,7 @@ export default function Invoices() {
     all: "",
     type: "all",
     date_type: "issued_at",
-    show:"invoice"
+    show: "invoice",
     // status:"",
     // type:"",
     // date_type:"",
@@ -73,6 +78,8 @@ export default function Invoices() {
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
+  const [dataDetail, setDataDetail] = useState("");
+
   const [idRow, setIdRow] = useState("");
   const { user } = useContext(AppContext);
   useEffect(() => {
@@ -113,9 +120,7 @@ export default function Invoices() {
     }
 
     setClicked(false);
-  
   };
-  
 
   const [searchField, setSearchField] = useState({
     company_name: "",
@@ -528,6 +533,21 @@ export default function Invoices() {
     onChange: onSelectChange,
   };
   const hasSelected = selectedRowKeys.length > 0;
+  const handleGeneratePdf = () => {
+		const doc = new jsPDF({
+			format: 'a3',
+			unit: 'px',
+		});
+
+		// Adding the fonts.
+		doc.setFont('Inter-Regular', 'normal');
+
+		doc.html(myRef.current, {
+			async callback(doc) {
+				await doc.save(`Invoice ${invoiceForPayment[0]?.invoice_number}`);
+			},
+		});
+	};
   const bulkList = (
     <div tw="w-36">
       <Menu>
@@ -600,7 +620,11 @@ export default function Invoices() {
             <span>Add a Payment</span>
           </div>
         </Menu.Item>
-        <Menu.Item key="download-pdf" onClick={() => pdfRefetch()}>
+        <Menu.Item
+          key="download-pdf"
+          onClick={handleGeneratePdf}
+          disabled={selectedRowKeys.length > 1}
+        >
           <div>
             <VerticalAlignBottomOutlined />
             <span>Download PDF</span>
@@ -625,6 +649,29 @@ export default function Invoices() {
       </Menu>
     </div>
   );
+
+  useEffect(() => {
+  if(selectedRowKeys){
+    async function fetchData() {
+      const response = await axios.get(`invoices/detail/${selectedRowKeys[0]}`);
+      setDataDetail(response.data.data);
+    }
+    fetchData();
+  }
+  
+  }, [selectedRowKeys])
+  
+  // const { data: dataDetail, status:statusDetail } = useQuery(
+  //   ["invoice-detail"],
+  //   async (key) =>
+  //     axios
+  //       .get(`invoices/detail/${selectedRowKeys[0]}`, {
+  //         params: key.queryKey[1],
+  //       })
+  //       .then((res) => res.data.data)
+  // );
+
+  console.log("cek",dataDetail,selectedRowKeys);
   const filledValues = Object.values(filter).filter((value) => value);
   return (
     <>
@@ -659,7 +706,10 @@ export default function Invoices() {
                     </div>
                   </div>
                 )}
-                <ListCardInvoice invoiceProps={[dataInvoices, status]} filter={filter} />
+                <ListCardInvoice
+                  invoiceProps={[dataInvoices, status]}
+                  filter={filter}
+                />
               </div>
             </div>
           ) : (
@@ -822,6 +872,197 @@ export default function Invoices() {
               </div>
             </div>
           </div>
+        </div>
+        <div tw="hidden">
+        {dataDetail && (
+              <div ref={myRef}>
+                <CardDetailInvoice>
+                  <div tw="grid gap-2 md:flex justify-between mb-10"  >
+                    {/* {dataDetail.logo  ? (
+                      <img
+                        src={dataDetail?.logo}
+                        alt="profile company"
+                        tw="w-52 h-52"
+                      />
+                    ) : ( */}
+                      <img
+                        src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"
+                        alt="profile company"
+                        tw="w-52 h-52"
+                      />
+                    {/* )} */}
+                    <div tw="flex justify-between"  >
+                      <div tw="flex flex-col items-end mr-5">
+                        <span>{user?.data?.company_name}</span>
+                        <span>{user?.data?.phone}</span>
+                      </div>
+                      <div tw="flex flex-col items-end">
+                        <span>{user?.data?.address}</span>
+                        {/* <span
+          
+                 >line_address_2</span> */}
+                        <div tw="flex">
+                          <span>{user?.data?.city}</span>
+                          <span>,</span>
+                          {/* <span
+                
+                   >State</span> */}
+                        </div>
+
+                        <span>{user?.data?.zip}</span>
+
+                        <span>{user?.data?.country}</span>
+                        {/* <div tw="flex">
+                   <span
+           
+                   >TAX NAME</span>
+                   <span>,</span>
+                   <span
+                 
+                   >TAX NUMBER</span>
+                 </div> */}
+                      </div>
+                    </div>
+                  </div>
+                  <div tw="grid grid-cols-4 mb-16">
+                    <div className="flex flex-col">
+                      <span tw="text-gray-400">Billed To</span>
+                      <span tw="text-xs w-28">
+                        {dataDetail?.client.first_name}{" "}
+                        {dataDetail?.client.last_name}
+                      </span>
+                      <span tw="text-xs w-28">
+                        {dataDetail?.client.company_name}
+                      </span>
+                      <span tw="text-xs">{dataDetail?.client.address}</span>
+                      <span tw="text-xs">{dataDetail?.client.city}</span>
+                      <span tw="text-xs">{dataDetail?.client.zip}</span>
+                      <span tw="text-xs">{dataDetail?.client.country}</span>
+                    </div>
+                    <div tw="space-y-5 ">
+                      <div>
+                        <h4 tw="text-gray-400">Date of Issue</h4>
+
+                        <span>
+                          {moment(dataDetail?.issued_at).format(
+                            `DD/MM/YYYY`
+                          )}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 tw="text-gray-400">Due Date</h4>
+                        <span>
+                          {moment(dataDetail?.due_date).format(`DD/MM/YYYY`)}
+                        </span>
+                      </div>
+                    </div>
+                    <div tw="space-y-5 ">
+                      <div>
+                        <h4 tw="text-gray-400">Invoice Number</h4>
+
+                        <span tw="text-xs">{dataDetail?.code}</span>
+                      </div>
+
+                      <div>
+                        <h4 tw="text-gray-400">Reference</h4>
+                        <span>{dataDetail?.references}</span>
+                      </div>
+                    </div>
+                    <div tw="text-right">
+                      <h3 tw="text-gray-400">Amount Due </h3>
+                      <span tw="font-medium text-3xl ">
+                        {numberWithDot(dataDetail?.total)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <table>
+                    <tbody>
+                      <tr tw="border-t-4 border-gray-600 text-sm text-gray-500 text-right font-bold">
+                        <th tw="text-left  py-2">Description</th>
+                        <th>Rate</th>
+                        <th tw="invisible">hide</th>
+                        <th>Qty</th>
+                        <th>Line Total</th>
+                      </tr>
+
+                      {dataDetail?.items_detail.length > 0 &&
+                        dataDetail?.items_detail?.map((detail, i) => (
+                          <tr
+                            key={i}
+                            tw="border-b text-sm  border-gray-300 text-right"
+                          >
+                            <th tw="grid text-left py-2">
+                              <span>{detail.name}</span>
+                              <span tw="text-xs">{detail.description}</span>
+                            </th>
+                            <td>{numberWithDot(detail.rate)}</td>
+                            <td></td>
+                            <td>{detail.pivot.qty}</td>
+
+                            <td>{numberWithDot(detail.pivot.total)}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+
+                  <div tw="grid grid-cols-12 mt-10 mb-20">
+                    <div tw="col-span-8"></div>
+
+                    <table tw="col-span-4">
+                      <tbody>
+                        <tr tw="text-right">
+                          <td>Subtotal</td>
+                          <td>
+                            {dataDetail?.subtotal !== null &&
+                              numberWithDot(dataDetail?.subtotal)}
+                          </td>
+                        </tr>
+                        <tr tw="border-b  border-gray-300 text-right">
+                          <td>Tax</td>
+                          <td>0.00</td>
+                        </tr>
+                        <tr tw="text-right ">
+                          <td tw="pt-1">Total</td>
+                          <td>{numberWithDot(dataDetail?.total)}</td>
+                        </tr>
+                        <tr tw="text-right">
+                          <td>Amount Paid</td>
+                          <td>0.00</td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr className="double">
+                          <td tw=" text-right align-top text-gray-400">
+                            Amount Due
+                          </td>
+
+                          <td tw=" grid gap-0 items-end ">
+                            <span tw="font-semibold ">
+                              {numberWithDot(dataDetail?.total)}
+                            </span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </CardDetailInvoice>
+                {dataDetail?.attachments?.length > 0 && (
+                  <Card tw="border-gray-200 rounded-lg p-5 mt-5">
+                    {dataDetail?.attachments?.map((item, i) => (
+                      <img
+                        key={i}
+                        src={item.url}
+                        tw="rounded-lg w-48 h-48"
+                        alt={item.name}
+                      />
+                    ))}
+                  </Card>
+                )}
+              </div>
+            )}
+
         </div>
       </div>
     </>

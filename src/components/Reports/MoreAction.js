@@ -9,6 +9,7 @@ import {
   VerticalAlignBottomOutlined,
 } from "@ant-design/icons";
 import { Menu } from "antd";
+import jsPDF from "jspdf";
 import React from "react";
 import { CSVLink } from "react-csv";
 import { Link, useHistory } from "react-router-dom";
@@ -53,6 +54,62 @@ export default function MoreAction({  myRef ,excelRefetch}) {
     </div>
   );
 }
+
+export function MoreActionInvoice({  myRef ,refInvoice,code}) {
+  const history = useHistory();
+	const handleGeneratePdf = () => {
+		const doc = new jsPDF({
+			format: 'a3',
+			unit: 'px',
+		});
+
+		// Adding the fonts.
+		doc.setFont('Inter-Regular', 'normal');
+
+		doc.html(refInvoice.current, {
+			async callback(doc) {
+				await doc.save(`Invoice ${code}`);
+			},
+		});
+	};
+  return (
+    <div>
+      <Menu>
+        <Menu.Item key="export" >
+          <div>
+            <VerticalAlignBottomOutlined />
+            <span
+              tw="cursor-pointer"
+              onClick={handleGeneratePdf}
+            >
+              Export to PDF
+            </span>
+          </div>
+        </Menu.Item>
+{!myRef.current?
+  <Menu.Item key="print" onClick={()=>history.push(`/invoices/${myRef.id}/print`)}>
+  <div>
+    <PrinterOutlined />
+    <span tw="cursor-pointer">Print</span>
+  </div>
+</Menu.Item>
+
+:<ReactToPrint
+          trigger={() => (
+            <Menu.Item key="print">
+              <div>
+                <PrinterOutlined />
+                <span tw="cursor-pointer">Print</span>
+              </div>
+            </Menu.Item>
+          )}
+          content={() => myRef.current}
+        />}
+      </Menu>
+    </div>
+  );
+}
+
 
 export function MoreActionCSV({  myRef ,csvReport,generatePdf}) {
   const history = useHistory();
