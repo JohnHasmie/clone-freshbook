@@ -265,7 +265,7 @@ const Items = () => {
         </Menu.Item>
 
         <Menu.Item>
-          <div onClick={() => handleModal("delete")}>
+          <div onClick={() => handleModal("delete")} disabled={selectedRowKeys.length > 1}>
             <RestOutlined />
             <span>Delete</span>
           </div>
