@@ -83,7 +83,7 @@ export default function ItemsDeleted() {
     if (selectedRowKeys.length === 0 ) {
       mutationUndelete.mutate(isItemId);
     } else {
-      mutationUndelete.mutate(selectedRowKeys[0]);
+      mutationUndeleteBatch.mutate({ids: selectedRowKeys});
     }
     setIsModalOpen(false);
   };
@@ -117,6 +117,29 @@ export default function ItemsDeleted() {
   const mutationUndelete = useMutation(
     async (data) => {
       return axios.post(`items/restore/${data}`).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("items-deleted");
+        }, 500);
+        setSelectedRowKeys([]);
+        notification.success({
+          message: `The selected item has been undelete`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+  const mutationUndeleteBatch = useMutation(
+    async (data) => {
+      return axios.post(`items/batch-restore`, data).then((res) => res.data);
     },
     {
       onSuccess: () => {

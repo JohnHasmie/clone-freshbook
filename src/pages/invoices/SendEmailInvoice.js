@@ -100,10 +100,10 @@ console.log(isContactId,isSubject,isBody,"cek");
           wrapperCol={{
             span: 20,
           }}
-          initialValues={{
-            subject: `${dataUser} sent you an invoices`,
+          // initialValues={{
+          //   subject: `${dataUser} sent you an invoices`,
             
-          }}
+          // }}
           fields={[
             {
               name: ["contact_id"],

@@ -69,7 +69,7 @@ export default function Invoices() {
     all: "",
     type: "all",
     date_type: "issued_at",
-    show: "invoice",
+    show_type: "invoice",
     // status:"",
     // type:"",
     // date_type:"",
@@ -386,7 +386,7 @@ export default function Invoices() {
           if (isInvoiceId) {
             mutation.mutate(isInvoiceId);
           } else {
-            mutation.mutate(selectedRowKeys[0]);
+            mutationMultiple.mutate({data:{ids:selectedRowKeys}})
           }
           break;
         case "mark":
@@ -438,6 +438,34 @@ export default function Invoices() {
       },
     }
   );
+  const mutationMultiple = useMutation(
+    async (data) => {
+      return axios.delete(`invoices/batch`,data).then((res) => res.data);
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          queryClient.invalidateQueries("invoices-listing");
+        }, 500);
+        setSelectedRowKeys([]);
+        setIsInvoiceId("");
+        notification.success({
+          message: `The selected ${
+            selectedRowKeys.length > 1 ? selectedRowKeys.length : ""
+          } invoices
+          has been succesfully deleted`,
+          placement: "topLeft",
+        });
+      },
+      onError: () => {
+        notification.error({
+          message: `An Error Occurred Please Try Again Later`,
+          placement: "topLeft",
+        });
+      },
+    }
+  );
+
 
   const mutationMark = useMutation(
     async (id) => {
@@ -571,8 +599,7 @@ export default function Invoices() {
 
         <Menu.Item
           key="print"
-          onClick={() => history.push(`/invoices/${selectedRowKeys[0]}/print`)}
-          disabled={selectedRowKeys.length > 1}
+          onClick={() => history.push(`/invoices/${selectedRowKeys}/print`)}
         >
           <div>
             <PrinterOutlined />
@@ -623,7 +650,6 @@ export default function Invoices() {
         <Menu.Item
           key="download-pdf"
           onClick={handleGeneratePdf}
-          disabled={selectedRowKeys.length > 1}
         >
           <div>
             <VerticalAlignBottomOutlined />
@@ -639,7 +665,6 @@ export default function Invoices() {
         <Menu.Item
           key="delete"
           onClick={handleModal}
-          disabled={selectedRowKeys.length > 1}
         >
           <div>
             <RestOutlined />
@@ -653,7 +678,7 @@ export default function Invoices() {
   useEffect(() => {
   if(selectedRowKeys){
     async function fetchData() {
-      const response = await axios.get(`invoices/detail/${selectedRowKeys[0]}`);
+      const response = await axios.get(`invoices/details`,{params:{ids:selectedRowKeys}});
       setDataDetail(response.data.data);
     }
     fetchData();
@@ -671,7 +696,7 @@ export default function Invoices() {
   //       .then((res) => res.data.data)
   // );
 
-  console.log("cek",dataDetail,selectedRowKeys);
+  console.log("cek",dataDetail,dataDetail?.invoices?.length > 0);
   const filledValues = Object.values(filter).filter((value) => value);
   return (
     <>
@@ -873,24 +898,23 @@ export default function Invoices() {
             </div>
           </div>
         </div>
+      
+      </div>
         <div tw="hidden">
-        {dataDetail && (
+        {dataDetail?.invoices?.length > 0 && (
               <div ref={myRef}>
+               {dataDetail?.invoices?.map((item,i)=>(
+
+               <div tw="mb-5" key={i}>
                 <CardDetailInvoice>
                   <div tw="grid gap-2 md:flex justify-between mb-10"  >
-                    {/* {dataDetail.logo  ? (
-                      <img
-                        src={dataDetail?.logo}
-                        alt="profile company"
-                        tw="w-52 h-52"
-                      />
-                    ) : ( */}
+                   
                       <img
                         src="https://api.freshbooks.com/uploads/images/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50Ijo3OTU0MjUzLCJvcmlnaW5hbF9maWxlbmFtZSI6InNlbWktam9pbi1hbmQtYW50aS1qb2luLnBuZyIsImxlbmd0aCI6NTAyMDcsImZpbGVuYW1lIjoidXBsb2FkLWI1MjQ5OGNjNDllNGJiOGNhZDhhYzM5YmZkMzJjODJmODI1Y2NhMjYiLCJidWNrZXQiOiJ1cGxvYWRzIiwia2V5IjoiJ2RvY3MtJy03OTU0MjUzL3VwbG9hZC1iNTI0OThjYzQ5ZTRiYjhjYWQ4YWMzOWJmZDMyYzgyZjgyNWNjYTI2IiwidXVpZCI6ImYyOThlMTUxLTliMTAtNGEwYS04YjY2LTM0ZTc5MmIwZWUxMyJ9.GfHJz3M6QXBQkkREmYY6ZCvPTOeYlvUrQMurvBIMX0Q"
                         alt="profile company"
                         tw="w-52 h-52"
                       />
-                    {/* )} */}
+          
                     <div tw="flex justify-between"  >
                       <div tw="flex flex-col items-end mr-5">
                         <span>{user?.data?.company_name}</span>
@@ -898,29 +922,17 @@ export default function Invoices() {
                       </div>
                       <div tw="flex flex-col items-end">
                         <span>{user?.data?.address}</span>
-                        {/* <span
-          
-                 >line_address_2</span> */}
+                       
                         <div tw="flex">
                           <span>{user?.data?.city}</span>
                           <span>,</span>
-                          {/* <span
-                
-                   >State</span> */}
+               
                         </div>
 
                         <span>{user?.data?.zip}</span>
 
                         <span>{user?.data?.country}</span>
-                        {/* <div tw="flex">
-                   <span
-           
-                   >TAX NAME</span>
-                   <span>,</span>
-                   <span
-                 
-                   >TAX NUMBER</span>
-                 </div> */}
+                      
                       </div>
                     </div>
                   </div>
@@ -928,23 +940,23 @@ export default function Invoices() {
                     <div className="flex flex-col">
                       <span tw="text-gray-400">Billed To</span>
                       <span tw="text-xs w-28">
-                        {dataDetail?.client.first_name}{" "}
-                        {dataDetail?.client.last_name}
+                        {item?.client.first_name}{" "}
+                        {item?.client.last_name}
                       </span>
                       <span tw="text-xs w-28">
-                        {dataDetail?.client.company_name}
+                        {item?.client.company_name}
                       </span>
-                      <span tw="text-xs">{dataDetail?.client.address}</span>
-                      <span tw="text-xs">{dataDetail?.client.city}</span>
-                      <span tw="text-xs">{dataDetail?.client.zip}</span>
-                      <span tw="text-xs">{dataDetail?.client.country}</span>
+                      <span tw="text-xs">{item?.client.address}</span>
+                      <span tw="text-xs">{item?.client.city}</span>
+                      <span tw="text-xs">{item?.client.zip}</span>
+                      <span tw="text-xs">{item?.client.country}</span>
                     </div>
                     <div tw="space-y-5 ">
                       <div>
                         <h4 tw="text-gray-400">Date of Issue</h4>
 
                         <span>
-                          {moment(dataDetail?.issued_at).format(
+                          {moment(item?.issued_at).format(
                             `DD/MM/YYYY`
                           )}
                         </span>
@@ -953,7 +965,7 @@ export default function Invoices() {
                       <div>
                         <h4 tw="text-gray-400">Due Date</h4>
                         <span>
-                          {moment(dataDetail?.due_date).format(`DD/MM/YYYY`)}
+                          {moment(item?.due_date).format(`DD/MM/YYYY`)}
                         </span>
                       </div>
                     </div>
@@ -961,18 +973,18 @@ export default function Invoices() {
                       <div>
                         <h4 tw="text-gray-400">Invoice Number</h4>
 
-                        <span tw="text-xs">{dataDetail?.code}</span>
+                        <span tw="text-xs">{item?.code}</span>
                       </div>
 
                       <div>
                         <h4 tw="text-gray-400">Reference</h4>
-                        <span>{dataDetail?.references}</span>
+                        <span>{item?.references}</span>
                       </div>
                     </div>
                     <div tw="text-right">
                       <h3 tw="text-gray-400">Amount Due </h3>
                       <span tw="font-medium text-3xl ">
-                        {numberWithDot(dataDetail?.total)}
+                        {numberWithDot(item?.total)}
                       </span>
                     </div>
                   </div>
@@ -987,8 +999,8 @@ export default function Invoices() {
                         <th>Line Total</th>
                       </tr>
 
-                      {dataDetail?.items_detail.length > 0 &&
-                        dataDetail?.items_detail?.map((detail, i) => (
+                      {item?.items_detail.length > 0 &&
+                        item?.items_detail?.map((detail, i) => (
                           <tr
                             key={i}
                             tw="border-b text-sm  border-gray-300 text-right"
@@ -1015,8 +1027,8 @@ export default function Invoices() {
                         <tr tw="text-right">
                           <td>Subtotal</td>
                           <td>
-                            {dataDetail?.subtotal !== null &&
-                              numberWithDot(dataDetail?.subtotal)}
+                            {item?.subtotal !== null &&
+                              numberWithDot(item?.subtotal)}
                           </td>
                         </tr>
                         <tr tw="border-b  border-gray-300 text-right">
@@ -1025,7 +1037,7 @@ export default function Invoices() {
                         </tr>
                         <tr tw="text-right ">
                           <td tw="pt-1">Total</td>
-                          <td>{numberWithDot(dataDetail?.total)}</td>
+                          <td>{numberWithDot(item?.total)}</td>
                         </tr>
                         <tr tw="text-right">
                           <td>Amount Paid</td>
@@ -1040,7 +1052,7 @@ export default function Invoices() {
 
                           <td tw=" grid gap-0 items-end ">
                             <span tw="font-semibold ">
-                              {numberWithDot(dataDetail?.total)}
+                              {numberWithDot(item?.total)}
                             </span>
                           </td>
                         </tr>
@@ -1048,9 +1060,9 @@ export default function Invoices() {
                     </table>
                   </div>
                 </CardDetailInvoice>
-                {dataDetail?.attachments?.length > 0 && (
+                {item?.attachments?.length > 0 && (
                   <Card tw="border-gray-200 rounded-lg p-5 mt-5">
-                    {dataDetail?.attachments?.map((item, i) => (
+                    {item?.attachments?.map((item, i) => (
                       <img
                         key={i}
                         src={item.url}
@@ -1060,11 +1072,11 @@ export default function Invoices() {
                     ))}
                   </Card>
                 )}
+                </div> ))}
               </div>
             )}
 
         </div>
-      </div>
     </>
   );
 }

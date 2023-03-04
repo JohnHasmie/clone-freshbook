@@ -23,7 +23,7 @@ import AppContext from "../../components/context/AppContext";
 
 const Items = () => {
   const [filter, setFilter] = useState({
-    limit: 10,
+    limit: 50,
     page: 1,
   });
   const { user } = useContext(AppContext);
@@ -52,7 +52,7 @@ const Items = () => {
       status: "archive",
     };
     if (isType === "delete") {
-      mutation.mutate(selectedRowKeys[0]);
+      mutation.mutate({ data: { ids: selectedRowKeys } });
     } else {
       mutationArchive.mutate(dataArchive);
     }
@@ -64,7 +64,6 @@ const Items = () => {
   const handlePopoverClick = (event) => {
     event.stopPropagation();
   };
-
   const columns = [
     {
       title: "Name / Description",
@@ -193,7 +192,7 @@ const Items = () => {
 
   const mutation = useMutation(
     async (data) => {
-      return axios.delete(`items/${data}`).then((res) => res.data);
+      return axios.delete(`items/batch`, data).then((res) => res.data);
     },
     {
       onSuccess: () => {
@@ -265,7 +264,7 @@ const Items = () => {
         </Menu.Item>
 
         <Menu.Item>
-          <div onClick={() => handleModal("delete")} disabled={selectedRowKeys.length > 1}>
+          <div onClick={() => handleModal("delete")} >
             <RestOutlined />
             <span>Delete</span>
           </div>

@@ -61,6 +61,9 @@ export default function InvoicesArchived() {
     limit: 10,
     page: 1,
     mode: "archive",
+    show_type: "invoice",
+
+    
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);

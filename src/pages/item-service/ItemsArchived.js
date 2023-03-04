@@ -110,7 +110,7 @@ export default function ItemsArchived() {
       status:"published"
     }
     if(isType === "delete"){
-    mutation.mutate(selectedRowKeys[0]);}else{
+    mutation.mutate({data:{ids:selectedRowKeys}});}else{
       mutationUnarchive.mutate(dataArchive)
     }
     setIsModalOpen(false);
@@ -168,7 +168,7 @@ export default function ItemsArchived() {
 
   const mutation = useMutation(
     async (data) => {
-      return axios.delete(`items/${clientId}/${data}`).then((res) => res.data);
+      return axios.delete(`items/batch`,data).then((res) => res.data);
     },
     {
       onSuccess: () => {

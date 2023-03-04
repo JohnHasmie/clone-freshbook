@@ -58,6 +58,7 @@ export default function InvoicesDeleted() {
     limit: 10,
     page: 1,
     show: "deleted",
+    show_type:"invoice"
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [clicked, setClicked] = useState(false);
@@ -223,15 +224,15 @@ export default function InvoicesDeleted() {
 
   const handleOk = () => {
     if(selectedRowKeys.length > 0){
-      mutation.mutate(selectedRowKeys[0])}else{
-        mutation.mutate(isInvoiceId)
+      mutation.mutate({ids:selectedRowKeys})}else{
+        mutation.mutate({ids:[isInvoiceId]})
       }
 
     setIsModalOpen(false);
   };
   const mutation = useMutation(
     async (data) => {
-      return axios.post(`invoices/restore/${data}`).then((res) => res.data);
+      return axios.post(`invoices/batch-restore`,data).then((res) => res.data);
     },
     {
       onSuccess: () => {
@@ -274,11 +275,10 @@ export default function InvoicesDeleted() {
         <Menu.Item
           key="undelete"
           onClick={handleModal}
-          disabled={selectedRowKeys.length > 1}
         >
           <div>
             <UndoOutlined />
-            <span>Delete</span>
+            <span>Undelete</span>
           </div>
         </Menu.Item>
       </Menu>

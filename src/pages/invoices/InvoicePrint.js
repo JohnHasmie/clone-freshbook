@@ -55,6 +55,8 @@ export default function InvoicePrint() {
   const hide = () => {
     setClicked(false);
   };
+
+ 
   const handleClickRowChange = (id, index) => {
     if (clickedRow === false) {
       setClickedRow(true);
@@ -69,27 +71,28 @@ export default function InvoicePrint() {
   const hideClickRow = (e) => {
     setClickedRow(false);
   };
-
+  const stringIds = invoiceId;
+  const arrayIds = stringIds.split(",").map(Number); 
   const { data: detailInvoice, status } = useQuery(
-    ["invoice-detail", filter],
+    ["invoice-detail", {ids:arrayIds}],
     async (key) =>
       axios
-        .get(`invoices/detail/${invoiceId}`, {
+        .get(`invoices/details`, {
           params: key.queryKey[1],
         })
         .then((res) => res.data.data)
   );
-
-  useEffect(() => {
-    if (status === "success") {
-      setGlobalDetailInvoice(detailInvoice);
-      setFilteayment({
-        ...filteayment,
-        invoice_id: invoiceId,
-        client_id: detailInvoice.client_id,
-      });
-    }
-  }, [status]);
+console.log("detail",arrayIds);
+  // useEffect(() => {
+  //   if (status === "success") {
+  //     setGlobalDetailInvoice(detailInvoice);
+  //     setFilteayment({
+  //       ...filteayment,
+  //       invoice_id: invoiceId,
+  //       client_id: detailInvoice.client_id,
+  //     });
+  //   }
+  // }, [status]);
 
   const { data: listPayment, status: statusListPayment } = useQuery(
     ["payment-listing", filteayment],
@@ -277,18 +280,7 @@ export default function InvoicePrint() {
           tw="flex justify-center"
         >
           <div tw="md:col-span-12 mb-10 ">
-            {/* <p>
-              {" "}
-              <ExclamationCircleOutlined tw="mr-2" />
-              Company Name has{" "}
-              <span
-                onClick={() => history.push("/invoices/outstanding-balance")}
-                tw="cursor-pointer text-primary underline"
-              >
-                1 outstanding invoices
-              </span>{" "}
-              totalling $6,000.00 USD
-            </p> */}
+         
             {status === "loading" && (
               <div
                 role="status"
@@ -313,12 +305,15 @@ export default function InvoicePrint() {
               </div>
             )}
             {status === "success" && (
-              <>
+              detailInvoice?.invoices.map((item,i)=>(
+
+         
+              <div key={i} className="mb-5">
                 <CardDetailInvoice ref={refInvoice}>
                   <div tw="grid gap-2 md:flex justify-between mb-10">
-                    {detailInvoice?.logo !== null ? (
+                    {item?.logo !== null ? (
                       <img
-                        src={detailInvoice?.logo}
+                        src={item?.logo}
                         alt="profile company"
                         tw="w-52 h-52"
                       />
@@ -366,23 +361,23 @@ export default function InvoicePrint() {
                     <div className="flex flex-col">
                       <span tw="text-gray-400">Billed To</span>
                       <span tw="text-xs w-28">
-                        {detailInvoice?.client.first_name}{" "}
-                        {detailInvoice?.client.last_name}
+                        {item?.client.first_name}{" "}
+                        {item?.client.last_name}
                       </span>
                       <span tw="text-xs w-28">
-                        {detailInvoice?.client.company_name}
+                        {item?.client.company_name}
                       </span>
-                      <span tw="text-xs">{detailInvoice?.client.address}</span>
-                      <span tw="text-xs">{detailInvoice?.client.city}</span>
-                      <span tw="text-xs">{detailInvoice?.client.zip}</span>
-                      <span tw="text-xs">{detailInvoice?.client.country}</span>
+                      <span tw="text-xs">{item?.client.address}</span>
+                      <span tw="text-xs">{item?.client.city}</span>
+                      <span tw="text-xs">{item?.client.zip}</span>
+                      <span tw="text-xs">{item?.client.country}</span>
                     </div>
                     <div tw="space-y-5 ">
                       <div>
                         <h4 tw="text-gray-400">Date of Issue</h4>
 
                         <span>
-                          {moment(detailInvoice?.issued_at).format(
+                          {moment(item?.issued_at).format(
                             `DD/MM/YYYY`
                           )}
                         </span>
@@ -391,7 +386,7 @@ export default function InvoicePrint() {
                       <div>
                         <h4 tw="text-gray-400">Due Date</h4>
                         <span>
-                          {moment(detailInvoice?.due_date).format(`DD/MM/YYYY`)}
+                          {moment(item?.due_date).format(`DD/MM/YYYY`)}
                         </span>
                       </div>
                     </div>
@@ -399,18 +394,18 @@ export default function InvoicePrint() {
                       <div>
                         <h4 tw="text-gray-400">Invoice Number</h4>
 
-                        <span tw="text-xs">{detailInvoice?.code}</span>
+                        <span tw="text-xs">{item?.code}</span>
                       </div>
 
                       <div>
                         <h4 tw="text-gray-400">Reference</h4>
-                        <span>{detailInvoice?.references}</span>
+                        <span>{item?.references}</span>
                       </div>
                     </div>
                     <div tw="text-right">
                       <h3 tw="text-gray-400">Amount Due </h3>
                       <span tw="font-medium text-3xl ">
-                        {numberWithDot(detailInvoice?.total)}
+                        {numberWithDot(item?.total)}
                       </span>
                     </div>
                   </div>
@@ -425,8 +420,8 @@ export default function InvoicePrint() {
                         <th>Line Total</th>
                       </tr>
 
-                      {detailInvoice?.items_detail.length > 0 &&
-                        detailInvoice?.items_detail?.map((detail, i) => (
+                      {item?.items_detail.length > 0 &&
+                        item?.items_detail?.map((detail, i) => (
                           <tr
                             key={i}
                             tw="border-b text-sm  border-gray-300 text-right"
@@ -453,8 +448,8 @@ export default function InvoicePrint() {
                         <tr tw="text-right">
                           <td>Subtotal</td>
                           <td>
-                            {detailInvoice?.subtotal !== null &&
-                              numberWithDot(detailInvoice?.subtotal)}
+                            {item?.subtotal !== null &&
+                              numberWithDot(item?.subtotal)}
                           </td>
                         </tr>
                         <tr tw="border-b  border-gray-300 text-right">
@@ -463,7 +458,7 @@ export default function InvoicePrint() {
                         </tr>
                         <tr tw="text-right ">
                           <td tw="pt-1">Total</td>
-                          <td>{numberWithDot(detailInvoice?.total)}</td>
+                          <td>{numberWithDot(item?.total)}</td>
                         </tr>
                         <tr tw="text-right">
                           <td>Amount Paid</td>
@@ -478,7 +473,7 @@ export default function InvoicePrint() {
 
                           <td tw=" grid gap-0 items-end ">
                             <span tw="font-semibold ">
-                              {numberWithDot(detailInvoice?.total)}
+                              {numberWithDot(item?.total)}
                             </span>
                             {/* <span tw="text-gray-600 text-right">IDR</span> */}
                           </td>
@@ -487,8 +482,8 @@ export default function InvoicePrint() {
                     </table>
                   </div>
                 </CardDetailInvoice>
-                {detailInvoice?.attachments?.length > 0 &&   <Card tw="border-gray-200 rounded-lg p-5 mt-5">
-          {detailInvoice?.attachments?.map((item,i)=>(
+                {item?.attachments?.length > 0 &&   <Card tw="border-gray-200 rounded-lg p-5 mt-5">
+          {item?.attachments?.map((item,i)=>(
 
            <img
            key={i}
@@ -497,7 +492,8 @@ export default function InvoicePrint() {
                 alt={item.name}
                 /> ))}
                 </Card>}
-              </>
+              </div>
+                   ))
             )}
           </div>
         </div>

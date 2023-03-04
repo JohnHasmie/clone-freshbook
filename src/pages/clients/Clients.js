@@ -147,7 +147,6 @@ export default function Clients() {
           mutation.mutate(isClientId);
         } else {
           if (selectedRowKeys.length > 1) {
-            console.log({ ids: selectedRowKeys });
             mutationDeleteBatch.mutate({ data: { ids: selectedRowKeys } });
           } else {
             mutation.mutate(selectedRowKeys[0]);
