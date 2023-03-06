@@ -39,7 +39,7 @@ export default function DetailInvoice() {
   const [filter, setFilter] = useState({
     limit: 10,
     page: 1,
-    show:"invoice"
+    show_type:"invoice"
   });
   const queryClient = useQueryClient();
 
