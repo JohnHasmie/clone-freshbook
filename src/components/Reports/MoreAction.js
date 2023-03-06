@@ -63,8 +63,7 @@ export function MoreActionInvoice({  myRef ,refInvoice,code}) {
 			unit: 'px',
 		});
 
-		// Adding the fonts.
-		doc.setFont('Inter-Regular', 'normal');
+	
 
 		doc.html(refInvoice.current, {
 			async callback(doc) {

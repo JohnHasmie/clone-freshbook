@@ -15,7 +15,7 @@ import {
   Typography,
 } from "antd";
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import tw from "twin.macro";
 import CardReporting from "../../components/CardReporting";
 import ButtonMore from "../../components/Reports/ButtonMore";
@@ -39,6 +39,30 @@ const dateFormat = "DD/MM/YYYY";
 export default function InvoiceDetail() {
   const { Title } = Typography;
   const [clicked, setClicked] = useState(false);
+  const [isClientId, setIsClientId] = useState("");
+  const [dataDetail, setDataDetail] = useState("");
+  const [headers, setHeaders] = useState([
+    "Client Name",
+    "Invoice#",
+    "Date Issued",
+    "Invoice Status",
+    "Date Paid",
+    "Item Name",
+    "Item Description",
+    "Rate",
+    "Quantity",
+    "Discount Percentage",
+    "Line Subtotal",
+    "Line Total",
+    "Currency"
+
+  ]);
+  const[ data,setData] =useState(
+    [
+   
+  
+    ])
+
   const handleClickChange = (open) => {
     setClicked(open);
   };
@@ -46,7 +70,10 @@ export default function InvoiceDetail() {
   const [newUser, setNewUser] = useState(
     JSON.parse(localStorage.getItem("newUser")) || { data: "" }
   );
-  const { clientId } = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const clientId = searchParams.get("clientId");
+
 
   const myRef = useRef();
 
@@ -54,16 +81,14 @@ export default function InvoiceDetail() {
     setClicked(false);
   };
   const [filter, setFilter] = useState({
-    limit: 10,
-    page: 1,
-    client_id: "",
+  
     currency: "USD",
     start_date: moment().startOf("year").format("MM/DD/YYYY"),
     end_date: moment().endOf("year").format("MM/DD/YYYY"),
   });
 
   useEffect(() => {
-    clientId && setFilter({ ...filter, client_id: clientId });
+  setIsClientId(clientId)
   }, [clientId]);
 
   let history = useHistory();
@@ -77,31 +102,70 @@ export default function InvoiceDetail() {
         })
         .then((res) => res.data.data)
   );
+
+  useEffect(() => {
+    isClientId &&
+    axios
+      .get(`clients/${isClientId}`, {
+        params: filter
+      })
+      .then((response) => {
+        setDataDetail(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [isClientId,filter]);
+
   const { data: dataClients, statusClients } = useQuery(
     ["clients"],
     async (key) => axios.get("clients").then((res) => res.data.data)
   );
 
   const onFinish = (values) => {
+    console.log("values",values.start_date._d);
     setFilter({
-      start_at: values.start_date._d,
-      finish_at: values.end_date._d,
+      start_date: values.start_date._d,
+      end_date: values.end_date._d,
       currency: values.currency,
-      client_id: values.client_id,
       status: values.status,
       date_type: values.date_type,
     });
+    if(values.client_id){
+    setIsClientId(values.client_id)}
     setOpen(false);
   };
 
+  let newDataItems =
+    dataDetail&&
+    dataDetail?.client?.invoices?.map((item) => ([
+    dataDetail?.client?.company_name,
+    item?.code,
+    item?.issued_at && moment(new Date(item?.issued_at), dateFormat),
+    item?.status,
+    item?.paid_at && moment(new Date(item?.paid_at), dateFormat),
+    item?.status,
+
+
+
+
+    ]));
+
+
+  useEffect(() => {
+    if(dataDetail){
+      setData([...newDataItems])
+    }
+  
+  }, [dataDetail])
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
   const generatePdf = () => {
     const doc = new jsPDF();
 
-    doc.autoTable({ head: [],
-    body:[]});
+    doc.autoTable({ head: [headers],
+    body:data});
 
     doc.save('invoice_detail.pdf');
   };
@@ -113,9 +177,7 @@ export default function InvoiceDetail() {
           tw="text-base text-primary cursor-pointer"
           onClick={() =>
             setFilter({
-              limit: 10,
-              page: 1,
-              client_id: "",
+            
               currency: "USD",
               start_date: moment().startOf("year").format("MM/DD/YYYY"),
               end_date: moment().endOf("year").format("MM/DD/YYYY"),
@@ -291,11 +353,12 @@ export default function InvoiceDetail() {
       </Form>
     </div>
   );
-
+let invoiceIds=dataDetail?.client?.invoices?.length > 0 &&
+dataDetail?.client?.invoices?.map(item=>item.id)
   const mutation = useMutation(
     async (data) => {
       return axios
-        .post(`invoices/detail/${dataInvoices?.data[0]?.id}/send`, data)
+        .post(`invoices/send`, {...data,invoice_ids:invoiceIds,client_id:isClientId})
         .then((res) => res.data);
     },
     {
@@ -394,7 +457,7 @@ export default function InvoiceDetail() {
           </Popover>
         </div>
       </div>
-      <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
+ {dataDetail &&     <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5">
         <div ref={myRef} tw="md:col-span-9 mb-10 mt-10 md:mt-2">
           <CardReporting>
             <h1 tw="text-blueDefault">Invoice Detail</h1>
@@ -402,35 +465,27 @@ export default function InvoiceDetail() {
               <span tw="text-sm text-gray-600">
                 {user?.data?.company_name || newUser?.data?.company_name}
               </span>
-              {status === "success" && (
                 <span tw="text-sm text-gray-600">
                   Total Invoiced:{" "}
-                  {getTotal(
-                    dataInvoices?.data?.map((item) => {
-                      const splitAmount = item?.total?.split(".");
-                      return parseInt(splitAmount[0]);
-                    })
-                  )}{" "}
+                {dataDetail?.amount_total && numberWithDot(dataDetail?.amount_total)}
                   ({filter.currency})
                 </span>
-              )}
               <span tw="text-sm text-gray-600">
                 For {moment(new Date(filter.start_date)).format("MMM DD, YYYY")}{" "}
                 - {moment(new Date(filter.end_date)).format("MMM DD, YYYY")}
               </span>
             </div>
             <div tw="overflow-x-auto ">
-              {status === "success" && (
                 <table>
                   <thead className="theadCustom">
                     <tr>
                       <th tw="pt-12 text-left py-4 ">
                         <span tw="rounded-full border border-orange-500 px-2 py-1 mr-0.5 ">
-                          {dataInvoices?.data[0]?.client?.company_name[0]}
+                          {dataDetail?.client?.company_name[0]}
                         </span>
                         <span tw="text-primary ml-1">
                           {" "}
-                          {dataInvoices?.data[0]?.client?.company_name}
+                          {dataDetail?.client?.company_name}
                         </span>
                       </th>
                     </tr>
@@ -445,17 +500,12 @@ export default function InvoiceDetail() {
                       <th tw="text-left pl-3 py-2">Total Invoice</th>
                       <td tw="text-right">
                         {" "}
-                        {getTotal(
-                          dataInvoices?.data?.map((item) => {
-                            const splitAmount = item?.total?.split(".");
-                            return parseInt(splitAmount[0]);
-                          })
-                        )}{" "}
+                        {dataDetail?.amount_total && numberWithDot(dataDetail?.amount_total)}
                       </td>
                     </tr>
                     <tr tw="border-b border-dotted">
                       <th tw="pl-3 text-left py-2">Amount Paid</th>
-                      <td tw="text-right">0,00</td>
+                      <td tw="text-right">{dataDetail?.amount_paid && numberWithDot(dataDetail?.amount_paid)}</td>
                     </tr>
                   </tbody>
                   <tfoot>
@@ -463,7 +513,7 @@ export default function InvoiceDetail() {
                       <td tw=" text-left font-semibold">Amount Due</td>
 
                       <td tw="pt-3  flex flex-col items-end ">
-                        <span tw="font-semibold ">0,00</span>
+                        <span tw="font-semibold ">{dataDetail?.amount_due && numberWithDot(dataDetail?.amount_due)}</span>
                         <span tw="text-gray-600 text-right uppercase">
                           {filter.currency}
                         </span>
@@ -471,10 +521,9 @@ export default function InvoiceDetail() {
                     </tr>
                   </tfoot>
                 </table>
-              )}
 
-              {status === "success" &&
-                dataInvoices?.data?.map((item, i) => (
+              {dataDetail?.invoice_per_days&&
+                dataDetail?.invoice_per_days[""].map((item, i) => (
                   <table tw="mt-10" key={i}>
                     <tbody>
                       <tr>
@@ -507,9 +556,9 @@ export default function InvoiceDetail() {
                         <th>Line Total</th>
                       </tr>
                       <tr tw="border-b  border-gray-300 text-right">
-                        <th tw="pl-3 text-left py-2">Frontend Development</th>
+                        <th tw="pl-3 text-left py-2">{""}</th>
                         <td>
-                          {filter?.currency == "GBP" ? "£" : "$"} 6,000.00
+                          {filter?.currency == "GBP" ? "£" : "$"} generate
                         </td>
                         <td>1</td>
                         <td>0.00</td>
@@ -575,7 +624,7 @@ export default function InvoiceDetail() {
           </CardReporting>
         </div>
         <Filter Filtering={FilterInvoiceDetail} open={open} setOpen={setOpen} />
-      </div>
+      </div>}
     </div>
   );
 }

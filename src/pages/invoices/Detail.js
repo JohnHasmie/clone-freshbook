@@ -126,7 +126,7 @@ export default function Detail() {
   const mutationDelete = useMutation(
     async (data) => {
       return axios
-        .delete(`payments/${selectedRowKeys[0]}`)
+        .delete(`payments/batch`,{data:{ids:selectedRowKeys.length < 2 ? [selectedRowKeys[0]] : selectedRowKeys}})
         .then((res) => res.data);
     },
     {
@@ -184,7 +184,6 @@ export default function Detail() {
         <Menu.Item
           key="delete"
           onClick={() => mutationDelete.mutate()}
-          disabled={selectedRowKeys.length > 1}
         >
           <div>
             <RestOutlined />

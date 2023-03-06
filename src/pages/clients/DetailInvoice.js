@@ -106,6 +106,7 @@ export default function DetailInvoice() {
         })
         .then((res) => res.data.data)
   );
+  
   const data =
   status === "success" &&
   dataInvoices?.data?.map((item) => ({
