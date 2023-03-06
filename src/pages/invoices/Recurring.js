@@ -62,7 +62,7 @@ export default function Invoices() {
     end_date: "",
     date_type: "last_invoice",
     type:"recurring",
-    show:"template",
+    show_type:"template",
     currency:"USD"
 
   });

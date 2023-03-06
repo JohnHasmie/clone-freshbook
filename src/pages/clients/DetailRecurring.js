@@ -41,7 +41,7 @@ export default function DetailRecurring() {
     limit: 50,
     page: 1,
     type:"recurring",
-    show:"template"
+    show_type:"template"
   });
   const queryClient = useQueryClient();
 

@@ -54,7 +54,7 @@ export default function RecurringArchived() {
     page: 1,
     mode: "archive",
     type:"recurring",
-    show:"template"
+    show_type:"template"
     // status:"send"
   });
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);

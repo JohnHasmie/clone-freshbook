@@ -176,7 +176,7 @@ export default function FormInvoice() {
 
         reference: detailInvoice.references,
       });
-      setFormRecurring({...formRecurring,recurring_type: detailInvoice.recurring.type,
+      setFormRecurring({...formRecurring,recurring_type: detailInvoice.recurring?.type,
       recurring_next_issue_date: detailInvoice.recurring.next_issued_at,
       recurring_max: detailInvoice.recurring.max_invoice,
       recurring_delivery_option: detailInvoice.recurring.delivery_option,})
