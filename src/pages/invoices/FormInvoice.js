@@ -13,6 +13,8 @@ import {
   Row,
   Select,
   Typography,
+  Modal,
+  Space,
 } from "antd";
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
@@ -48,10 +50,13 @@ import CreateRecurring, { MakeRecurring } from "./CreateRecurring";
 import { DividerCustom } from "../clients/AdvanceSearch.style";
 import FilterDiscount from "./FilterDiscount";
 import SendEmailInvoice from "./SendEmailInvoice";
+import RecurringSchedule from "./RecurringSchedule";
+import useLocalstorage from "./useLocalstorage";
 
 const dateFormat = "DD/MM/YYYY";
 
 export default function FormInvoice() {
+    const [recurringConfig, setRecurringConfig] = useLocalstorage('recurring');
   const [open, setOpen] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [isInvoiceId, setIsInvoiceId] = useState("");
@@ -73,7 +78,8 @@ export default function FormInvoice() {
 
   const [lines, setLines] = useState([]);
   const [toggleInvoiceNumber, setToggleInvoiceNumber] = useState("");
-
+  const [modalRecurring, setModalRecurring] = useState(false)
+  
   const handleClickChange = (open) => {
     if (isClient) {
       setClicked(open);
@@ -458,6 +464,20 @@ export default function FormInvoice() {
           </Col>
           <Divider tw="!mt-0" />
           <Col span={24}>
+            <Form.Item label="End Date" name="recurring_end_issue_date">
+              <DatePicker
+                onChange={(date, dateString) =>
+                  setFormRecurring({
+                    ...formRecurring,
+                    recurring_end_issue_date: dateString,
+                  })
+                }
+                format={dateFormat}
+              />
+            </Form.Item>
+          </Col>
+          <Divider tw="!mt-0" />
+          <Col span={24}>
             <span>Number of Invoices</span>
             <Radio.Group
               tw="grid gap-3 mt-2 mb-2"
@@ -469,8 +489,8 @@ export default function FormInvoice() {
               }
               value={formRecurring.recurring_max}
             >
-              <Radio value={0}>Last Invoiced</Radio>
-              <Radio value={null}>Issued Date</Radio>
+              <Radio value={0}>Infinite</Radio>
+              <Radio value={null}>A specific number</Radio>
               {toggleInvoiceNumber ? (
                 <div tw=" grid border-l border-l-gray-400 pl-2 ml-2">
                   <span tw="text-xs text-gray-400">Invoices Remaining</span>
@@ -633,614 +653,746 @@ export default function FormInvoice() {
   console.log("detailInvoice",detailInvoice);
 
   return (
-    <div tw="max-w-screen-lg mx-auto">
-      <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
-        <div tw="flex justify-between md:hidden">
-          <div>{bell}</div>
-          <ButtonCustom
-            tw="!bg-transparent !border-0 hover:opacity-50"
-            type="link"
-            className="sidebar-toggler"
-            // onClick={() => onPress()}
-          >
-            {toggler}
-          </ButtonCustom>
-        </div>
-
-        <div tw="flex items-center">
-          <span tw="capitalize text-4xl font-bold text-black">
-            {pathname.includes("edit") ? `Edit ${isTitle}` : `New ${isTitle}`}
-          </span>
-        </div>
-        <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
-          <ButtonMore
-            tw="!py-2"
-            onClick={() => {
-              pathname.includes("recurring")
-                ? history.push("/invoices/recurring-templates")
-                : history.push("/invoices");
-            }}
-          >
-            <span>Cancel</span>
-          </ButtonMore>
-          <Button
-            tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center "
-            onClick={() => form.submit()}
-          >
-            <span tw="text-lg">Save...</span>
-          </Button>
-          {!pathname.includes("recurring") && (
-            <Popover
-              placement="bottom"
-              content={
-                <SendEmailInvoice
-                  clientProps={[isClient, setIsClient]}
-                  hide={hide}
-                  dataUser={dataUser?.user?.company_name}
-                  invoiceId={invoiceId}
-                  date={isForm?.due_date}
-                  total={numberWithDot(
-                    localSubTotal - (localSubTotal * isForm.discount) / 100
-                  )}
-                  onFinishInvoice={onFinish}
-                  setDontThrow={setDontThrow}
-                  isInvoiceId={isInvoiceId}
-                />
-              }
-              trigger="click"
-              visible={clicked}
-              onVisibleChange={handleClickChange}
+    <>
+        <div tw="max-w-screen-lg mx-auto">
+        <div tw="grid grid-cols-1 gap-y-2 md:grid-cols-2 mx-5 mt-5">
+            <div tw="flex justify-between md:hidden">
+            <div>{bell}</div>
+            <ButtonCustom
+                tw="!bg-transparent !border-0 hover:opacity-50"
+                type="link"
+                className="sidebar-toggler"
+                // onClick={() => onPress()}
             >
-              <Button
-                tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!isClient}
-              >
-                <span tw="text-lg">Send To...</span>
-              </Button>
-            </Popover>
-          )}
-        </div>
-      </div>
-      <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2">
-        <Form
-          size="default"
-          form={form}
-          layout={"vertical"}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          tw="md:col-span-9 space-y-5 mb-10 mt-10 md:mt-2"
-        >
-          <CardDetailInvoice>
-            <div tw="grid gap-y-2 md:flex justify-between mb-10">
-              {/* <img
-               src="https://source.unsplash.com/200x200?company"
-               alt="profile company"
-               tw="w-screen md:w-auto"
-             /> */}
-              <Form.Item
-                name="file"
-                rules={
-                  fileList.length < 1 && [
-                    {
-                      required: true,
-                      message: "Please input your image!",
-                    },
-                  ]
+                {toggler}
+            </ButtonCustom>
+            </div>
+
+            <div tw="flex items-center">
+            <span tw="capitalize text-4xl font-bold text-black">
+                {pathname.includes("edit") ? `Edit ${isTitle}` : `New ${isTitle}`}
+            </span>
+            </div>
+            <div tw="grid gap-y-2  md:flex items-center md:justify-self-end">
+            <ButtonMore
+                tw="!py-2"
+                onClick={() => {
+                pathname.includes("recurring")
+                    ? history.push("/invoices/recurring-templates")
+                    : history.push("/invoices");
+                }}
+            >
+                <span>Cancel</span>
+            </ButtonMore>
+            <Button
+                tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center "
+                onClick={() => form.submit()}
+            >
+                <span tw="text-lg">Save...</span>
+            </Button>
+            {!pathname.includes("recurring") && (
+                <Popover
+                placement="bottom"
+                content={
+                    <SendEmailInvoice
+                    clientProps={[isClient, setIsClient]}
+                    hide={hide}
+                    dataUser={dataUser?.user?.company_name}
+                    invoiceId={invoiceId}
+                    date={isForm?.due_date}
+                    total={numberWithDot(
+                        localSubTotal - (localSubTotal * isForm.discount) / 100
+                    )}
+                    onFinishInvoice={onFinish}
+                    setDontThrow={setDontThrow}
+                    isInvoiceId={isInvoiceId}
+                    />
                 }
-              >
-                <UploadCustom
-                  name="file"
-                  headers={{
-                    Authorization: `Bearer ${token?.token}`,
-                    "Content-Type": "multipart/form-data",
-                  }}
-                  action="upload"
-                  customRequest={actionUploadLogo}
-                  beforeUpload={beforeUpload}
-                  listType="picture-card"
-                  fileList={fileList}
-                  // onChange={onChange}
-                  onPreview={onPreview}
+                trigger="click"
+                visible={clicked}
+                onVisibleChange={handleClickChange}
                 >
-                  {fileList.length < 1 && "+ Upload"}
-                </UploadCustom>
-              </Form.Item>
-
-              <div tw="flex justify-between ">
-                <div tw="flex flex-col items-end text-right ">
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="Company Name"
-                    tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: {
-                          value: e.target.innerHTML,
-                          name: "company_name",
+                <Button
+                    tw="!py-2 ml-2 bg-success text-white px-4 h-auto flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!isClient}
+                >
+                    <span tw="text-lg">Send To...</span>
+                </Button>
+                </Popover>
+            )}
+            </div>
+        </div>
+        <div tw="grid grid-cols-1 md:grid-cols-12 gap-5 mx-5 mt-10 md:mt-2">
+            <Form
+            size="default"
+            form={form}
+            layout={"vertical"}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            tw="md:col-span-9 space-y-5 mb-10 mt-10 md:mt-2"
+            >
+            <CardDetailInvoice>
+                <div tw="grid gap-y-2 md:flex justify-between mb-10">
+                {/* <img
+                src="https://source.unsplash.com/200x200?company"
+                alt="profile company"
+                tw="w-screen md:w-auto"
+                /> */}
+                <Form.Item
+                    name="file"
+                    rules={
+                    fileList.length < 1 && [
+                        {
+                        required: true,
+                        message: "Please input your image!",
                         },
-                      })
+                    ]
                     }
-                    dangerouslySetInnerHTML={{ __html: isForm.company_name }}
-                  ></span>
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="Addres Line 1"
-                    tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: { value: e.target.innerHTML, name: "address" },
-                      })
-                    }
-                    dangerouslySetInnerHTML={{ __html: isForm.address }}
-                  ></span>
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="Addres Line 2"
-                    tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: {
-                          value: e.target.innerHTML,
-                          name: "address_line_2",
-                        },
-                      })
-                    }
-                    dangerouslySetInnerHTML={{ __html: isForm.address_line_2 }}
-                  ></span>
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="City"
-                    tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: { value: e.target.innerHTML, name: "city" },
-                      })
-                    }
-                    dangerouslySetInnerHTML={{ __html: isForm.city }}
-                  ></span>
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="Phone Number"
-                    tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: { value: e.target.innerHTML, name: "phone" },
-                      })
-                    }
-                    dangerouslySetInnerHTML={{ __html: isForm.phone }}
-                  ></span>
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="ZIP"
-                    tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: { value: e.target.innerHTML, name: "zip" },
-                      })
-                    }
-                    dangerouslySetInnerHTML={{ __html: isForm.zip }}
-                  ></span>
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="Country"
-                    tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: { value: e.target.innerHTML, name: "country" },
-                      })
-                    }
-                    dangerouslySetInnerHTML={{ __html: isForm.country }}
-                  ></span>
-                </div>
-                {/* <div tw="flex flex-col items-end">
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="Address Line 1"
-                    tw="max-w-[200px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: { value: e.target.innerHTML, name: "address" },
-                      })
-                    }
-                    html={isForm.address}
-                  ></span>
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="Address Line 2"
-                    tw="max-w-[200px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: {
-                          value: e.target.innerHTML,
-                          name: "address_line_2",
-                        },
-                      })
-                    }
-                    html={isForm.address_line_2}
-                  ></span>
-                  <div tw="flex">
-                    <span
-                      contentEditable
-                      suppressContentEditableWarning
-                      className="editable"
-                      data-placeholder="City"
-                      tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                      onInput={(e) =>
-                        handleInput({
-                          target: { value: e.target.innerHTML, name: "city" },
-                        })
-                      }
-                      html={isForm.city}
-                    ></span>
-                    <span>,</span>
-                    <span
-                      contentEditable
-                      suppressContentEditableWarning
-                      className="editable"
-                      data-placeholder="State"
-                      tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                      onInput={(e) =>
-                        handleInput({
-                          target: { value: e.target.innerHTML, name: "state" },
-                        })
-                      }
-                      html={isForm.state}
-                    ></span>
-                  </div>
-
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="ZIP Code"
-                    tw="max-w-[100px] min-w-[50px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: { value: e.target.innerHTML, name: "zip" },
-                      })
-                    }
-                    html={isForm.zip}
-                  ></span>
-
-                  <AutoCompleteCustom
-                    style={{
-                      width: 100,
+                >
+                    <UploadCustom
+                    name="file"
+                    headers={{
+                        Authorization: `Bearer ${token?.token}`,
+                        "Content-Type": "multipart/form-data",
                     }}
-                    onChange={(e) =>
-                      handleInput({
-                        target: { value: e, name: "country" },
-                      })
-                    }
-                    options={countryList.map((item) => ({
-                      value: item,
-                    }))}
-                    value={isForm.country}
-                    placeholder="Country"
-                    filterOption={(inputValue, option) =>
-                      option.value
-                        .toUpperCase()
-                        .indexOf(inputValue.toUpperCase()) !== -1
-                    }
-                  />
-                  <div tw="flex">
+                    action="upload"
+                    customRequest={actionUploadLogo}
+                    beforeUpload={beforeUpload}
+                    listType="picture-card"
+                    fileList={fileList}
+                    // onChange={onChange}
+                    onPreview={onPreview}
+                    >
+                    {fileList.length < 1 && "+ Upload"}
+                    </UploadCustom>
+                </Form.Item>
+
+                <div tw="flex justify-between ">
+                    <div tw="flex flex-col items-end text-right ">
                     <span
-                      contentEditable
-                      suppressContentEditableWarning
-                      className="editable"
-                      data-placeholder="Tax Name"
-                      tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                      onInput={(e) =>
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Company Name"
+                        tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
                         handleInput({
-                          target: {
+                            target: {
                             value: e.target.innerHTML,
-                            name: "tax_name",
-                          },
+                            name: "company_name",
+                            },
                         })
-                      }
-                      html={isForm.tax_name}
-                    ></span>
-                    <span>,</span>
-                    <span
-                      contentEditable
-                      suppressContentEditableWarning
-                      className="editable"
-                      data-placeholder="Tax Number"
-                      tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                      onInput={(e) =>
-                        handleInput({
-                          target: {
-                            value: e.target.innerHTML,
-                            name: "tax_number",
-                          },
-                        })
-                      }
-                      html={isForm.tax_number}
-                    ></span>
-                  </div>
-                </div> */}
-              </div>
-            </div>
-            <div tw="grid grid-cols-4 gap-5 mb-16">
-              <Form.Item
-                name="clients"
-                rules={[
-                  {
-                    message: "Please input your client",
-                    validator: (_, value) => {
-                      if (isClient) {
-                        return Promise.resolve();
-                      } else {
-                        return Promise.reject("Error");
-                      }
-                    },
-                  },
-                ]}
-              >
-                <InvoiceHead clientProps={[isClient, setIsClient]} />
-              </Form.Item>
-              <div tw="space-y-5 ">
-                <div>
-                  {/* <Form.Item
-                    label="Date of Issue"
-                    name="issued_at"
-                    rules={[
-                      { required: true, message: "Please select a date!" },
-                    ]}
-                  > */}
-                  <h4 tw="text-gray-400">Date of Issue</h4>
-
-                  <DatePickerCustom
-                    bordered={false}
-                    onChange={(date, dateString) =>
-                      setIsForm({ ...isForm, issued_at: dateString })
-                    }
-                    value={
-                      isForm.issued_at !== new Date() &&
-                      moment(new Date(isForm.issued_at), dateFormat)
-                    }
-                    format={dateFormat}
-                  />
-                  {/* </Form.Item> */}
-                </div>
-
-                <div>
-                  {/* <Form.Item
-                    label="Due Date"
-                    name="due_date"
-                    rules={[
-                      { required: true, message: "Please select a date!" },
-                    ]}
-                  > */}
-                  <h4 tw="text-gray-400">Due Date</h4>
-
-                  <DatePickerCustom
-                    bordered={false}
-                    onChange={(date, dateString) =>
-                      setIsForm({ ...isForm, due_date: dateString })
-                    }
-                    value={
-                      isForm.due_date &&
-                      moment(new Date(isForm.due_date), dateFormat)
-                    }
-                    format={dateFormat}
-                  />
-                  {/* </Form.Item> */}
-                </div>
-              </div>
-              <div tw="space-y-5 ">
-                <div>
-                  <h4 tw="text-gray-400">Invoice Number</h4>
-
-                  <span tw="text-xs">{isForm.code}</span>
-                </div>
-
-                <div>
-                  <h4 tw="text-gray-400">Reference</h4>
-                  <span
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="editable"
-                    data-placeholder="Enter value (e.g. PO #)"
-                    tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
-                    onInput={(e) =>
-                      handleInput({
-                        target: {
-                          value: e.target.innerHTML,
-                          name: "reference",
-                        },
-                      })
-                    }
-                    html={isForm.reference}
-                  ></span>
-                </div>
-              </div>
-              <div tw="text-right">
-                <h3 tw="text-gray-400">Amount Due</h3>
-                <span tw="font-medium text-3xl ">
-                  {numberWithDot(
-                    localSubTotal - (localSubTotal * isForm.discount) / 100
-                  )}
-                  {/* {lines.length > 0 &&
-                    getTotal(
-                      lines?.map((x) => {
-                        const splitAmount = x.total.split(".");
-                        return parseInt(splitAmount[0]);
-                      })
-                    )} */}
-                </span>
-              </div>
-            </div>
-
-            <InvoiceLines linesProps={[lines, setLines]} />
-
-            <div tw="grid grid-cols-12 mt-10 ">
-              <div tw="col-span-8"></div>
-              <table tw="col-span-4">
-                <tbody>
-                  <tr tw="text-right">
-                    <td>Subtotal</td>
-                    <td>{numberWithDot(localSubTotal)}</td>
-                  </tr>
-                  <tr tw=" text-right">
-                    <td tw="text-primary">
-                      <Popover
-                        placement="bottom"
-                        content={
-                          <FilterDiscount
-                            hide={hide2}
-                            isFormProps={[isForm, setIsForm]}
-                          />
                         }
-                        trigger="click"
-                        visible={clicked2}
-                        onVisibleChange={handleClickChange2}
-                      >
-                        {isForm.discount
-                          ? isForm.discount + "%" + "Discount"
-                          : "Add Discount"}
-                      </Popover>
-                    </td>
-                    <td>
-                      {" "}
-                      {isForm.discount &&
-                        "- " + (localSubTotal * isForm.discount) / 100}
-                    </td>
-                  </tr>
-                  <tr tw="border-b  border-gray-300 text-right">
-                    <td>Tax</td>
-                    <td>0.00</td>
-                  </tr>
-                  <tr tw="text-right ">
-                    <td tw="pt-1">Total</td>
-                    <td>
-                      {" "}
-                      {/* {lines.length > 0 &&
+                        dangerouslySetInnerHTML={{ __html: isForm.company_name }}
+                    ></span>
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Addres Line 1"
+                        tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: { value: e.target.innerHTML, name: "address" },
+                        })
+                        }
+                        dangerouslySetInnerHTML={{ __html: isForm.address }}
+                    ></span>
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Addres Line 2"
+                        tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: {
+                            value: e.target.innerHTML,
+                            name: "address_line_2",
+                            },
+                        })
+                        }
+                        dangerouslySetInnerHTML={{ __html: isForm.address_line_2 }}
+                    ></span>
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="City"
+                        tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: { value: e.target.innerHTML, name: "city" },
+                        })
+                        }
+                        dangerouslySetInnerHTML={{ __html: isForm.city }}
+                    ></span>
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Phone Number"
+                        tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: { value: e.target.innerHTML, name: "phone" },
+                        })
+                        }
+                        dangerouslySetInnerHTML={{ __html: isForm.phone }}
+                    ></span>
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="ZIP"
+                        tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: { value: e.target.innerHTML, name: "zip" },
+                        })
+                        }
+                        dangerouslySetInnerHTML={{ __html: isForm.zip }}
+                    ></span>
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Country"
+                        tw="max-w-[300px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: { value: e.target.innerHTML, name: "country" },
+                        })
+                        }
+                        dangerouslySetInnerHTML={{ __html: isForm.country }}
+                    ></span>
+                    </div>
+                    {/* <div tw="flex flex-col items-end">
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Address Line 1"
+                        tw="max-w-[200px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: { value: e.target.innerHTML, name: "address" },
+                        })
+                        }
+                        html={isForm.address}
+                    ></span>
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Address Line 2"
+                        tw="max-w-[200px] min-w-[100px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: {
+                            value: e.target.innerHTML,
+                            name: "address_line_2",
+                            },
+                        })
+                        }
+                        html={isForm.address_line_2}
+                    ></span>
+                    <div tw="flex">
+                        <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="City"
+                        tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                            handleInput({
+                            target: { value: e.target.innerHTML, name: "city" },
+                            })
+                        }
+                        html={isForm.city}
+                        ></span>
+                        <span>,</span>
+                        <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="State"
+                        tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                            handleInput({
+                            target: { value: e.target.innerHTML, name: "state" },
+                            })
+                        }
+                        html={isForm.state}
+                        ></span>
+                    </div>
+
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="ZIP Code"
+                        tw="max-w-[100px] min-w-[50px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: { value: e.target.innerHTML, name: "zip" },
+                        })
+                        }
+                        html={isForm.zip}
+                    ></span>
+
+                    <AutoCompleteCustom
+                        style={{
+                        width: 100,
+                        }}
+                        onChange={(e) =>
+                        handleInput({
+                            target: { value: e, name: "country" },
+                        })
+                        }
+                        options={countryList.map((item) => ({
+                        value: item,
+                        }))}
+                        value={isForm.country}
+                        placeholder="Country"
+                        filterOption={(inputValue, option) =>
+                        option.value
+                            .toUpperCase()
+                            .indexOf(inputValue.toUpperCase()) !== -1
+                        }
+                    />
+                    <div tw="flex">
+                        <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Tax Name"
+                        tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                            handleInput({
+                            target: {
+                                value: e.target.innerHTML,
+                                name: "tax_name",
+                            },
+                            })
+                        }
+                        html={isForm.tax_name}
+                        ></span>
+                        <span>,</span>
+                        <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Tax Number"
+                        tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                            handleInput({
+                            target: {
+                                value: e.target.innerHTML,
+                                name: "tax_number",
+                            },
+                            })
+                        }
+                        html={isForm.tax_number}
+                        ></span>
+                    </div>
+                    </div> */}
+                </div>
+                </div>
+                <div tw="grid grid-cols-4 gap-5 mb-16">
+                <Form.Item
+                    name="clients"
+                    rules={[
+                    {
+                        message: "Please input your client",
+                        validator: (_, value) => {
+                        if (isClient) {
+                            return Promise.resolve();
+                        } else {
+                            return Promise.reject("Error");
+                        }
+                        },
+                    },
+                    ]}
+                >
+                    <InvoiceHead clientProps={[isClient, setIsClient]} />
+                </Form.Item>
+                <div tw="space-y-5 ">
+                    <div>
+                    {/* <Form.Item
+                        label="Date of Issue"
+                        name="issued_at"
+                        rules={[
+                        { required: true, message: "Please select a date!" },
+                        ]}
+                    > */}
+                    <h4 tw="text-gray-400">Date of Issue</h4>
+
+                    <DatePickerCustom
+                        bordered={false}
+                        onChange={(date, dateString) =>
+                        setIsForm({ ...isForm, issued_at: dateString })
+                        }
+                        value={
+                        isForm.issued_at !== new Date() &&
+                        moment(new Date(isForm.issued_at), dateFormat)
+                        }
+                        format={dateFormat}
+                    />
+                    {/* </Form.Item> */}
+                    </div>
+
+                    <div>
+                    {/* <Form.Item
+                        label="Due Date"
+                        name="due_date"
+                        rules={[
+                        { required: true, message: "Please select a date!" },
+                        ]}
+                    > */}
+                    <h4 tw="text-gray-400">Due Date</h4>
+
+                    <DatePickerCustom
+                        bordered={false}
+                        onChange={(date, dateString) =>
+                        setIsForm({ ...isForm, due_date: dateString })
+                        }
+                        value={
+                        isForm.due_date &&
+                        moment(new Date(isForm.due_date), dateFormat)
+                        }
+                        format={dateFormat}
+                    />
+                    {/* </Form.Item> */}
+                    </div>
+                </div>
+                <div tw="space-y-5 ">
+                    <div>
+                    <h4 tw="text-gray-400">Invoice Number</h4>
+
+                    <span tw="text-xs">{isForm.code}</span>
+                    </div>
+
+                    <div>
+                    <h4 tw="text-gray-400">Reference</h4>
+                    <span
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="editable"
+                        data-placeholder="Enter value (e.g. PO #)"
+                        tw="max-w-[100px] min-w-[30px] whitespace-nowrap	overflow-x-hidden text-sm focus:outline-offset-4 focus:outline-2 focus:outline-sky-500 rounded-md focus:border-2 focus:border-gray-400 focus:ring-1 focus:ring-sky-500 border-2 border-transparent"
+                        onInput={(e) =>
+                        handleInput({
+                            target: {
+                            value: e.target.innerHTML,
+                            name: "reference",
+                            },
+                        })
+                        }
+                        html={isForm.reference}
+                    ></span>
+                    </div>
+                </div>
+                <div tw="text-right">
+                    <h3 tw="text-gray-400">Amount Due</h3>
+                    <span tw="font-medium text-3xl ">
+                    {numberWithDot(
+                        localSubTotal - (localSubTotal * isForm.discount) / 100
+                    )}
+                    {/* {lines.length > 0 &&
                         getTotal(
-                          lines?.map((x) => {
+                        lines?.map((x) => {
                             const splitAmount = x.total.split(".");
                             return parseInt(splitAmount[0]);
-                          })
-                        )}{" "} */}
-                      {numberWithDot(
-                        localSubTotal - (localSubTotal * isForm.discount) / 100
-                      )}
-                    </td>
-                  </tr>
-                  <tr tw="text-right">
-                    <td>Amount Paid</td>
-                    <td>0.00</td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr className="double">
-                    <td tw=" text-right align-top text-gray-400">Amount Due</td>
-
-                    <td tw=" grid gap-0 items-end ">
-                      <span tw="font-semibold ">
-                        {numberWithDot(
-                          localSubTotal -
-                            (localSubTotal * isForm.discount) / 100
-                        )}
-
+                        })
+                        )} */}
+                    </span>
+                </div>
+                </div>
+                
+                <Space direction="vertical" className="ant-col ant-col-24" size="middle" style={{ display: 'flex' }}>
+                    <InvoiceLines linesProps={[lines, setLines]} />
+                    {
+                        !pathname.includes("recurring")
+                            ? <Button block type="button" onClick={() => setModalRecurring(true)}>Add multiple payment</Button>
+                            : null
+                    }
+                </Space>
+                
+                <div tw="grid grid-cols-12 mt-10 ">
+                <div tw="col-span-8"></div>
+                <table tw="col-span-4">
+                    <tbody>
+                    <tr tw="text-right">
+                        <td>Subtotal</td>
+                        <td>{numberWithDot(localSubTotal)}</td>
+                    </tr>
+                    <tr tw=" text-right">
+                        <td tw="text-primary">
+                        <Popover
+                            placement="bottom"
+                            content={
+                            <FilterDiscount
+                                hide={hide2}
+                                isFormProps={[isForm, setIsForm]}
+                            />
+                            }
+                            trigger="click"
+                            visible={clicked2}
+                            onVisibleChange={handleClickChange2}
+                        >
+                            {isForm.discount
+                            ? isForm.discount + "%" + "Discount"
+                            : "Add Discount"}
+                        </Popover>
+                        </td>
+                        <td>
+                        {" "}
+                        {isForm.discount &&
+                            "- " + (localSubTotal * isForm.discount) / 100}
+                        </td>
+                    </tr>
+                    <tr tw="border-b  border-gray-300 text-right">
+                        <td>Tax</td>
+                        <td>0.00</td>
+                    </tr>
+                    <tr tw="text-right ">
+                        <td tw="pt-1">Total</td>
+                        <td>
+                        {" "}
                         {/* {lines.length > 0 &&
-                          getTotal(
+                            getTotal(
                             lines?.map((x) => {
-                              const splitAmount = x.total.split(".");
-                              return parseInt(splitAmount[0]);
+                                const splitAmount = x.total.split(".");
+                                return parseInt(splitAmount[0]);
                             })
-                          )} */}
-                      </span>
-                      {/* <span tw="text-gray-600 text-right">USD</span> */}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-            <div tw="grid gap-y-5 mb-20">
-              <div>
-                <h3 tw="text-sm">Notes</h3>
-                <TextArea
-                  tw="border-0"
-                  name="notes"
-                  placeholder="Enter notes or bank transfer details (optional)"
-                  autoSize
-                  onChange={(e) =>
-                    setIsForm({ ...isForm, notes: e.target.value })
-                  }
-                  value={isForm.notes}
-                />
-              </div>
-              <div>
-                <h3 tw="text-sm">Terms</h3>
-                <TextArea
-                  tw="border-0"
-                  name="terms"
-                  placeholder="Enter your terms and conditions. (Pro tip: It pays to be polite. FreshBooks invoices that include “please” and “thanks” get paid up to 2 days faster.)"
-                  autoSize
-                  onChange={(e) =>
-                    setIsForm({ ...isForm, terms: e.target.value })
-                  }
-                  value={isForm.terms}
-                />
-              </div>
-            </div>
-          </CardDetailInvoice>
-          <Card tw="border-gray-200 rounded-lg">
-            <UploadCustom
-              name="file"
-              headers={{
-                Authorization: `Bearer ${token?.token}`,
-                "Content-Type": "multipart/form-data",
-              }}
-              action="upload"
-              customRequest={actionUpload}
-              beforeUpload={beforeUpload}
-              listType="picture-card"
-              fileList={fileListAttach}
-              // onChange={onChangeAttach}
-              onPreview={onPreviewAttach}
+                            )}{" "} */}
+                        {numberWithDot(
+                            localSubTotal - (localSubTotal * isForm.discount) / 100
+                        )}
+                        </td>
+                    </tr>
+                    <tr tw="text-right">
+                        <td>Amount Paid</td>
+                        <td>0.00</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr className="double">
+                        <td tw=" text-right align-top text-gray-400">Amount Due</td>
+
+                        <td tw=" grid gap-0 items-end ">
+                        <span tw="font-semibold ">
+                            {numberWithDot(
+                            localSubTotal -
+                                (localSubTotal * isForm.discount) / 100
+                            )}
+
+                            {/* {lines.length > 0 &&
+                            getTotal(
+                                lines?.map((x) => {
+                                const splitAmount = x.total.split(".");
+                                return parseInt(splitAmount[0]);
+                                })
+                            )} */}
+                        </span>
+                        {/* <span tw="text-gray-600 text-right">USD</span> */}
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+                </div>
+
+                {
+                    pathname.includes("recurring") && formRecurring.recurring_max > 0 && !modalRecurring
+                        ? <RecurringSchedule recurring={recurringConfig} total={numberWithDot(
+                            localSubTotal - (localSubTotal * isForm.discount) / 100
+                        )} />
+                        : null
+                }
+
+                <div tw="grid gap-y-5 mb-20">
+                <div>
+                    <h3 tw="text-sm">Notes</h3>
+                    <TextArea
+                    tw="border-0"
+                    name="notes"
+                    placeholder="Enter notes or bank transfer details (optional)"
+                    autoSize
+                    onChange={(e) =>
+                        setIsForm({ ...isForm, notes: e.target.value })
+                    }
+                    value={isForm.notes}
+                    />
+                </div>
+                <div>
+                    <h3 tw="text-sm">Terms</h3>
+                    <TextArea
+                    tw="border-0"
+                    name="terms"
+                    placeholder="Enter your terms and conditions. (Pro tip: It pays to be polite. FreshBooks invoices that include “please” and “thanks” get paid up to 2 days faster.)"
+                    autoSize
+                    onChange={(e) =>
+                        setIsForm({ ...isForm, terms: e.target.value })
+                    }
+                    value={isForm.terms}
+                    />
+                </div>
+                </div>
+            </CardDetailInvoice>
+            <Card tw="border-gray-200 rounded-lg">
+                <UploadCustom
+                name="file"
+                headers={{
+                    Authorization: `Bearer ${token?.token}`,
+                    "Content-Type": "multipart/form-data",
+                }}
+                action="upload"
+                customRequest={actionUpload}
+                beforeUpload={beforeUpload}
+                listType="picture-card"
+                fileList={fileListAttach}
+                // onChange={onChangeAttach}
+                onPreview={onPreviewAttach}
+                >
+                {fileListAttach?.length < 5 && uploadButton}
+                </UploadCustom>
+            </Card>
+            </Form>
+            {pathname.includes("recurring") ? (
+            <CreateRecurring
+                Filtering={RecurringSettings}
+                setOpen={setOpen}
+                setIsRecurring={setIsRecurring}
+                open={open}
+            />
+            ) : (
+            <MakeRecurring
+                Filtering={MakeRecurringSettings}
+                setOpen={setOpen}
+                setIsRecurring={setIsRecurring}
+                open={open}
+            />
+            )}
+            {/* <Filter Filtering={RecurringSettingsInvoice} setOpen={setOpen} open={open} /> */}
+            {/* <InvoicesSetting open={open} setOpen={setOpen} /> */}
+        </div>
+        </div>
+        <Modal title="Add multiple payments" footer={null} open={modalRecurring} onCancel={() => setModalRecurring(false)}>
+            <Form
+                onFinish={() => {
+                    setModalRecurring(false)
+                    setRecurringConfig(JSON.stringify(formRecurring))
+                    history.push("/recurring-template/new")
+                }}
+                layout="vertical"
+                size={"large"}
+                tw="mt-5"
+                fields={[
+                {
+                    name: ["recurring_type"],
+                    value: formRecurring?.recurring_type,
+                },
+                {
+                    name: ["recurring_next_issue_date"],
+                    value: moment(
+                    new Date(formRecurring.recurring_next_issue_date),
+                    dateFormat
+                    ),
+                },
+                ]}
             >
-              {fileListAttach?.length < 5 && uploadButton}
-            </UploadCustom>
-          </Card>
-        </Form>
-        {pathname.includes("recurring") ? (
-          <CreateRecurring
-            Filtering={RecurringSettings}
-            setOpen={setOpen}
-            setIsRecurring={setIsRecurring}
-            open={open}
-          />
-        ) : (
-          <MakeRecurring
-            Filtering={MakeRecurringSettings}
-            setOpen={setOpen}
-            setIsRecurring={setIsRecurring}
-            open={open}
-          />
-        )}
-        {/* <Filter Filtering={RecurringSettingsInvoice} setOpen={setOpen} open={open} /> */}
-        {/* <InvoicesSetting open={open} setOpen={setOpen} /> */}
-      </div>
-    </div>
+                <Row gutter={24}>
+                <Col span={24}>
+                    <Form.Item label="How Often?" name="recurring_type">
+                    <Select
+                        value={formRecurring.recurring_type}
+                        onChange={(e) =>
+                        setFormRecurring({ ...formRecurring, recurring_type: e })
+                        }
+                        options={[
+                        {
+                            value: "weekly",
+                            label: "Weekly",
+                        },
+                        {
+                            value: "monthly",
+                            label: "Monthly",
+                        },
+                        {
+                            value: "yearly",
+                            label: "Yearly",
+                        },
+                        ]}
+                    />
+                    </Form.Item>
+                </Col>
+                <Divider tw="!mt-0" />
+                <Col span={24}>
+                <Row gutter={8}>
+                    <Col span={12}>
+                        <Form.Item label="Next Issue Date" name="recurring_next_issue_date">
+                            <DatePicker
+                                onChange={(date, dateString) =>
+                                setFormRecurring({
+                                    ...formRecurring,
+                                    recurring_next_issue_date: dateString,
+                                })
+                                }
+                                // value={
+                                //   formRecurring.recurring_next_issue_date &&
+                                //   moment(new Date(formRecurring.recurring_next_issue_date), dateFormat)
+                                // }
+                                format={dateFormat}
+                                className="ant-col-24"
+                            />
+                            </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label="End Date" name="recurring_end_issue_date">
+                        <DatePicker
+                            onChange={(date, dateString) =>
+                            setFormRecurring({
+                                ...formRecurring,
+                                recurring_end_issue_date: dateString,
+                            })
+                            }
+                            format={dateFormat}
+                            className="ant-col-24"
+                        />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                </Col>
+                <Divider tw="!mt-0" />
+                <Col span={24}>
+                    <Row>
+                        <Col span={12}>
+                            <Form.Item label="Number of Invoices" name="recurring_max">
+                                <Input
+                                    type="number"
+                                    value={formRecurring.recurring_max}
+                                    onChange={(e) =>
+                                    setFormRecurring({
+                                        ...formRecurring,
+                                        recurring_max: e.target.value,
+                                    })
+                                    }
+                                    block
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </Col>
+                <Col span={12}>
+                    <Button htmlType="submit" tw="text-lg text-white bg-success px-8">
+                        Apply
+                    </Button>
+                </Col>
+                </Row>
+            </Form>
+        </Modal>
+    </>
   );
 }
 export function getTotal(v) {
